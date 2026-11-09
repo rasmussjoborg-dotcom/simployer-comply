@@ -1006,9 +1006,12 @@ struct MacMainView: View {
         if isCompliant {
             headline = store.language == .se ? "Fjord Dynamics är 100% skyddat" : (store.language == .no ? "Fjord Dynamics er 100% sikret" : "Fjord Dynamics is 100% protected")
             subtitle = store.language == .se ? "Alla 10 lagkrav är uppfyllda. 3 datakällor och 8 anställningsakter bevakas kontinuerligt i bakgrunden." : (store.language == .no ? "Alle 10 lovkrav er oppfylt. 3 datakilder og 8 personalmapper overvåkes kontinuerlig i bakgrunnen." : "All 10 duties are secured. 3 data sources and 8 employee records continuously monitored.")
-        } else if hasContractGap {
+        } else if pending > 1 {
             headline = store.language == .se ? "Fjord Dynamics är delvis skyddat (70%)" : (store.language == .no ? "Fjord Dynamics er delvis sikret (70%)" : "Fjord Dynamics is partially protected (70%)")
-            subtitle = store.language == .se ? "7 anställningsavtal saknar lagstadgade klausuler enligt AML § 14-6. Inga sanktionsavgifter föreligger om åtgärd genomförs." : (store.language == .no ? "7 ansettelsesavtaler mangler lovpålagte klausuler etter AML § 14-6. Ingen gebyrer ilegges når avvik rettes." : "7 contracts lack statutory clauses under AML § 14-6. No sanctions apply if resolved.")
+            subtitle = store.language == .se ? "\(pending) öppna avvikelser kräver åtgärd för att säkra bolaget mot tillsynsavgifter och tvister." : (store.language == .no ? "\(pending) åpne avvik krever tiltak for å sikre selskapet mot gebyrer og tvister." : "\(pending) pending issues require action to secure the company against penalties and disputes.")
+        } else if hasContractGap {
+            headline = store.language == .se ? "1 anställningsavtal saknar lagstadgade klausuler" : (store.language == .no ? "1 ansettelsesavtale mangler lovpålagte klausuler" : "1 contract lacks statutory clauses")
+            subtitle = store.language == .se ? "Standardavtal saknar klausuler enligt AML § 14-6. Inga avgifter föreligger om åtgärd genomförs." : (store.language == .no ? "Standardavtale mangler klausuler etter AML § 14-6. Ingen gebyrer ilegges når avvik rettes." : "Contract lacks statutory clauses under AML § 14-6. No sanctions apply if resolved.")
         } else if voPending {
             headline = store.language == .se ? "Obligatoriskt skyddsombudsval krävs" : (store.language == .no ? "Obligatorisk verneombudsvalg kreves" : "Mandatory safety rep election required")
             subtitle = store.language == .se ? "Fjord Dynamics har 8 anställda (tröskel: 5). Digitalt valförfarande krävs enligt AML § 6-1." : (store.language == .no ? "Fjord Dynamics har 8 ansatte (terskel: 5). Digitalt valg kreves etter AML § 6-1." : "Headcount passed 5. Election required under AML § 6-1.")
@@ -1020,12 +1023,7 @@ struct MacMainView: View {
             subtitle = store.language == .se ? "Granska och genomför åtgärder för att uppnå 100% säkrat skydd." : (store.language == .no ? "Gjennomfør tiltak for å oppnå 100% vern." : "Review and complete actions to achieve 100% protection.")
         }
         
-        let ctaTitle: String
-        if hasContractGap {
-            ctaTitle = store.language == .se ? "Signera med BankID" : (store.language == .no ? "Signer med BankID" : "Sign with BankID")
-        } else {
-            ctaTitle = store.language == .se ? "Åtgärda allt" : (store.language == .no ? "Løs alt" : "Resolve all")
-        }
+        let ctaTitle: String = store.l10n.hubMacroResolveButton
         
         return HStack(alignment: .center, spacing: 32) {
             // Column 1: Ambient Radial Glow & 140pt Dial
@@ -1124,7 +1122,7 @@ struct MacMainView: View {
                         }
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: "signature")
+                            Image(systemName: "checkmark.shield.fill")
                                 .font(.system(size: 14, weight: .bold))
                             Text(ctaTitle)
                                 .font(.inter(14, .bold))
@@ -1134,6 +1132,7 @@ struct MacMainView: View {
                         .background(SolTokens.linearIndigo)
                         .foregroundColor(Color.white)
                         .clipShape(Capsule())
+                        .contentShape(Capsule())
                         .shadow(color: SolTokens.indigo.opacity(0.32), radius: 8, y: 3)
                     }
                     .buttonStyle(.plain)
@@ -1729,6 +1728,7 @@ struct MacMainView: View {
                         .background(isSelected ? color.opacity(0.18) : SolTokens.paper250)
                         .foregroundColor(isSelected ? (filter == .all ? SolTokens.ink900 : color) : SolTokens.ink600)
                         .clipShape(Capsule())
+                        .contentShape(Capsule())
                         .overlay(Capsule().stroke(isSelected ? color.opacity(0.4) : SolTokens.paper300, lineWidth: 1))
                 }
             }
@@ -2237,6 +2237,7 @@ struct MacMainView: View {
                         .padding(.vertical, 2.5)
                         .background(SolTokens.paper200)
                         .clipShape(Capsule())
+                        .contentShape(Capsule())
                         .overlay(Capsule().stroke(SolTokens.paper300, lineWidth: 1))
                     }
                     

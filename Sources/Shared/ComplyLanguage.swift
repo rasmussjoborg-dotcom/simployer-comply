@@ -995,9 +995,9 @@ public struct LocalizedStrings: Sendable {
 
     public var hubMacroResolveButton: String {
         switch languageCode {
-        case "se": return "Signera med BankID"
-        case "en": return "Sign with BankID"
-        default: return "Signer med BankID"
+        case "se": return "Åtgärda allt"
+        case "en": return "Resolve all"
+        default: return "Løs alt"
         }
     }
 
