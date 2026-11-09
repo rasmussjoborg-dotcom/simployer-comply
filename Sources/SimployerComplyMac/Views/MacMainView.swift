@@ -4817,8 +4817,8 @@ struct MacMainView: View {
     // MARK: - Ingestion Canvas & Cloud Sources Hub (The Apple Standard: Calm, Restrained, One Clear Hero)
     private var macIngestDropView: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                sourcesHeroStageView
+            VStack(alignment: .leading, spacing: 20) {
+                ingestHeaderView
                 sourcesThreeColumnsGrid
                 heroDropzoneView
             }
@@ -4828,96 +4828,59 @@ struct MacMainView: View {
         }
     }
     
-    // MARK: - Sources Hero Stage (3-Column Layout Matching Overview)
-    private var sourcesHeroStageView: some View {
-        HStack(spacing: 20) {
-            // Col 1: Circular Gauge / Health Indicator
-            ZStack {
-                Circle()
-                    .stroke(SolTokens.paper300, lineWidth: 6)
-                    .frame(width: 76, height: 76)
-                Circle()
-                    .trim(from: 0.0, to: 1.0)
-                    .stroke(SolTokens.green800, style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                    .frame(width: 76, height: 76)
-                    .rotationEffect(.degrees(-90))
-                
-                VStack(spacing: 1) {
-                    Text("3 / 3")
-                        .font(.inter(16, .bold))
-                        .foregroundColor(SolTokens.ink900)
-                    Text(store.language == .se ? "KÄLLOR" : "SOURCES")
-                        .font(.system(size: 8.5, weight: .bold, design: .monospaced))
-                        .foregroundColor(SolTokens.green800)
-                }
+    // MARK: - Sources Header
+    private var ingestHeaderView: some View {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(store.language == .se ? "Källor & Dokumentövervakning" : (store.language == .no ? "Kilder & Dokumentovervåking" : "Sources & Document Sentinel"))
+                    .font(.inter(18, .bold))
+                    .foregroundColor(SolTokens.ink900)
+                Text(store.language == .se 
+                    ? "Comply ansluter direkt till företagets befintliga system för att automatiskt bevaka avtal, stämplingar och myndighetskrav i realtid." 
+                    : (store.language == .no 
+                        ? "Comply kobler seg direkte til bedriftens eksisterende systemer for å overvåke avtaler, stemplinger og myndighetskrav i sanntid." 
+                        : "Comply connects directly to your systems to monitor contracts, attendance and statutory regulations in real time."))
+                    .font(.inter(12.5))
+                    .foregroundColor(SolTokens.ink600)
             }
-            .frame(width: 90)
             
-            // Col 2: Context Headline & Explanation
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
+            Spacer()
+            
+            HStack(spacing: 8) {
+                HStack(spacing: 5) {
                     Circle()
                         .fill(SolTokens.green800)
                         .frame(width: 6, height: 6)
-                    Text(store.language == .se ? "ALL DATAINHÄMTNING SKER AUTONOMT" : (store.language == .no ? "ALL DATAINNHENTING SKJER AUTONOMT" : "AUTONOMOUS DATA SENTINEL"))
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    Text(store.language == .se ? "3 / 3 källor synkade" : (store.language == .no ? "3 / 3 kilder synkronisert" : "3 / 3 sources synced"))
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundColor(SolTokens.green800)
                 }
-                .padding(.horizontal, 7)
-                .padding(.vertical, 3)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 5)
                 .background(SolTokens.green100)
-                .cornerRadius(4)
+                .cornerRadius(6)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.greenBorder, lineWidth: 1))
                 
-                Text(store.language == .se ? "Fjord Dynamics är anslutet och övervakas i realtid" : (store.language == .no ? "Fjord Dynamics er tilkoblet og overvåkes i sanntid" : "Fjord Dynamics is connected and guarded in real-time"))
-                    .font(.inter(18, .bold))
-                    .foregroundColor(SolTokens.ink900)
-                
-                Text(store.language == .se 
-                    ? "Comply läser personalavtal i molnet, synkar stämplingar från lönemotorn och bevakar myndighetskrav i bakgrunden utan manuell filhantering." 
-                    : (store.language == .no 
-                        ? "Comply leser personalavtaler i skyen, synkroniserer stemplinger fra lønnsmotoren og vokter myndighetskrav i bakgrunnen." 
-                        : "Comply reads contracts in the cloud, syncs punches from payroll, and tracks regulatory duties in the background."))
-                    .font(.inter(12))
-                    .foregroundColor(SolTokens.ink600)
-                    .lineSpacing(2)
-            }
-            
-            Spacer(minLength: 16)
-            
-            // Col 3: Hub Navigation CTA
-            VStack(alignment: .trailing, spacing: 6) {
                 Button {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
                         store.activeNav = "hub"
                     }
                 } label: {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 5) {
                         Image(systemName: "shield.lefthalf.filled")
-                            .font(.system(size: 12))
+                            .font(.system(size: 11))
                         Text(store.language == .se ? "Gå till åtgärder (\(store.pendingActionCount))" : (store.language == .no ? "Gå til handlinger (\(store.pendingActionCount))" : "Go to actions (\(store.pendingActionCount))"))
-                            .font(.inter(12.5, .bold))
+                            .font(.inter(11.5, .semibold))
                     }
                     .foregroundColor(Color.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 9)
+                    .padding(.horizontal, 11)
+                    .padding(.vertical, 6)
                     .background(SolTokens.sidebarActivePill)
-                    .clipShape(Capsule())
-                    .shadow(color: SolTokens.indigo.opacity(0.35), radius: 8, y: 3)
+                    .cornerRadius(6)
                 }
                 .buttonStyle(.plain)
-                
-                Text(store.language == .se ? "21 verifierade datapunkter aktiva" : (store.language == .no ? "21 verifiserte datapunkter aktive" : "21 verified data points active"))
-                    .font(.system(size: 10.5, design: .monospaced))
-                    .foregroundColor(SolTokens.ink450)
             }
         }
-        .padding(18)
-        .background(SolTokens.paper100)
-        .cornerRadius(14)
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(SolTokens.paper300, lineWidth: 1)
-        )
     }
     
     // MARK: - 3-Column Branded Sources Grid (Matching Overview Pillars)
@@ -4939,7 +4902,7 @@ struct MacMainView: View {
                     : (store.language == .no 
                         ? "8 ansettelsesavtaler og personalhåndbok overvåkes løpende. Endringer tolkes automatisk mot AML." 
                         : "8 employment contracts and handbook monitored continuously. Changes parsed automatically against labor law."),
-                footerMeta: store.language == .se ? "Lokal spegel: ~/Dokument/Personalakter" : "Local mirror: ~/Dokument/Personalakter",
+                footerMeta: store.language == .se ? "Lokal kopia på Macen: Dokument/Personalakter" : (store.language == .no ? "Lokal kopi på Macen: Dokumenter/Personalmapper" : "Local folder on Mac: Documents/HR"),
                 actionTitle: store.language == .se ? "Konfigurera mapp" : (store.language == .no ? "Konfigurer mappe" : "Configure folder"),
                 action: {}
             )
