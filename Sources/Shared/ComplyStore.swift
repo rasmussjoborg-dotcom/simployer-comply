@@ -258,6 +258,9 @@ public class ComplyStore: ObservableObject {
         self.activeNav = payload.activeNav
         self.verneombudElectionActive = payload.verneombudElectionActive
         self.electionVotesCast = payload.electionVotesCast
+        if let hms = payload.hmsTrainingEnrolled {
+            self.hmsTrainingEnrolled = hms
+        }
         
         if let tier = payload.selectedTimelineTier {
             self.selectedTimelineTier = tier
@@ -295,6 +298,7 @@ public class ComplyStore: ObservableObject {
             approvedEmployeeIds: Array(Set(approvedIds)),
             verneombudElectionActive: verneombudElectionActive,
             electionVotesCast: electionVotesCast,
+            hmsTrainingEnrolled: hmsTrainingEnrolled,
             lastUpdated: now,
             sender: currentPlatform,
             language: language.rawValue

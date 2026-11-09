@@ -954,85 +954,586 @@ struct MacMainView: View {
         .padding(.top, 8)
     }
 
-    // MARK: - Action Hub View
-    // MARK: - Action Hub Cockpit View
+    // MARK: - Action Hub Antivirus Protection Console (MacKeeper / CleanMyMac Pattern)
     private var macActionHubView: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Executive Cockpit Hero Status Bar
-                complianceStatusBar
-                    .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                    .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                // 1. Antivirus Grand Central Hero Cockpit (Status ring / gauge + BankID macro action)
+                antivirusHeroCockpit
                 
-                // Linear Horizon Filter Bar & Temporal Overview
-                horizonFilterBar
-                    .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                    .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
-                
-                // Horizon 1: 🔴 AKUT — KRÄVER ÅTGÄRD IDAG (Gör bolaget icke-compliant)
-                if (selectedHorizonFilter == .all || selectedHorizonFilter == .akut) && akutCount > 0 {
-                    horizonAkutSection
-                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                // 2. Expandable In-Place Contract Redline Diff Viewer (when expandedHubCard == "contracts")
+                if expandedHubCard == "contracts" {
+                    contractDiffInlineDrawer
                 }
                 
-                // Horizon 2: 🟡 SNART — INNAN DET ÄR FÖR SENT (Lagstadgad tidsfrist)
-                if (selectedHorizonFilter == .all || selectedHorizonFilter == .snart) && snartCount > 0 {
-                    horizonSnartSection
-                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
-                }
+                // 3. Four Modular Protection Shields (The MacKeeper / CleanMyMac 2x2 Grid)
+                antivirusFourShieldsGrid
                 
-                // Horizon 3: ⚪️ PLANERAT & HORISONT — BOLAGSRESAN (Kompetens & Trösklar)
-                if (selectedHorizonFilter == .all || selectedHorizonFilter == .planerat) && planeratCount > 0 {
-                    horizonPlaneratSection
-                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
-                }
-                
-                // Horizon Specific Resolution Banners (when filtered to a clean horizon)
-                if selectedHorizonFilter == .akut && akutCount == 0 {
-                    horizonResolvedBanner(
-                        title: store.language == .se ? "Inga akuta lagavvikelser" : "No critical violations",
-                        subtitle: store.language == .se ? "Alla anställningsavtal och akuta lagkrav är säkrade. Bolaget riskerar inga sanktionsavgifter." : "All employment contracts and immediate statutory requirements are secured.",
-                        icon: "checkmark.shield.fill",
-                        color: SolTokens.green800
-                    )
-                } else if selectedHorizonFilter == .snart && snartCount == 0 {
-                    horizonResolvedBanner(
-                        title: store.language == .se ? "Inga öppna tidsfrister" : "No pending deadlines",
-                        subtitle: store.language == .se ? "Inga pågående valprocesser eller förfallande tidsfönster kräver tillsynsåtgärd." : "No active election procedures or expiring statutory windows require action.",
-                        icon: "checkmark.circle.fill",
-                        color: SolTokens.green800
-                    )
-                } else if selectedHorizonFilter == .planerat && planeratCount == 0 {
-                    horizonResolvedBanner(
-                        title: store.language == .se ? "Alla planerade krav säkrade" : "All planned milestones secured",
-                        subtitle: store.language == .se ? "Obligatoriska kompetenskrav för företagsledningen är bokade eller uppfyllda." : "Mandated executive competence requirements are booked or satisfied.",
-                        icon: "graduationcap.fill",
-                        color: SolTokens.green800
-                    )
-                }
-                
-                // All Compliant Overall Reassurance Card (when 0 pending total)
-                if store.pendingActionCount == 0 && selectedHorizonFilter == .all {
-                    allCompliantBanner
-                }
-                
-                // Completed Archive Section (placed directly below active actions, before guardrails)
-                if completedCountForCurrentYear > 0 {
-                    completedArchiveSection
-                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
-                }
-                
-                // Tier 2: Continuous Guardrails (SÄKRAT & BEVAKAS I BAKGRUNDEN)
-                hubContinuousGuardrailsSection
-                    .opacity(expandedHubCard != nil ? 0.35 : 1.0)
-                    .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                // 4. Ambient Trojan Horse Background Ingestion & Monitor Bar
+                antivirusTrojanMonitorBar
             }
             .padding(20)
         }
+    }
+    
+    // MARK: - Antivirus Hero Cockpit (Status Ring + Headline + 1-Click BankID Fix)
+    private var antivirusHeroCockpit: some View {
+        let isCompliant = store.pendingActionCount == 0
+        let totalCount = 10
+        let pending = store.pendingActionCount
+        let secured = max(0, totalCount - pending)
+        let percent = Int(Double(secured) / Double(totalCount) * 100.0)
+        
+        let hasContractGap = store.currentScenario.employees.contains { $0.status == .aml14Gap }
+        let voPending = !store.verneombudElectionActive
+        let hmsPending = !store.hmsTrainingEnrolled
+        
+        let headline: String
+        let subtitle: String
+        
+        if isCompliant {
+            headline = store.language == .se ? "Bolaget uppfyller alla gällande lagkrav" : "Company complies with all statutory regulations"
+            subtitle = store.language == .se ? "Alla 10 lagkrav är säkrade. 8 personalakter bevakas kontinuerligt i bakgrunden utan åtgärdsbehov." : "All 10 duties are secured. 8 employee records continuously monitored."
+        } else if hasContractGap {
+            headline = store.language == .se ? "7 anställningsavtal saknar lagstadgade klausuler" : "7 employment contracts miss mandatory clauses"
+            subtitle = store.language == .se ? "EU-direktivet (AML § 14-6) kräver klausuler om arbetstid och övertid. Inga sanktionsavgifter föreligger om åtgärd genomförs." : "EU Directive (AML § 14-6) requires clauses on work hours and overtime. No penalties apply if resolved."
+        } else if voPending {
+            headline = store.language == .se ? "Obligatoriskt skyddsombud måste väljas" : "Mandatory safety representative election required"
+            subtitle = store.language == .se ? "Fjord Dynamics passerade 5 anställda. Digitalt valförfarande krävs enligt AML § 6-1." : "Headcount passed 5. Election required under AML § 6-1."
+        } else if hmsPending {
+            headline = store.language == .se ? "Obligatorisk KMA/HMS-kurs för företagsledningen" : "Mandatory HSE training for company management"
+            subtitle = store.language == .se ? "Verkställande direktör är enligt lag skyldig att genomgå utbildning i hälsa, miljö och säkerhet (AML § 3-5)." : "CEO is legally required to complete HSE competence training."
+        } else {
+            headline = store.language == .se ? "\(pending) lagkrav kräver åtgärd" : "\(pending) duties require action"
+            subtitle = store.language == .se ? "Granska och genomför åtgärder för att uppnå 100% säkrat skydd." : "Review and complete actions to achieve 100% protection."
+        }
+        
+        return VStack(spacing: 16) {
+            HStack(alignment: .center, spacing: 28) {
+                // 130pt Status Ring Gauge (MacKeeper / CleanMyMac)
+                ZStack {
+                    Circle()
+                        .stroke(SolTokens.paper300, lineWidth: 9)
+                        .frame(width: 120, height: 120)
+                    
+                    Circle()
+                        .trim(from: 0.0, to: CGFloat(secured) / CGFloat(totalCount))
+                        .stroke(
+                            isCompliant ? SolTokens.green800 : SolTokens.linearIndigo,
+                            style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                        )
+                        .rotationEffect(.degrees(-90))
+                        .frame(width: 120, height: 120)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: secured)
+                    
+                    VStack(spacing: 2) {
+                        if isCompliant {
+                            Image(systemName: "checkmark.shield.fill")
+                                .font(.system(size: 32, weight: .bold))
+                                .foregroundColor(SolTokens.green800)
+                            Text("100%")
+                                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                .foregroundColor(SolTokens.green800)
+                            Text(store.language == .se ? "SÄKRAT" : "SECURED")
+                                .font(.system(size: 8.5, weight: .heavy))
+                                .tracking(1.2)
+                                .foregroundColor(SolTokens.ink600)
+                        } else {
+                            Text("\(percent)%")
+                                .font(.system(size: 28, weight: .heavy, design: .rounded))
+                                .foregroundColor(SolTokens.ink900)
+                            Text("\(secured)/\(totalCount) " + (store.language == .se ? "krav" : "duties"))
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                .foregroundColor(SolTokens.ink600)
+                            Text(store.language == .se ? "SÄKRAT" : "SECURED")
+                                .font(.system(size: 8.5, weight: .heavy))
+                                .tracking(1.2)
+                                .foregroundColor(SolTokens.indigo)
+                        }
+                    }
+                }
+                .frame(width: 130, height: 130)
+                
+                // Assessment Copy + Headline + CTAs
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        HStack(spacing: 5) {
+                            Circle()
+                                .fill(isCompliant ? SolTokens.green800 : SolTokens.red700)
+                                .frame(width: 6, height: 6)
+                            Text(isCompliant 
+                                 ? (store.language == .se ? "100% SÄKRAT MOT LAGAVVIKELSER" : "100% SECURED AGAINST INFRACTIONS")
+                                 : (store.language == .se 
+                                    ? (pending == 1 ? "1 LAGAVVIKELSE KRÄVER DITT GODKÄNNANDE" : "\(pending) LAGAVVIKELSER KRÄVER DITT GODKÄNNANDE")
+                                    : (pending == 1 ? "1 VIOLATION REQUIRES APPROVAL" : "\(pending) VIOLATIONS REQUIRE APPROVAL")))
+                                .font(.inter(10.5, .bold))
+                                .foregroundColor(isCompliant ? SolTokens.green800 : SolTokens.red700)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3.5)
+                        .background(isCompliant ? SolTokens.green100 : SolTokens.red100)
+                        .cornerRadius(4)
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.seal.fill")
+                                .font(.system(size: 9))
+                                .foregroundColor(SolTokens.green800)
+                            Text(store.language == .se ? "Lagdefinitioner: Idag 06:00 (AML & Folketrygdloven)" : "Statute definitions: Today 06:00 (AML)")
+                                .font(.inter(10, .medium))
+                                .foregroundColor(SolTokens.ink600)
+                        }
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3.5)
+                        .background(SolTokens.paper200)
+                        .cornerRadius(4)
+                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
+                    }
+                    
+                    Text(headline)
+                        .font(.inter(18, .bold))
+                        .foregroundColor(SolTokens.ink900)
+                    
+                    Text(subtitle)
+                        .font(.inter(12.5, .regular))
+                        .foregroundColor(SolTokens.ink600)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    HStack(spacing: 12) {
+                        if !isCompliant {
+                            Button {
+                                withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
+                                    store.resolveAllActionHubItems()
+                                }
+                            } label: {
+                                HStack(spacing: 7) {
+                                    Image(systemName: "signature")
+                                        .font(.system(size: 13, weight: .bold))
+                                    Text(hasContractGap 
+                                         ? (store.language == .se ? "Åtgärda & signera alla med BankID (45 sek)" : "Resolve & sign all via BankID (45s)")
+                                         : (store.language == .se ? "Åtgärda alla öppna punkter (BankID)" : "Resolve all pending items (BankID)"))
+                                        .font(.inter(13, .bold))
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 9)
+                                .background(SolTokens.linearIndigo)
+                                .foregroundColor(Color.white)
+                                .cornerRadius(7)
+                                .shadow(color: SolTokens.indigo.opacity(0.25), radius: 6, y: 2)
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Button {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                                    if expandedHubCard == "contracts" {
+                                        expandedHubCard = nil
+                                    } else {
+                                        expandedHubCard = "contracts"
+                                        if selectedDiffEmployee == nil || selectedDiffEmployee?.status != .aml14Gap {
+                                            selectedDiffEmployee = store.currentScenario.employees.first(where: { $0.status == .aml14Gap })
+                                        }
+                                    }
+                                }
+                            } label: {
+                                HStack(spacing: 5) {
+                                    Image(systemName: expandedHubCard == "contracts" ? "chevron.up" : "doc.text.magnifyingglass")
+                                        .font(.system(size: 11))
+                                    Text(expandedHubCard == "contracts" 
+                                         ? (store.language == .se ? "Dölj granskning" : "Hide diff")
+                                         : (store.language == .se ? "Förhandsgranska diff" : "Preview diff"))
+                                        .font(.inter(12, .medium))
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8.5)
+                                .background(SolTokens.paper200)
+                                .foregroundColor(SolTokens.ink700)
+                                .cornerRadius(7)
+                                .overlay(RoundedRectangle(cornerRadius: 7).stroke(SolTokens.paper300, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Button {
+                                store.broadcastSync()
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "arrow.clockwise")
+                                        .font(.system(size: 11, weight: .bold))
+                                    Text(store.language == .se ? "Kör manuell lagskanning" : "Run manual scan")
+                                        .font(.inter(12.5, .semibold))
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8.5)
+                                .background(SolTokens.paper200)
+                                .foregroundColor(SolTokens.ink800)
+                                .cornerRadius(7)
+                                .overlay(RoundedRectangle(cornerRadius: 7).stroke(SolTokens.paper300, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        
+                        Button {
+                            store.activeNav = "auditPack"
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: "shield.lefthalf.filled")
+                                    .font(.system(size: 11))
+                                Text(store.language == .se ? "Tillsynspaket (PDF)" : "Inspection Pack")
+                                    .font(.inter(12, .medium))
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8.5)
+                            .background(SolTokens.paper200)
+                            .foregroundColor(SolTokens.ink700)
+                            .cornerRadius(7)
+                            .overlay(RoundedRectangle(cornerRadius: 7).stroke(SolTokens.paper300, lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.top, 4)
+                }
+                
+                Spacer()
+            }
+            
+            Divider()
+                .overlay(SolTokens.paper300)
+            
+            // Bolagsresan Growth Threshold Rail (RAD-01..05)
+            HStack(spacing: 8) {
+                Image(systemName: "figure.walk.arrival")
+                    .font(.system(size: 11))
+                    .foregroundColor(SolTokens.indigo)
+                
+                Text(store.language == .se ?
+                     "Bolagsresan: Fjord Dynamics har 8 anställda · 2 kvar till tröskel 10 (Obligatorisk VD KMA/HMS-kurs, AML § 3-5)" :
+                     "Growth Journey: Fjord Dynamics has 8 staff · 2 remaining to threshold 10 (Mandatory CEO HSE Training, AML § 3-5)")
+                    .font(.inter(11.5))
+                    .foregroundColor(SolTokens.ink600)
+                
+                Spacer()
+                
+                Button {
+                    store.activeNav = "radar"
+                } label: {
+                    Text(store.language == .se ? "Se trösklar (5/10/20/30/50) →" : "View thresholds (5/10/20/30/50) →")
+                        .font(.inter(11, .medium))
+                        .foregroundColor(SolTokens.indigo)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(20)
+        .background(SolTokens.paper100)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isCompliant ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+        )
+    }
+
+    // MARK: - Inline Redline Diff Drawer
+    private var contractDiffInlineDrawer: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                HStack(spacing: 8) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .foregroundColor(SolTokens.indigo)
+                    Text(store.language == .se ? "Förhandsgranska lagklausuler: Nya EU-villkor (AML § 14-6)" : "Clause Preview: EU Working Terms (AML § 14-6)")
+                        .font(.inter(13.5, .bold))
+                        .foregroundColor(SolTokens.ink900)
+                    
+                    Text(store.language == .se ? "7 avtal berörda" : "7 contracts affected")
+                        .font(.inter(11, .semibold))
+                        .foregroundColor(SolTokens.indigo)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 2.5)
+                        .background(SolTokens.indigo.opacity(0.12))
+                        .cornerRadius(4)
+                }
+                
+                Spacer()
+                
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        expandedHubCard = nil
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 9, weight: .bold))
+                        Text(store.language == .se ? "Stäng granskning" : "Close preview")
+                            .font(.inter(11.5, .medium))
+                    }
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
+                    .background(SolTokens.paper200)
+                    .foregroundColor(SolTokens.ink700)
+                    .cornerRadius(5)
+                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            }
+            
+            inlineContractsDiffView
+        }
+        .padding(16)
+        .background(SolTokens.paper100)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(SolTokens.indigo.opacity(0.4), lineWidth: 1.5)
+        )
+        .transition(.opacity.combined(with: .move(edge: .top)))
+    }
+
+    // MARK: - 4 Modular Protection Shields (The MacKeeper / CleanMyMac 2x2 Grid)
+    private var antivirusFourShieldsGrid: some View {
+        let columns = [
+            GridItem(.flexible(), spacing: 16),
+            GridItem(.flexible(), spacing: 16)
+        ]
+        
+        let hasContractGap = store.currentScenario.employees.contains { $0.status == .aml14Gap }
+        let voActive = store.verneombudElectionActive
+        
+        return LazyVGrid(columns: columns, spacing: 16) {
+            // Shield 1: Avtal & Anställningsvillkor (AML § 14-6)
+            antivirusShieldCard(
+                title: store.language == .se ? "Avtal & Anställningsskydd" : "Contracts & Terms",
+                statute: "AML § 14-6",
+                icon: "doc.badge.gearshape.fill",
+                statusText: hasContractGap 
+                    ? (store.language == .se ? "1 avvikelse i 7 avtal" : "1 gap in 7 contracts")
+                    : (store.language == .se ? "100% säkrat med BankID" : "100% secured with BankID"),
+                statusColor: hasContractGap ? SolTokens.red700 : SolTokens.green800,
+                statusBg: hasContractGap ? SolTokens.red100 : SolTokens.green100,
+                description: hasContractGap 
+                    ? (store.language == .se ? "Standardavtal saknar lagstadgade villkor för arbetstid och övertid enligt lagändring 1 juli 2024." : "Standard contracts lack statutory overtime terms under July 1, 2024 amendment.")
+                    : (store.language == .se ? "Alla 8 anställda har uppdaterade, BankID-signerade avtal som uppfyller lagkraven." : "All 8 contracts signed and verified."),
+                metaText: store.language == .se ? "8 personalakter granskade · Inga tvister" : "8 personnel records checked · 0 disputes",
+                actionLabel: hasContractGap ? (store.language == .se ? "Granska diff →" : "Review diff →") : nil,
+                action: {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        if expandedHubCard == "contracts" {
+                            expandedHubCard = nil
+                        } else {
+                            expandedHubCard = "contracts"
+                            if selectedDiffEmployee == nil || selectedDiffEmployee?.status != .aml14Gap {
+                                selectedDiffEmployee = store.currentScenario.employees.first(where: { $0.status == .aml14Gap })
+                            }
+                        }
+                    }
+                }
+            )
+            
+            // Shield 2: Skyddsombud & Samverkan (AML § 6-1)
+            antivirusShieldCard(
+                title: store.language == .se ? "Skyddsombud & Arbetsmiljö" : "Safety Rep & Environment",
+                statute: "AML § 6-1",
+                icon: "person.2.badge.gearshape.fill",
+                statusText: voActive
+                    ? (store.language == .se ? "Skyddsombud tillsatt" : "Rep elected")
+                    : (store.language == .se ? "Val krävs (18 dgr kvar)" : "Election needed (18d)"),
+                statusColor: voActive ? SolTokens.green800 : SolTokens.amber400,
+                statusBg: voActive ? SolTokens.green100 : SolTokens.amber100,
+                description: voActive
+                    ? (store.language == .se ? "Digitalt val genomfört. Sofie Hagen vald till skyddsombud (6/8 röster)." : "Sofie Hagen elected safety representative (6/8 votes).")
+                    : (store.language == .se ? "Fjord Dynamics har 8 anställda (tröskel: 5). Obligatoriskt skyddsombud måste utses." : "Headcount passed 5. Mandated safety rep required by law."),
+                metaText: store.language == .se ? "8 röstberättigade · Valsedel redo" : "8 voters · Digital ballot ready",
+                actionLabel: voActive ? nil : (store.language == .se ? "Starta digitalt val →" : "Start election →"),
+                action: {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        store.verneombudElectionActive = true
+                        store.electionVotesCast = 8
+                        store.broadcastSync()
+                    }
+                }
+            )
+            
+            // Shield 3: Arbetstid & Dygnsvila (AML kap. 10)
+            antivirusShieldCard(
+                title: store.language == .se ? "Arbetstid & Dygnsvila" : "Working Hours & Rest",
+                statute: "AML kap. 10",
+                icon: "clock.badge.checkmark.fill",
+                statusText: store.language == .se ? "100% säkrat i realtid" : "100% secured in realtime",
+                statusColor: SolTokens.green800,
+                statusBg: SolTokens.green100,
+                description: store.language == .se 
+                    ? "Löpande kontroll av 11-timmars dygnsvila, veckovila och max tillåten övertid mot stämplingar."
+                    : "Continuous matching of rest periods and overtime against time logs.",
+                metaText: store.language == .se ? "0 övertidsavvikelser senaste 30 dagarna" : "0 overtime violations last 30 days",
+                actionLabel: store.language == .se ? "Visa tidslogg →" : "View log →",
+                action: {
+                    store.activeNav = "agentLog"
+                }
+            )
+            
+            // Shield 4: Jämställdhet & Lön (Likestillingsloven § 26)
+            antivirusShieldCard(
+                title: store.language == .se ? "Jämställdhet & Lönekartläggning" : "Equal Pay & Equality",
+                statute: "Likestillingsloven § 26",
+                icon: "chart.bar.xaxis",
+                statusText: store.language == .se ? "100% säkrat i realtid" : "100% secured in realtime",
+                statusColor: SolTokens.green800,
+                statusBg: SolTokens.green100,
+                description: store.language == .se 
+                    ? "Automatisk lönekartläggning analyserad mot osakliga könsskillnader för alla 8 anställda."
+                    : "Automated gender wage gap analysis completed across all 8 employees.",
+                metaText: store.language == .se ? "Lönegap 0.0% · Revisionsunderlag arkiverat" : "Gender gap 0.0% · Audit package ready",
+                actionLabel: store.language == .se ? "Se analys →" : "View analysis →",
+                action: {
+                    store.activeNav = "auditPack"
+                }
+            )
+        }
+    }
+
+    private func antivirusShieldCard(
+        title: String,
+        statute: String,
+        icon: String,
+        statusText: String,
+        statusColor: Color,
+        statusBg: Color,
+        description: String,
+        metaText: String,
+        actionLabel: String? = nil,
+        action: (() -> Void)? = nil
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Top Header Row
+            HStack(alignment: .center, spacing: 10) {
+                ZStack {
+                    Circle()
+                        .fill(statusBg)
+                        .frame(width: 32, height: 32)
+                    Image(systemName: icon)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(statusColor)
+                }
+                
+                VStack(alignment: .leading, spacing: 1.5) {
+                    Text(title)
+                        .font(.inter(13.5, .bold))
+                        .foregroundColor(SolTokens.ink900)
+                        .lineLimit(1)
+                    
+                    Text(statute)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundColor(SolTokens.ink600)
+                }
+                
+                Spacer()
+                
+                // Status Pill
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(statusColor)
+                        .frame(width: 5, height: 5)
+                    Text(statusText)
+                        .font(.inter(11, .semibold))
+                        .foregroundColor(statusColor)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3.5)
+                .background(statusBg)
+                .cornerRadius(5)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(statusColor.opacity(0.3), lineWidth: 1)
+                )
+            }
+            
+            // Body Copy
+            Text(description)
+                .font(.inter(12, .regular))
+                .foregroundColor(SolTokens.ink700)
+                .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(minHeight: 34, alignment: .topLeading)
+            
+            // Footer: Meta & Action
+            HStack(alignment: .center) {
+                Text(metaText)
+                    .font(.inter(10.5, .medium))
+                    .foregroundColor(SolTokens.ink600)
+                    .lineLimit(1)
+                
+                Spacer()
+                
+                if let actionLabel = actionLabel, let action = action {
+                    Button(action: action) {
+                        Text(actionLabel)
+                            .font(.inter(11.5, .semibold))
+                            .foregroundColor(SolTokens.indigo)
+                            .padding(.horizontal, 9)
+                            .padding(.vertical, 4.5)
+                            .background(SolTokens.paper200)
+                            .cornerRadius(5)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(16)
+        .background(SolTokens.paper100)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(SolTokens.paper300, lineWidth: 1)
+        )
+    }
+
+    // MARK: - Ambient Trojan Horse Background Ingestion & Monitor Bar
+    private var antivirusTrojanMonitorBar: some View {
+        HStack(spacing: 16) {
+            HStack(spacing: 8) {
+                Image(systemName: "folder.badge.gearshape")
+                    .font(.system(size: 13))
+                    .foregroundColor(SolTokens.indigo)
+                Text(store.language == .se 
+                     ? "Bevakar lokala källor: ~/Dokument/Personalakter och SharePoint (8 aktiva akter)" 
+                     : "Watching local sources: ~/Documents/HR and SharePoint (8 active files)")
+                    .font(.inter(11.5, .medium))
+                    .foregroundColor(SolTokens.ink700)
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(SolTokens.green800)
+                    .frame(width: 5, height: 5)
+                Text(store.language == .se 
+                     ? "38 autonoma bakgrundskontroller utförda i november" 
+                     : "38 autonomous background checks run in Nov")
+                    .font(.inter(11.5))
+                    .foregroundColor(SolTokens.ink600)
+            }
+            
+            Button {
+                store.activeNav = "agentLog"
+            } label: {
+                HStack(spacing: 4) {
+                    Text(store.language == .se ? "Öppna Agentlogg" : "Open Agent Log")
+                        .font(.inter(11.5, .semibold))
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 9))
+                }
+                .foregroundColor(SolTokens.indigo)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 4.5)
+                .background(SolTokens.paper200)
+                .cornerRadius(5)
+                .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(SolTokens.paper100)
+        .cornerRadius(8)
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
     }
     
     // MARK: - Temporal Horizon Filter Bar

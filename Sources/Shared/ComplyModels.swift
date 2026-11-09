@@ -114,6 +114,7 @@ public struct SyncPayload: Codable, Sendable {
     public var approvedEmployeeIds: [String]
     public var verneombudElectionActive: Bool
     public var electionVotesCast: Int
+    public var hmsTrainingEnrolled: Bool?
     public var lastUpdated: Double
     public var sender: String
     public var language: String
@@ -126,6 +127,7 @@ public struct SyncPayload: Codable, Sendable {
         approvedEmployeeIds: [String],
         verneombudElectionActive: Bool,
         electionVotesCast: Int,
+        hmsTrainingEnrolled: Bool? = nil,
         lastUpdated: Double,
         sender: String,
         language: String = "no",
@@ -137,6 +139,7 @@ public struct SyncPayload: Codable, Sendable {
         self.approvedEmployeeIds = approvedEmployeeIds
         self.verneombudElectionActive = verneombudElectionActive
         self.electionVotesCast = electionVotesCast
+        self.hmsTrainingEnrolled = hmsTrainingEnrolled
         self.lastUpdated = lastUpdated
         self.sender = sender
         self.language = language
