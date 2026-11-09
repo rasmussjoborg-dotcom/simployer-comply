@@ -1,0 +1,627 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02F227AF3FF784BD2AF8ACA0 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 25B69A2B7915AA033E9718F3 /* Inter-Bold.ttf */; };
+		18F4B404531701D3BEE633A5 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */; };
+		2F055EE34DA2CA31F27C36B4 /* MacModals.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A97EEDF3533D4764DB779D /* MacModals.swift */; };
+		2FBEE437682762A7D14A218D /* ComplyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */; };
+		35F6B8D01F2D0F14774BE158 /* ComplyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61593BB04D44D762C627BF2B /* ComplyModels.swift */; };
+		461EF115F5E7A04D1B88BE59 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31DA34C95DE0354F400E1334 /* Inter-Regular.ttf */; };
+		52CF964E89D1E5A7CD5FDD8F /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FF4169989091163FAEE67302 /* Inter-Regular.ttf */; };
+		56E1928C8C77ED28F3FEFD8A /* SimployerComplyIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22378A870BFFEA3829D51606 /* SimployerComplyIOSApp.swift */; };
+		60536E2913DD37AEAC3153BC /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 20A5522E233037659B174066 /* Inter-Medium.ttf */; };
+		64D6F8E72137423512D47B7C /* ComplyLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0019712590F87874129D27 /* ComplyLanguage.swift */; };
+		68175D182169028D841D7C41 /* SolTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8A3D8DDD3802F31F33539E /* SolTokens.swift */; };
+		6AE2B0EC7489F57CDEC0DDA1 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2DCCAD881E5D678206F403AF /* Inter-Medium.ttf */; };
+		76179912B99F16CD76A6FA69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09CB3BDDE43752266AD231E3 /* Assets.xcassets */; };
+		76A5C16A2FB9B26A751EB240 /* ComplyLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0019712590F87874129D27 /* ComplyLanguage.swift */; };
+		77F6BC66F45F3039738CA690 /* ComplyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE77CE7EC13B82F14102BA /* ComplyStore.swift */; };
+		86EB6323BB8FF48E8437275A /* IOSMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200ACC54A98903C2A2A25A3C /* IOSMainView.swift */; };
+		8BE134ABC64E90E2ACA9B261 /* ComplyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE77CE7EC13B82F14102BA /* ComplyStore.swift */; };
+		957B75442158DEBBEF04985B /* SimployerComplyMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */; };
+		A5810ADE930C211741178692 /* AutoplayDemoEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C64A820BA02C22ADCA4DA /* AutoplayDemoEngine.swift */; };
+		A71258706571D311BA48CC11 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C9BBC9D7D408A12842A9748 /* Inter-Bold.ttf */; };
+		A7CDDDB2DDA3643437200C2C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED98779A166ED77F3D90FB13 /* Assets.xcassets */; };
+		BA5CDBB99A2C9ED2AC48B354 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B55A96C437A5DEE5F48D1B56 /* AppIcon.icns */; };
+		CC6F00287CA96F9EF2CDB01D /* ComplyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61593BB04D44D762C627BF2B /* ComplyModels.swift */; };
+		DEF18F434CB7C0E79E53D98C /* AppIcon-1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BEC2BAD6B4B0E69D5DA4ED9 /* AppIcon-1024.png */; };
+		E2BE5E5E1845C75F8C1D466A /* MacMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */; };
+		E8AFEBFCF6F6E727BDB8C013 /* SolTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8A3D8DDD3802F31F33539E /* SolTokens.swift */; };
+		EA06F2E155A98BDA309083B6 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A6038843AE766AD28713D6F3 /* Sparkle */; };
+		EF87D479E2EF82022645842B /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00B6537BB24759CF0CE91C54 /* Inter-SemiBold.ttf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		00B6537BB24759CF0CE91C54 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		086ACCD9AE2438B4E15D97FD /* SimployerComplyMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimployerComplyMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09CB3BDDE43752266AD231E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		200ACC54A98903C2A2A25A3C /* IOSMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSMainView.swift; sourceTree = "<group>"; };
+		20A5522E233037659B174066 /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
+		22378A870BFFEA3829D51606 /* SimployerComplyIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimployerComplyIOSApp.swift; sourceTree = "<group>"; };
+		25B69A2B7915AA033E9718F3 /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
+		2C9BBC9D7D408A12842A9748 /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
+		2DCCAD881E5D678206F403AF /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
+		31DA34C95DE0354F400E1334 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+		3F2F58AA827103F884BFF85D /* SimployerComplyIOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SimployerComplyIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		53EE77CE7EC13B82F14102BA /* ComplyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyStore.swift; sourceTree = "<group>"; };
+		61593BB04D44D762C627BF2B /* ComplyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyModels.swift; sourceTree = "<group>"; };
+		6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimployerComplyMacApp.swift; sourceTree = "<group>"; };
+		7BEC2BAD6B4B0E69D5DA4ED9 /* AppIcon-1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon-1024.png"; sourceTree = "<group>"; };
+		8B8A3D8DDD3802F31F33539E /* SolTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolTokens.swift; sourceTree = "<group>"; };
+		B55A96C437A5DEE5F48D1B56 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		BD4C64A820BA02C22ADCA4DA /* AutoplayDemoEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoplayDemoEngine.swift; sourceTree = "<group>"; };
+		CD0019712590F87874129D27 /* ComplyLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyLanguage.swift; sourceTree = "<group>"; };
+		DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyUpdater.swift; sourceTree = "<group>"; };
+		DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
+		ED98779A166ED77F3D90FB13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F3A97EEDF3533D4764DB779D /* MacModals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacModals.swift; sourceTree = "<group>"; };
+		FF4169989091163FAEE67302 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		77E042F1EC867335F439DFC6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA06F2E155A98BDA309083B6 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2C7C1DCF64768338E7EE833B /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				25B69A2B7915AA033E9718F3 /* Inter-Bold.ttf */,
+				2DCCAD881E5D678206F403AF /* Inter-Medium.ttf */,
+				31DA34C95DE0354F400E1334 /* Inter-Regular.ttf */,
+				00B6537BB24759CF0CE91C54 /* Inter-SemiBold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		3A1893AFFF4D6221E096D9CB /* SimployerComplyIOS */ = {
+			isa = PBXGroup;
+			children = (
+				09CB3BDDE43752266AD231E3 /* Assets.xcassets */,
+				22378A870BFFEA3829D51606 /* SimployerComplyIOSApp.swift */,
+				98EE89460150EA9B696643D2 /* Resources */,
+				B854B243D80F238798527723 /* Views */,
+			);
+			name = SimployerComplyIOS;
+			path = Sources/SimployerComplyIOS;
+			sourceTree = "<group>";
+		};
+		485DF3A0258AFC5B429DE623 /* SimployerComplyMac */ = {
+			isa = PBXGroup;
+			children = (
+				ED98779A166ED77F3D90FB13 /* Assets.xcassets */,
+				6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */,
+				AE4AD684FD1432F1D8985192 /* Resources */,
+				AF3810657B3A125DA2506D0E /* Services */,
+				F995CE3ECF8640DD8F69075A /* Views */,
+			);
+			name = SimployerComplyMac;
+			path = Sources/SimployerComplyMac;
+			sourceTree = "<group>";
+		};
+		51738889517D9808FAF4F2D8 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				2C9BBC9D7D408A12842A9748 /* Inter-Bold.ttf */,
+				20A5522E233037659B174066 /* Inter-Medium.ttf */,
+				FF4169989091163FAEE67302 /* Inter-Regular.ttf */,
+				DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		608A995DCF4442BCF54F79C8 = {
+			isa = PBXGroup;
+			children = (
+				DEDEB326ACBEA95CF067C8F9 /* Shared */,
+				3A1893AFFF4D6221E096D9CB /* SimployerComplyIOS */,
+				485DF3A0258AFC5B429DE623 /* SimployerComplyMac */,
+				99F4A9BF49546C411513BB3C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		98EE89460150EA9B696643D2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				51738889517D9808FAF4F2D8 /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		99F4A9BF49546C411513BB3C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3F2F58AA827103F884BFF85D /* SimployerComplyIOS.app */,
+				086ACCD9AE2438B4E15D97FD /* SimployerComplyMac.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AE4AD684FD1432F1D8985192 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7BEC2BAD6B4B0E69D5DA4ED9 /* AppIcon-1024.png */,
+				B55A96C437A5DEE5F48D1B56 /* AppIcon.icns */,
+				2C7C1DCF64768338E7EE833B /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AF3810657B3A125DA2506D0E /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B854B243D80F238798527723 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				200ACC54A98903C2A2A25A3C /* IOSMainView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DEDEB326ACBEA95CF067C8F9 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				CD0019712590F87874129D27 /* ComplyLanguage.swift */,
+				61593BB04D44D762C627BF2B /* ComplyModels.swift */,
+				53EE77CE7EC13B82F14102BA /* ComplyStore.swift */,
+				8B8A3D8DDD3802F31F33539E /* SolTokens.swift */,
+			);
+			name = Shared;
+			path = Sources/Shared;
+			sourceTree = "<group>";
+		};
+		F995CE3ECF8640DD8F69075A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BD4C64A820BA02C22ADCA4DA /* AutoplayDemoEngine.swift */,
+				E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */,
+				F3A97EEDF3533D4764DB779D /* MacModals.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0493B2D1AA0C84F6DE7AF543 /* SimployerComplyMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE59F94FAA2C9D055EBA043C /* Build configuration list for PBXNativeTarget "SimployerComplyMac" */;
+			buildPhases = (
+				F9900075A4B4D12777373840 /* Sources */,
+				36EE084ECEE2689E912E9A87 /* Resources */,
+				77E042F1EC867335F439DFC6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SimployerComplyMac;
+			packageProductDependencies = (
+				A6038843AE766AD28713D6F3 /* Sparkle */,
+			);
+			productName = SimployerComplyMac;
+			productReference = 086ACCD9AE2438B4E15D97FD /* SimployerComplyMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		529CA7FB08D1BDE19F8CD8F6 /* SimployerComplyIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6999B0C5045127EB916B1211 /* Build configuration list for PBXNativeTarget "SimployerComplyIOS" */;
+			buildPhases = (
+				44B160B8727B73026FFB251F /* Sources */,
+				32B0C3A57C33CC7036C1345A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SimployerComplyIOS;
+			packageProductDependencies = (
+			);
+			productName = SimployerComplyIOS;
+			productReference = 3F2F58AA827103F884BFF85D /* SimployerComplyIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BCAEF01E93A2783DA70433FE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					0493B2D1AA0C84F6DE7AF543 = {
+						ProvisioningStyle = Automatic;
+					};
+					529CA7FB08D1BDE19F8CD8F6 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = BBE0D58F936C9CAB002EFC63 /* Build configuration list for PBXProject "SimployerComply" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 608A995DCF4442BCF54F79C8;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4068D149FE74A8BD8F5C5792 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 99F4A9BF49546C411513BB3C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0493B2D1AA0C84F6DE7AF543 /* SimployerComplyMac */,
+				529CA7FB08D1BDE19F8CD8F6 /* SimployerComplyIOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		32B0C3A57C33CC7036C1345A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76179912B99F16CD76A6FA69 /* Assets.xcassets in Resources */,
+				A71258706571D311BA48CC11 /* Inter-Bold.ttf in Resources */,
+				60536E2913DD37AEAC3153BC /* Inter-Medium.ttf in Resources */,
+				52CF964E89D1E5A7CD5FDD8F /* Inter-Regular.ttf in Resources */,
+				18F4B404531701D3BEE633A5 /* Inter-SemiBold.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		36EE084ECEE2689E912E9A87 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEF18F434CB7C0E79E53D98C /* AppIcon-1024.png in Resources */,
+				BA5CDBB99A2C9ED2AC48B354 /* AppIcon.icns in Resources */,
+				A7CDDDB2DDA3643437200C2C /* Assets.xcassets in Resources */,
+				02F227AF3FF784BD2AF8ACA0 /* Inter-Bold.ttf in Resources */,
+				6AE2B0EC7489F57CDEC0DDA1 /* Inter-Medium.ttf in Resources */,
+				461EF115F5E7A04D1B88BE59 /* Inter-Regular.ttf in Resources */,
+				EF87D479E2EF82022645842B /* Inter-SemiBold.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		44B160B8727B73026FFB251F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				64D6F8E72137423512D47B7C /* ComplyLanguage.swift in Sources */,
+				CC6F00287CA96F9EF2CDB01D /* ComplyModels.swift in Sources */,
+				77F6BC66F45F3039738CA690 /* ComplyStore.swift in Sources */,
+				86EB6323BB8FF48E8437275A /* IOSMainView.swift in Sources */,
+				56E1928C8C77ED28F3FEFD8A /* SimployerComplyIOSApp.swift in Sources */,
+				E8AFEBFCF6F6E727BDB8C013 /* SolTokens.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F9900075A4B4D12777373840 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5810ADE930C211741178692 /* AutoplayDemoEngine.swift in Sources */,
+				76A5C16A2FB9B26A751EB240 /* ComplyLanguage.swift in Sources */,
+				35F6B8D01F2D0F14774BE158 /* ComplyModels.swift in Sources */,
+				8BE134ABC64E90E2ACA9B261 /* ComplyStore.swift in Sources */,
+				2FBEE437682762A7D14A218D /* ComplyUpdater.swift in Sources */,
+				E2BE5E5E1845C75F8C1D466A /* MacMainView.swift in Sources */,
+				2F055EE34DA2CA31F27C36B4 /* MacModals.swift in Sources */,
+				957B75442158DEBBEF04985B /* SimployerComplyMacApp.swift in Sources */,
+				68175D182169028D841D7C41 /* SolTokens.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1F6201EEB8466FDD22C34C4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_KEY_ATSApplicationFontsPath = Fonts;
+				INFOPLIST_KEY_CFBundleDisplayName = "Simployer Comply";
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
+				INFOPLIST_KEY_LSUIElement = NO;
+				INFOPLIST_KEY_SUAllowsAutomaticUpdates = YES;
+				INFOPLIST_KEY_SUEnableAutomaticChecks = YES;
+				INFOPLIST_KEY_SUFeedURL = "https://raw.githubusercontent.com/rasmussjoborg-dotcom/simployer-comply/main/appcast.xml";
+				INFOPLIST_KEY_SUPublicEDKey = "wrzbkG27b8tElYYupt+GjaxRxPjSbm6wXRJUnyAYwec=";
+				INFOPLIST_KEY_SUScheduledCheckInterval = 3600;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.simployer.comply.mac;
+				PRODUCT_NAME = "Simployer Comply";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		31F4000F5B8D6DFEFF0DC54D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_KEY_ATSApplicationFontsPath = Fonts;
+				INFOPLIST_KEY_CFBundleDisplayName = "Simployer Comply";
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
+				INFOPLIST_KEY_LSUIElement = NO;
+				INFOPLIST_KEY_SUAllowsAutomaticUpdates = YES;
+				INFOPLIST_KEY_SUEnableAutomaticChecks = YES;
+				INFOPLIST_KEY_SUFeedURL = "https://raw.githubusercontent.com/rasmussjoborg-dotcom/simployer-comply/main/appcast.xml";
+				INFOPLIST_KEY_SUPublicEDKey = "wrzbkG27b8tElYYupt+GjaxRxPjSbm6wXRJUnyAYwec=";
+				INFOPLIST_KEY_SUScheduledCheckInterval = 3600;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.simployer.comply.mac;
+				PRODUCT_NAME = "Simployer Comply";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4344CE15B7EDAEDBC274EC87 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = Comply;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Bruk FaceID for å godkjenne lovpålagte endringer og BankID-avtaler.";
+				INFOPLIST_KEY_UIAppFonts = (
+					"Fonts/Inter-Regular.ttf",
+					"Fonts/Inter-Medium.ttf",
+					"Fonts/Inter-SemiBold.ttf",
+					"Fonts/Inter-Bold.ttf",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.simployer.comply.ios;
+				PRODUCT_NAME = "Comply Companion";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8F489D6B2B4D503FDA6067AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		9BF81DA1E871625F0F764D59 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		BBC93AC6C7DF44DDD61E4377 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = Comply;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Bruk FaceID for å godkjenne lovpålagte endringer og BankID-avtaler.";
+				INFOPLIST_KEY_UIAppFonts = (
+					"Fonts/Inter-Regular.ttf",
+					"Fonts/Inter-Medium.ttf",
+					"Fonts/Inter-SemiBold.ttf",
+					"Fonts/Inter-Bold.ttf",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.simployer.comply.ios;
+				PRODUCT_NAME = "Comply Companion";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6999B0C5045127EB916B1211 /* Build configuration list for PBXNativeTarget "SimployerComplyIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4344CE15B7EDAEDBC274EC87 /* Debug */,
+				BBC93AC6C7DF44DDD61E4377 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BBE0D58F936C9CAB002EFC63 /* Build configuration list for PBXProject "SimployerComply" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F489D6B2B4D503FDA6067AA /* Debug */,
+				9BF81DA1E871625F0F764D59 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EE59F94FAA2C9D055EBA043C /* Build configuration list for PBXNativeTarget "SimployerComplyMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31F4000F5B8D6DFEFF0DC54D /* Debug */,
+				1F6201EEB8466FDD22C34C4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4068D149FE74A8BD8F5C5792 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A6038843AE766AD28713D6F3 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4068D149FE74A8BD8F5C5792 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = BCAEF01E93A2783DA70433FE /* Project object */;
+}

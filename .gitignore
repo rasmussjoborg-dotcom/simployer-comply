@@ -1,0 +1,17 @@
+# Private signing key (Never commit)
+.sparkle_privkey
+*.privkey
+
+# DerivedData & build artifacts
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+*.dmg
+*.zip
+releases/
+/tmp/
+bin/sparkle/Symbols
+bin/sparkle/*.app
+bin/sparkle/Sparkle.framework

@@ -1,0 +1,69 @@
+name: SimployerComply
+options:
+  bundleIdPrefix: com.simployer
+  deploymentTarget:
+    macOS: "15.0"
+    iOS: "18.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    CODE_SIGN_STYLE: Automatic
+    GENERATE_INFOPLIST_FILE: YES
+    SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.10.1
+
+targets:
+  SimployerComplyMac:
+    type: application
+    platform: macOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Sources/Shared
+      - path: Sources/SimployerComplyMac
+    dependencies:
+      - package: Sparkle
+    settings:
+      base:
+        PRODUCT_NAME: "Simployer Comply"
+        PRODUCT_BUNDLE_IDENTIFIER: com.simployer.comply.mac
+        INFOPLIST_KEY_CFBundleDisplayName: "Simployer Comply"
+        INFOPLIST_KEY_CFBundleIconFile: AppIcon
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_ATSApplicationFontsPath: "Fonts"
+        INFOPLIST_KEY_LSUIElement: false
+        ENABLE_HARDENED_RUNTIME: YES
+        MACOSX_DEPLOYMENT_TARGET: "15.0"
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_KEY_SUFeedURL: "https://raw.githubusercontent.com/rasmussjoborg-dotcom/simployer-comply/main/appcast.xml"
+        INFOPLIST_KEY_SUPublicEDKey: "wrzbkG27b8tElYYupt+GjaxRxPjSbm6wXRJUnyAYwec="
+        INFOPLIST_KEY_SUEnableAutomaticChecks: YES
+        INFOPLIST_KEY_SUScheduledCheckInterval: 3600
+        INFOPLIST_KEY_SUAllowsAutomaticUpdates: YES
+
+  SimployerComplyIOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Sources/Shared
+      - path: Sources/SimployerComplyIOS
+    settings:
+      base:
+        PRODUCT_NAME: "Comply Companion"
+        PRODUCT_BUNDLE_IDENTIFIER: com.simployer.comply.ios
+        INFOPLIST_KEY_CFBundleDisplayName: "Comply"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_UIAppFonts:
+          - "Fonts/Inter-Regular.ttf"
+          - "Fonts/Inter-Medium.ttf"
+          - "Fonts/Inter-SemiBold.ttf"
+          - "Fonts/Inter-Bold.ttf"
+        INFOPLIST_KEY_NSFaceIDUsageDescription: "Bruk FaceID for å godkjenne lovpålagte endringer og BankID-avtaler."
+        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
