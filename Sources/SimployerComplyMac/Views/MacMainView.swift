@@ -407,105 +407,62 @@ struct MacMainView: View {
         }
     }
     
-    // MARK: - Company Overview Root Item (Unified Fjord Dynamics Cockpit Header & Overview Nav)
+    // MARK: - Company Overview Root Item (Unified Fjord Dynamics Navigation Item)
     private var companyHeaderView: some View {
         let active = store.activeNav == "hub"
-        return HStack(spacing: 7) {
-            // Clickable company label area (logo + name)
-            Button {
-                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                    store.activeNav = "hub"
-                }
-            } label: {
-                HStack(spacing: 7) {
-                    companyComplianceBadge
-                    
-                    Text("Fjord Dynamics")
-                        .font(.inter(13, active ? .bold : .semibold))
-                        .foregroundColor(active ? Color.white : SolTokens.ink900)
-                        .lineLimit(1)
-                }
+        let shieldColor: Color = {
+            switch store.complianceSeverity {
+            case .compliant:
+                return SolTokens.green800
+            case .warning:
+                return SolTokens.amber400
+            case .behind:
+                return SolTokens.red700
             }
-            .buttonStyle(.plain)
-            
-            // Company Switcher Menu Chevron
-            Menu {
-                Button {
-                    store.activeNav = "hub"
-                } label: {
-                    Label("Fjord Dynamics AS (Aktiv)", systemImage: "checkmark")
-                }
-                Button {
-                    // Switch company
-                } label: {
-                    Text("Kyst Studio AS")
-                }
-                Button {
-                    // Switch company
-                } label: {
-                    Text("Nordic SaaS AB")
-                }
-            } label: {
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 7.5, weight: .bold))
-                    .foregroundColor(active ? Color.white.opacity(0.8) : SolTokens.ink450)
-                    .frame(width: 14, height: 18)
-                    .contentShape(Rectangle())
-            }
-            .menuStyle(.borderlessButton)
-            .fixedSize()
-            .help("Byt bolag")
-            
-            Spacer()
-            
-            // Alert badge if issues require attention
-            if store.pendingActionCount > 0 {
-                Button {
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                        store.activeNav = "hub"
-                    }
-                } label: {
-                    Text("\(store.pendingActionCount)")
-                        .font(.system(size: 10, weight: .semibold, design: .rounded))
-                        .foregroundColor(active ? SolTokens.ink700 : SolTokens.amber400)
-                        .padding(.horizontal, 5.5)
-                        .padding(.vertical, 1.5)
-                        .background(active ? SolTokens.paper250 : SolTokens.amber100)
-                        .cornerRadius(4)
-                }
-                .buttonStyle(.plain)
-            }
-            
-            // Search Button (⌘K)
-            Button {
-                showSearchPalette.toggle()
-            } label: {
-                Image(systemName: "magnifyingglass")
-                    .font(.inter(11.5, .medium))
-                    .foregroundColor(active ? Color.white.opacity(0.8) : SolTokens.ink600)
-                    .frame(width: 20, height: 20)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .keyboardShortcut("k", modifiers: .command)
-            .help("Sök eller hoppa till... (⌘K)")
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .background(
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(active ? SolTokens.linearIndigo : (isHoveredCompany ? SolTokens.paper200 : Color.clear))
-        )
-        .contentShape(Rectangle())
-        .onTapGesture {
+        }()
+        
+        return Button {
             withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                 store.activeNav = "hub"
             }
+        } label: {
+            HStack(spacing: 9) {
+                Image(systemName: "shield.fill")
+                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                    .foregroundColor(shieldColor)
+                    .frame(width: 18, alignment: .center)
+                
+                Text("Fjord Dynamics")
+                    .font(.inter(13, active ? .semibold : .medium))
+                    .foregroundColor(active ? Color.white : (isHoveredCompany ? SolTokens.ink900 : SolTokens.ink700))
+                    .lineLimit(1)
+                
+                Spacer()
+                
+                if store.pendingActionCount > 0 {
+                    Text("\(store.pendingActionCount)")
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundColor(SolTokens.amber400)
+                        .padding(.horizontal, 5.5)
+                        .padding(.vertical, 1.5)
+                        .background(SolTokens.amber100)
+                        .cornerRadius(4)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(SolTokens.amberBorder, lineWidth: 1)
+                        )
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6.5)
+            .background(active ? SolTokens.sidebarActivePill : (isHoveredCompany ? SolTokens.paper200.opacity(0.6) : Color.clear))
+            .cornerRadius(6)
         }
-        .onHover { isHoveredCompany = $0 }
+        .buttonStyle(.plain)
         .padding(.horizontal, 6)
-        .padding(.top, 8)
-        .padding(.bottom, 4)
+        .padding(.top, 10)
+        .padding(.bottom, 2)
+        .onHover { isHoveredCompany = $0 }
     }
     
     // MARK: - Company Compliance Badge with Active Radar Indicator
