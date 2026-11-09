@@ -155,19 +155,24 @@ struct MacMainView: View {
                         
                     Spacer()
                     
-                    // Pinned Bottom Settings Row
-                    SidebarButton(
-                        id: "settings",
-                        label: store.l10n.navSettings,
-                        icon: "gearshape",
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "settings"
-                    }
-                    .padding(.bottom, 2)
+                    // Pinned Bottom Settings Row with Border Divider
+                    VStack(spacing: 8) {
+                        Rectangle()
+                            .fill(SolTokens.paper300)
+                            .frame(height: 1)
+                            .padding(.horizontal, 10)
+                            .padding(.top, 6)
                         
-                    // MARK: - Bottom Section: Utilities (Language + Demo) & Mobile Diffs
-                    sidebarBottomSection
+                        SidebarButton(
+                            id: "settings",
+                            label: store.l10n.navSettings,
+                            icon: "gearshape",
+                            activeNav: store.activeNav
+                        ) {
+                            store.activeNav = "settings"
+                        }
+                    }
+                    .padding(.bottom, 12)
                 }
                     .frame(width: CGFloat(sidebarWidth))
                     .fixedSize(horizontal: true, vertical: false)
@@ -564,94 +569,7 @@ struct MacMainView: View {
         }
     }
     
-    // MARK: - Sidebar Bottom Section (Language + Demo + Mobile Diffs)
-    private var sidebarBottomSection: some View {
-        VStack(spacing: 8) {
-            // Language & Demo Controls Row
-            HStack(spacing: 6) {
-                // Language Switcher Dropdown
-                LanguageSwitcherView(currentLanguage: $store.language) { lang in
-                    store.setLanguage(lang)
-                }
-                
-                Spacer()
-                
-                // Demo Popover Button
-                Button {
-                    showDemoControls.toggle()
-                } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: "slider.horizontal.2.square")
-                            .font(.inter(11))
-                        Text(store.l10n.demoPillLabel)
-                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(showDemoControls ? SolTokens.lav100 : SolTokens.paper200)
-                    .foregroundColor(showDemoControls ? SolTokens.lav400 : SolTokens.ink600)
-                    .cornerRadius(7)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .stroke(showDemoControls ? SolTokens.lav600.opacity(0.4) : SolTokens.paper300, lineWidth: 1)
-                    )
-                }
-                .buttonStyle(.plain)
-                .keyboardShortcut("d", modifiers: .command)
-                .popover(isPresented: $showDemoControls, arrowEdge: .trailing) {
-                    DemoControlsPopover(
-                        store: store,
-                        autoplay: autoplay,
-                        isPresented: $showDemoControls,
-                        onExpandCard: { card in
-                            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
-                                self.expandedHubCard = card
-                            }
-                        },
-                        onReset: {
-                            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
-                                self.vanishedCardIds.removeAll()
-                                self.showCompletedArchive = false
-                                self.expandedHubCard = nil
-                            }
-                        }
-                    )
-                }
-            }
-            .padding(.horizontal, 10)
-            
-            // Linear Mobile Diffs Card Style
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 6) {
-                    Image(systemName: "iphone.gen3")
-                        .font(.inter(12))
-                        .foregroundColor(SolTokens.lav400)
-                    Text("Mobile Diffs")
-                        .font(.inter(11, .bold))
-                        .foregroundColor(SolTokens.ink900)
-                    Spacer()
-                    Circle()
-                        .fill(SolTokens.green800)
-                        .frame(width: 5, height: 5)
-                }
-                Text("iOS Companion Synk · FaceID & BankID")
-                    .font(.inter(10))
-                    .foregroundColor(SolTokens.ink600)
-                    .lineLimit(2)
-            }
-            .padding(10)
-            .background(SolTokens.paper200)
-            .cornerRadius(8)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(SolTokens.paper300, lineWidth: 1)
-            )
-        }
-        .padding(.horizontal, 10)
-        .padding(.bottom, 10)
-    }
-    
+
     // MARK: - Navigation Title & Icon Helpers
     private var currentNavTitle: String {
         switch store.activeNav {
@@ -3407,6 +3325,200 @@ struct MacMainView: View {
                                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
                             }
                             .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(16)
+                    .background(SolTokens.paper100)
+                    .cornerRadius(10)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                
+                // SECTION: SPRÅK & REGION
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("SPRÅK & REGION")
+                        .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
+                        .padding(.horizontal, 2)
+                    
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack(alignment: .center, spacing: 14) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(SolTokens.paper200)
+                                    .frame(width: 40, height: 40)
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                                Image(systemName: "globe")
+                                    .font(.inter(18))
+                                    .foregroundColor(SolTokens.ink700)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Gränssnittsspråk & Jurisdiktion")
+                                    .font(.inter(14, .bold))
+                                    .foregroundColor(SolTokens.ink900)
+                                Text("Välj aktivt språk för applikationen, laghänvisningar och avtalsklausuler.")
+                                    .font(.inter(12))
+                                    .foregroundColor(SolTokens.ink600)
+                            }
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 8) {
+                                ForEach(AppLanguage.allCases) { lang in
+                                    let isSelected = store.language == lang
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.15)) {
+                                            store.setLanguage(lang)
+                                        }
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Text(lang.flag)
+                                                .font(.system(size: 13))
+                                            Text(lang.displayName)
+                                                .font(.inter(12, isSelected ? .bold : .medium))
+                                            if isSelected {
+                                                Image(systemName: "checkmark")
+                                                    .font(.system(size: 10, weight: .bold))
+                                                    .foregroundColor(SolTokens.lav400)
+                                            }
+                                        }
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 6.5)
+                                        .background(isSelected ? SolTokens.lav100 : SolTokens.paper200)
+                                        .foregroundColor(isSelected ? SolTokens.lav400 : SolTokens.ink700)
+                                        .cornerRadius(6)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .stroke(isSelected ? SolTokens.lav600.opacity(0.4) : SolTokens.paper300, lineWidth: 1)
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .background(SolTokens.paper100)
+                    .cornerRadius(10)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                
+                // SECTION: DEMO & PRESENTATION
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("DEMO & PRESENTATION")
+                            .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                            .foregroundColor(SolTokens.ink450)
+                            .padding(.horizontal, 2)
+                        Spacer()
+                        Text("Snabbkommando: ⌘D · Autoplay: ⌘P")
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundColor(SolTokens.ink450)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack(alignment: .center, spacing: 14) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(SolTokens.paper200)
+                                    .frame(width: 40, height: 40)
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                                Image(systemName: "slider.horizontal.2.square")
+                                    .font(.inter(18))
+                                    .foregroundColor(SolTokens.ink700)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack(spacing: 8) {
+                                    Text(store.l10n.demoControllerTitle)
+                                        .font(.inter(14, .bold))
+                                        .foregroundColor(SolTokens.ink900)
+                                    
+                                    if autoplay.isPlaying {
+                                        LinearStatusPill(text: "Autoplay aktiv", dotColor: SolTokens.red700)
+                                    }
+                                }
+                                Text("Styr tidslinjeår (2024–2026), automatiserad demoberättelse och återställning.")
+                                    .font(.inter(12))
+                                    .foregroundColor(SolTokens.ink600)
+                            }
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 8) {
+                                // Autoplay button
+                                Button {
+                                    if autoplay.isPlaying {
+                                        autoplay.stopDemo { card in
+                                            expandedHubCard = card
+                                        }
+                                    } else {
+                                        store.activeNav = "hub"
+                                        autoplay.startDemo(store: store) { card in
+                                            expandedHubCard = card
+                                        }
+                                    }
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: autoplay.isPlaying ? "stop.fill" : "play.fill")
+                                            .font(.inter(11))
+                                        Text(autoplay.isPlaying ? "Stoppa autoplay" : "Starta autoplay (⌘P)")
+                                            .font(.inter(12, .semibold))
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6.5)
+                                    .background(autoplay.isPlaying ? SolTokens.red100 : SolTokens.plum900)
+                                    .foregroundColor(autoplay.isPlaying ? SolTokens.red700 : SolTokens.lav50)
+                                    .cornerRadius(6)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(autoplay.isPlaying ? SolTokens.redBorder : SolTokens.lav600.opacity(0.4), lineWidth: 1)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                
+                                // Open Demo Popover Button
+                                Button {
+                                    showDemoControls.toggle()
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "slider.horizontal.2.square")
+                                            .font(.inter(11))
+                                        Text("Öppna panel (⌘D)")
+                                            .font(.inter(12, .semibold))
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6.5)
+                                    .background(showDemoControls ? SolTokens.lav100 : SolTokens.paper200)
+                                    .foregroundColor(showDemoControls ? SolTokens.lav400 : SolTokens.ink700)
+                                    .cornerRadius(6)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(showDemoControls ? SolTokens.lav600.opacity(0.4) : SolTokens.paper300, lineWidth: 1)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .keyboardShortcut("d", modifiers: .command)
+                                .popover(isPresented: $showDemoControls, arrowEdge: .bottom) {
+                                    DemoControlsPopover(
+                                        store: store,
+                                        autoplay: autoplay,
+                                        isPresented: $showDemoControls,
+                                        onExpandCard: { card in
+                                            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+                                                self.expandedHubCard = card
+                                            }
+                                        },
+                                        onReset: {
+                                            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+                                                self.vanishedCardIds.removeAll()
+                                                self.showCompletedArchive = false
+                                                self.expandedHubCard = nil
+                                            }
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                     .padding(16)
