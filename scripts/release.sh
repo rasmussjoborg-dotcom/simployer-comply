@@ -27,7 +27,21 @@ else
     VERSION="${VERSION#v}"
 fi
 
-RELEASE_NOTES="${2:-"Prototype update: Autonomous Compliance & Norwegian Labor Law Cockpit."}"
+# Resolve release notes / changelog
+if [ -n "${2:-}" ]; then
+    RELEASE_NOTES="$2"
+else
+    LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+    if [ -n "$LATEST_TAG" ]; then
+        GIT_CHANGES=$(git log "${LATEST_TAG}..HEAD" --pretty=format:"• %s" --no-merges | grep -v "chore(release)" | grep -v "Merge" | head -n 8 || true)
+    else
+        GIT_CHANGES=""
+    fi
+    if [ -z "$GIT_CHANGES" ]; then
+        GIT_CHANGES="• Prestanda- och stabilitetsförbättringar i regelefterlevnadsmotorn."
+    fi
+    RELEASE_NOTES="$GIT_CHANGES"
+fi
 
 echo "========================================================================"
 echo "🚀 Building & Publishing Simployer Comply v$VERSION"
@@ -101,8 +115,8 @@ codesign --force --timestamp --sign "$SIGNING_IDENTITY" "$DMG_PATH"
 codesign --verify --verbose=2 "$DMG_PATH"
 echo "✅ DMG created and signed."
 
-# 7. Generate Sparkle Appcast Feed
-echo "📡 Generating Sparkle appcast feed..."
+# 7. Generate Sparkle Appcast Feed & In-App Release Notes
+echo "📡 Generating Sparkle appcast feed with embedded changelog..."
 if [ ! -f .sparkle_privkey ]; then
     echo "❌ Error: .sparkle_privkey not found!"
     exit 1
@@ -111,10 +125,73 @@ fi
 mkdir -p releases/sparkle_archives
 cp -f "$ZIP_PATH" releases/sparkle_archives/
 
+# Build HTML release notes for Sparkle native WebKit prompt
+HTML_NOTES_PATH="releases/sparkle_archives/Simployer-Comply-$VERSION.html"
+cat <<EOF > "$HTML_NOTES_PATH"
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #E4E4E7;
+    background-color: #18181B;
+    padding: 14px 18px;
+    margin: 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: rgba(151,115,255,0.18);
+    color: #C4B5FD;
+    border: 1px solid rgba(151,115,255,0.3);
+    margin-bottom: 10px;
+}
+h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+ul {
+    padding-left: 18px;
+    margin: 0 0 12px 0;
+}
+li {
+    margin-bottom: 6px;
+    color: #D4D4D8;
+}
+p.footer {
+    font-size: 11px;
+    color: #71717A;
+    margin-top: 14px;
+    border-top: 1px solid #27272A;
+    padding-top: 8px;
+}
+</style>
+</head>
+<body>
+<span class="badge">Version $VERSION</span>
+<h3>Vad är nytt i denna version:</h3>
+<ul>
+$(echo "$RELEASE_NOTES" | sed 's/^• /<li>/' | sed 's/$/<\/li>/')
+</ul>
+<p class="footer">Simployer Comply Autonomous Engine — Alltid i tråd med loven.</p>
+</body>
+</html>
+EOF
+
 ./bin/sparkle/bin/generate_appcast \
     --download-url-prefix "https://github.com/$REPO_SLUG/releases/download/v$VERSION/" \
     --account simployer-comply \
     --ed-key-file .sparkle_privkey \
+    --embed-release-notes \
     releases/sparkle_archives/
 
 # Copy appcast.xml to project root
