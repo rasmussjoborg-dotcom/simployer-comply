@@ -70,7 +70,7 @@ p.footer {
 </body>
 </html>
 ]]></description>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.1/Simployer-Comply-1.0.1.zip" length="4283917" type="application/octet-stream" sparkle:edSignature="uhmD9w2gAt5QOKfhOftu2DkeK27YrdD40qARjuKkV3CmumBU5HR7s3qci6F3yTj2oXk1kx2Z6WGwxr1OfZFJCQ=="/>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.1/Simployer-Comply-1.0.1.zip" length="4285483" type="application/octet-stream" sparkle:edSignature="1wCmEgGikspRdZ07Uk0oCzubEYazdwBT3P3eaa7/ROvfPQutnElSsmXvu+d9/h79rlFVP+a2W4ndQ/4I4HPpBQ=="/>
             <sparkle:deltas>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.1/Simployer%20Comply202611091542-202611090920.delta" sparkle:deltaFrom="202611090920" length="572734" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="hTFCLwsFi8qEFrUaMMl3MlL+FRLfaZC57IhHHNcQCpwxgfTVcPy87hE9AZMu+01CBmIUboJ6dsbR6J2KCi6kCQ=="/>
             </sparkle:deltas>
