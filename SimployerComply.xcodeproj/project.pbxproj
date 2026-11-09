@@ -10,6 +10,8 @@
 		02F227AF3FF784BD2AF8ACA0 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 25B69A2B7915AA033E9718F3 /* Inter-Bold.ttf */; };
 		18F4B404531701D3BEE633A5 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */; };
 		2F055EE34DA2CA31F27C36B4 /* MacModals.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A97EEDF3533D4764DB779D /* MacModals.swift */; };
+		B10101010101010101010001 /* AgentLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10101010101010101010001 /* AgentLogView.swift */; };
+		B10101010101010101010002 /* InspectionExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10101010101010101010002 /* InspectionExportView.swift */; };
 		2FBEE437682762A7D14A218D /* ComplyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */; };
 		35F6B8D01F2D0F14774BE158 /* ComplyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61593BB04D44D762C627BF2B /* ComplyModels.swift */; };
 		461EF115F5E7A04D1B88BE59 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31DA34C95DE0354F400E1334 /* Inter-Regular.ttf */; };
@@ -63,6 +65,8 @@
 		E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
 		ED98779A166ED77F3D90FB13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F3A97EEDF3533D4764DB779D /* MacModals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacModals.swift; sourceTree = "<group>"; };
+		A10101010101010101010001 /* AgentLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentLogView.swift; sourceTree = "<group>"; };
+		A10101010101010101010002 /* InspectionExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionExportView.swift; sourceTree = "<group>"; };
 		FF4169989091163FAEE67302 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -197,6 +201,8 @@
 				BD4C64A820BA02C22ADCA4DA /* AutoplayDemoEngine.swift */,
 				E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */,
 				F3A97EEDF3533D4764DB779D /* MacModals.swift */,
+				A10101010101010101010001 /* AgentLogView.swift */,
+				A10101010101010101010002 /* InspectionExportView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -336,6 +342,8 @@
 				2FBEE437682762A7D14A218D /* ComplyUpdater.swift in Sources */,
 				E2BE5E5E1845C75F8C1D466A /* MacMainView.swift in Sources */,
 				2F055EE34DA2CA31F27C36B4 /* MacModals.swift in Sources */,
+				B10101010101010101010001 /* AgentLogView.swift in Sources */,
+				B10101010101010101010002 /* InspectionExportView.swift in Sources */,
 				957B75442158DEBBEF04985B /* SimployerComplyMacApp.swift in Sources */,
 				68175D182169028D841D7C41 /* SolTokens.swift in Sources */,
 			);

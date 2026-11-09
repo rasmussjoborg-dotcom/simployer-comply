@@ -13,12 +13,14 @@ public struct SolTokens {
     
     // MARK: - Linear Typography & High-Contrast Ink
     public static let ink900 = Color(hex: 0xF7F8FA)       // High-contrast crisp white primary text
+    public static let ink800 = Color(hex: 0xDFE1E8)       // Crisp sub-header text
     public static let ink700 = Color(hex: 0xC5C8D2)       // Body & readable descriptions
     public static let ink600 = Color(hex: 0x8E93A0)       // Secondary metadata & captions
     public static let ink450 = Color(hex: 0x626673)       // Dimmed keycaps, hints & placeholders
     
     // MARK: - Linear Signature Electric Indigo / Blurple meets Sol
     public static let linearIndigo = Color(hex: 0x5E6AD2) // Linear iconic button & primary action
+    public static let indigo = linearIndigo               // Direct alias for linearIndigo
     public static let plum900 = Color(hex: 0x5E6AD2)      // Signature electric indigo / primary action
     public static let plum950 = Color(hex: 0x4F59B8)      // Button pressed / deep accent
     public static let plum800 = Color(hex: 0x7A86E8)      // Glowing highlight

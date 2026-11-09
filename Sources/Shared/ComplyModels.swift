@@ -144,3 +144,111 @@ public struct SyncPayload: Codable, Sendable {
         self.slackTestToastActive = slackTestToastActive
     }
 }
+
+// MARK: - Agent Activity Log & Compliance Timeline Models (REP-03 / Master Plan)
+public enum AgentEventCategory: String, CaseIterable, Sendable {
+    case sweep = "sweep"
+    case definitions = "definitions"
+    case ingestion = "ingestion"
+    case guardrail = "guardrail"
+    case signature = "signature"
+    
+    public var icon: String {
+        switch self {
+        case .sweep: return "shield.lefthalf.filled"
+        case .definitions: return "arrow.triangle.2.circlepath"
+        case .ingestion: return "doc.viewfinder"
+        case .guardrail: return "checkmark.seal.fill"
+        case .signature: return "signature"
+        }
+    }
+}
+
+public struct AgentEvent: Identifiable, Sendable {
+    public let id: String
+    public let timestampString: String
+    public let category: AgentEventCategory
+    public let title: String
+    public let description: String
+    public let statute: String?
+    public let affectedEntity: String?
+    public let statusBadge: String
+    public let auditHash: String?
+    public let isAutonomous: Bool
+    
+    public init(
+        id: String = UUID().uuidString,
+        timestampString: String,
+        category: AgentEventCategory,
+        title: String,
+        description: String,
+        statute: String? = nil,
+        affectedEntity: String? = nil,
+        statusBadge: String,
+        auditHash: String? = nil,
+        isAutonomous: Bool = true
+    ) {
+        self.id = id
+        self.timestampString = timestampString
+        self.category = category
+        self.title = title
+        self.description = description
+        self.statute = statute
+        self.affectedEntity = affectedEntity
+        self.statusBadge = statusBadge
+        self.auditHash = auditHash
+        self.isAutonomous = isAutonomous
+    }
+}
+
+// MARK: - Statutory Headcount Thresholds (RAD-01 .. RAD-05)
+public struct HeadcountDuty: Identifiable, Sendable {
+    public let id: String
+    public let threshold: Int
+    public let title: String
+    public let statute: String
+    public let description: String
+    public let penaltyRisk: String
+    public let actionLabel: String
+    
+    public init(
+        id: String,
+        threshold: Int,
+        title: String,
+        statute: String,
+        description: String,
+        penaltyRisk: String,
+        actionLabel: String
+    ) {
+        self.id = id
+        self.threshold = threshold
+        self.title = title
+        self.statute = statute
+        self.description = description
+        self.penaltyRisk = penaltyRisk
+        self.actionLabel = actionLabel
+    }
+}
+
+// MARK: - Inspection & Due Diligence Packs (REP-02)
+public enum InspectionPackType: String, CaseIterable, Identifiable, Sendable {
+    case laborAuthority = "labor_authority"
+    case dueDiligence = "due_diligence"
+    
+    public var id: String { rawValue }
+    
+    public var titleSE: String {
+        switch self {
+        case .laborAuthority: return "Tillsynspaket · Arbetsmiljöverket"
+        case .dueDiligence: return "Due Diligence-rapport · Investor & M&A"
+        }
+    }
+    
+    public var titleNO: String {
+        switch self {
+        case .laborAuthority: return "Tilsynspakke · Arbeidstilsynet"
+        case .dueDiligence: return "Due Diligence-rapport · Investor & M&A"
+        }
+    }
+}
+

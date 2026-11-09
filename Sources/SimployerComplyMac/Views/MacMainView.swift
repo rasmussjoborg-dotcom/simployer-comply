@@ -51,10 +51,11 @@ struct MacMainView: View {
                     // Linear Company Header (Dynamic Badge + Radar Dot + Search + Compose)
                     companyHeaderView
                         
-                    // Section 1: Oversikt (Linear-style soft title case)
+                    // Section 1: Skydd & Oversikt (Primary Executive Focus)
                     HStack(spacing: 4) {
-                        Text(store.l10n.overviewSection)
-                            .font(.inter(11.5, .medium))
+                        Text(store.language == .se ? "SKYDD & ÖVERSIKT" : "PROTECTION & OVERVIEW")
+                            .font(.inter(10, .bold))
+                            .tracking(0.7)
                             .foregroundColor(SolTokens.ink600)
                         Image(systemName: "arrowtriangle.down.fill")
                             .font(.system(size: 6))
@@ -67,7 +68,7 @@ struct MacMainView: View {
                     SidebarButton(
                         id: "hub",
                         label: store.l10n.navHub,
-                        icon: "bolt",
+                        icon: "shield.checkered",
                         badge: store.pendingActionCount > 0 ? "\(store.pendingActionCount)" : nil,
                         badgeStyle: .alert,
                         activeNav: store.activeNav
@@ -75,10 +76,22 @@ struct MacMainView: View {
                         store.activeNav = "hub"
                     }
                     
-                    // Section 2: Register & innhold (Linear-style soft title case)
+                    SidebarButton(
+                        id: "agentLog",
+                        label: store.l10n.navAgentLog,
+                        icon: "clock.arrow.circlepath",
+                        badge: "Live",
+                        badgeStyle: .dot,
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "agentLog"
+                    }
+                    
+                    // Section 2: Fordjupning & Register (Quiet Reference)
                     HStack(spacing: 4) {
-                        Text(store.l10n.complianceSection)
-                            .font(.inter(11.5, .medium))
+                        Text(store.language == .se ? "FÖRDJUPNING & REGISTER" : "RECORDS & EXPLORATION")
+                            .font(.inter(10, .bold))
+                            .tracking(0.7)
                             .foregroundColor(SolTokens.ink600)
                         Image(systemName: "arrowtriangle.down.fill")
                             .font(.system(size: 6))
@@ -130,6 +143,14 @@ struct MacMainView: View {
                         activeNav: store.activeNav
                     ) {
                         store.activeNav = "expert"
+                    }
+                    SidebarButton(
+                        id: "auditPack",
+                        label: store.l10n.navAuditPack,
+                        icon: "shield.lefthalf.filled",
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "auditPack"
                     }
                     SidebarButton(
                         id: "settings",
@@ -207,6 +228,8 @@ struct MacMainView: View {
                             
                             if store.activeNav == "hub" {
                                 macActionHubView
+                            } else if store.activeNav == "agentLog" {
+                                AgentLogView()
                             } else if store.activeNav == "ingest" {
                                 macIngestDropView
                             } else if store.activeNav == "register" {
@@ -217,6 +240,8 @@ struct MacMainView: View {
                                 macRadarView
                             } else if store.activeNav == "expert" {
                                 macExpertView
+                            } else if store.activeNav == "auditPack" {
+                                InspectionExportView()
                             } else if store.activeNav == "settings" {
                                 macSettingsView
                             }
@@ -601,11 +626,13 @@ struct MacMainView: View {
     private var currentNavTitle: String {
         switch store.activeNav {
         case "hub": return store.l10n.navHub
+        case "agentLog": return store.l10n.navAgentLog
         case "ingest": return store.l10n.navIngest
         case "register": return store.l10n.navRegister
         case "handbook": return store.l10n.navHandbook
         case "radar": return store.l10n.navRadar
         case "expert": return store.l10n.navExpert
+        case "auditPack": return store.l10n.navAuditPack
         case "settings": return store.l10n.navSettings
         default: return store.l10n.navRegister
         }
@@ -613,14 +640,16 @@ struct MacMainView: View {
     
     private var currentNavIcon: String {
         switch store.activeNav {
-        case "hub": return "bolt"
+        case "hub": return "shield.checkered"
+        case "agentLog": return "clock.arrow.circlepath"
         case "ingest": return "tray"
         case "register": return "person.2"
         case "handbook": return "book.closed"
         case "radar": return "dot.radiowaves.left.and.right"
         case "expert": return "bubble.left.and.bubble.right"
+        case "auditPack": return "shield.lefthalf.filled"
         case "settings": return "gearshape"
-        default: return "bolt"
+        default: return "shield.checkered"
         }
     }
     
@@ -1551,30 +1580,53 @@ struct MacMainView: View {
         let secured = max(0, totalCount - pending)
         let percent = Int(Double(secured) / Double(totalCount) * 100.0)
         
-        return HStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(SolTokens.paper200)
-                    .frame(width: 44, height: 44)
-                    .overlay(Circle().stroke(SolTokens.paper300, lineWidth: 1))
-                Image(systemName: isCompliant ? "checkmark.seal.fill" : "shield.checkered")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(isCompliant ? SolTokens.green800 : SolTokens.ink700)
-            }
-            
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 8) {
-                    Text(isCompliant ? store.l10n.hubAllCompliantTitle : store.l10n.hubExecutiveStatusTitle(securedCount: secured, totalCount: totalCount, percent: percent))
-                        .font(.inter(14.5, .bold))
-                        .foregroundColor(SolTokens.ink900)
+        return VStack(spacing: 12) {
+            HStack(spacing: 16) {
+                // Segmented Status Ring (Per's lo-fi status ring / Apple Arc)
+                ZStack {
+                    Circle()
+                        .stroke(SolTokens.paper300, lineWidth: 3.5)
+                        .frame(width: 44, height: 44)
                     
-                    if !isCompliant {
+                    Circle()
+                        .trim(from: 0.0, to: CGFloat(secured) / CGFloat(totalCount))
+                        .stroke(
+                            isCompliant ? SolTokens.green800 : SolTokens.indigo,
+                            style: StrokeStyle(lineWidth: 3.5, lineCap: .round)
+                        )
+                        .rotationEffect(.degrees(-90))
+                        .frame(width: 44, height: 44)
+                    
+                    if isCompliant {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(SolTokens.green800)
+                    } else {
+                        VStack(spacing: -1) {
+                            Text("\(secured)")
+                                .font(.inter(12.5, .bold))
+                                .foregroundColor(SolTokens.ink900)
+                            Text("/\(totalCount)")
+                                .font(.inter(8.5, .medium))
+                                .foregroundColor(SolTokens.ink450)
+                        }
+                    }
+                }
+                .frame(width: 48, height: 48)
+                
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 8) {
+                        Text(isCompliant ? store.l10n.hubAllCompliantTitle : store.l10n.hubExecutiveStatusTitle(securedCount: secured, totalCount: totalCount, percent: percent))
+                            .font(.inter(14.5, .bold))
+                            .foregroundColor(SolTokens.ink900)
+                        
+                        // Legal Definitions Heartbeat Stamp
                         HStack(spacing: 4) {
                             Circle()
-                                .fill(SolTokens.green800)
-                                .frame(width: 4.5, height: 4.5)
-                            Text(store.l10n.activeRadar)
-                                .font(.inter(10.5, .medium))
+                                .fill(isCompliant ? SolTokens.green800 : SolTokens.indigo)
+                                .frame(width: 5, height: 5)
+                            Text("Simployer Legal Cloud v2026.11 · Idag 06:00")
+                                .font(.inter(10, .medium))
                                 .foregroundColor(SolTokens.ink700)
                         }
                         .padding(.horizontal, 7)
@@ -1583,38 +1635,35 @@ struct MacMainView: View {
                         .clipShape(Capsule())
                         .overlay(Capsule().stroke(SolTokens.paper300, lineWidth: 1))
                     }
+                    
+                    Text(store.l10n.hubExecutiveStatusSubtitle(pendingCount: pending))
+                        .font(.inter(12, .regular))
+                        .foregroundColor(SolTokens.ink600)
                 }
                 
-                Text(store.l10n.hubExecutiveStatusSubtitle(pendingCount: pending))
-                    .font(.inter(12, .regular))
-                    .foregroundColor(SolTokens.ink600)
-            }
-            
-            Spacer()
-            
-            // 1-Click Audit Report / Certificate Button
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                    store.showAuditReportSheet = true
+                Spacer()
+                
+                // Revisionspaket Button (REP-02)
+                Button {
+                    store.activeNav = "auditPack"
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "shield.lefthalf.filled")
+                            .font(.system(size: 11))
+                        Text(store.language == .se ? "Revisionspaket (PDF)" : "Inspection Pack")
+                            .font(.inter(11.5, .medium))
+                    }
+                    .padding(.horizontal, 11)
+                    .padding(.vertical, 7)
+                    .background(SolTokens.paper200)
+                    .foregroundColor(SolTokens.ink700)
+                    .cornerRadius(7)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .stroke(SolTokens.paper300, lineWidth: 1)
+                    )
                 }
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "doc.text.fill")
-                        .font(.system(size: 11))
-                    Text(store.l10n.auditCertificateButton)
-                        .font(.inter(11.5, .medium))
-                }
-                .padding(.horizontal, 11)
-                .padding(.vertical, 7)
-                .background(SolTokens.paper200)
-                .foregroundColor(SolTokens.ink700)
-                .cornerRadius(7)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .stroke(SolTokens.paper300, lineWidth: 1)
-                )
-            }
-            .buttonStyle(.plain)
+                .buttonStyle(.plain)
             
             if isCompliant {
                 Button {
@@ -1662,14 +1711,44 @@ struct MacMainView: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(16)
-        .background(SolTokens.paper100)
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(isCompliant ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
-        )
+        
+        // Bolagsresan Contextual Headcount Micro-Rail (RAD-01 .. RAD-05)
+        HStack(spacing: 8) {
+            Image(systemName: "figure.walk.arrival")
+                .font(.system(size: 11))
+                .foregroundColor(SolTokens.indigo)
+            
+            Text(store.language == .se ?
+                 "Bolagsresan: Fjord Dynamics har 8 anställda · 2 kvar till tröskel 10 (Obligatorisk VD KMA/HMS-kurs, AML § 3-5)" :
+                 "Growth Journey: Fjord Dynamics has 8 staff · 2 remaining to threshold 10 (Mandatory CEO HSE Training, AML § 3-5)")
+                .font(.inter(11.5))
+                .foregroundColor(SolTokens.ink600)
+            
+            Spacer()
+            
+            Button {
+                store.activeNav = "radar"
+            } label: {
+                Text(store.language == .se ? "Se trösklar (5/10/20/30/50) →" : "View thresholds (5/10/20/30/50) →")
+                    .font(.inter(11, .medium))
+                    .foregroundColor(SolTokens.indigo)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 7)
+        .background(SolTokens.paper200.opacity(0.6))
+        .cornerRadius(6)
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 0.75))
     }
+    .padding(16)
+    .background(SolTokens.paper100)
+    .cornerRadius(10)
+    .overlay(
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(isCompliant ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+    )
+}
     
     // MARK: - Continuous Guardrails Section (Restrained Collapsible Drawer)
     private var hubContinuousGuardrailsSection: some View {

@@ -78,6 +78,7 @@ public struct LocalizedStrings: Sendable {
     // Sidebar & Navigation
     public let overviewSection: String
     public let navHub: String
+    public let navAgentLog: String
     public let complianceSection: String
     public let navIngest: String
     public let navRegister: String
@@ -85,6 +86,7 @@ public struct LocalizedStrings: Sendable {
     public let navHandbook: String
     public let navRadar: String
     public let navExpert: String
+    public let navAuditPack: String
     public let oneReadyTitle: String
     public let oneReadySubtitle: String
     
@@ -1276,13 +1278,15 @@ public enum L10n {
                 staff124: "124 ansatte",
                 overviewSection: "Oversikt",
                 navHub: "Handlinger",
+                navAgentLog: "Agentlogg & tidslinje",
                 complianceSection: "Register & innhold",
                 navIngest: "Kilder",
                 navRegister: "Personalregister",
                 navContracts: "Arbeidsavtaler",
                 navHandbook: "Personalhåndbok",
-                navRadar: "Lovradar",
+                navRadar: "Lovradar & trinn",
                 navExpert: "Simployer Jurist",
+                navAuditPack: "Revisjonspakke",
                 oneReadyTitle: "Simployer One Ready",
                 oneReadySubtitle: "Data oppdateres strukturert i bakgrunnen uten migreringsbehov.",
                 hubTitle: "Handlingssenter",
@@ -1677,13 +1681,15 @@ public enum L10n {
                 staff124: "124 anställda",
                 overviewSection: "Översikt",
                 navHub: "Åtgärder",
+                navAgentLog: "Agentlogg & tidslinje",
                 complianceSection: "Register & innehåll",
                 navIngest: "Källor",
                 navRegister: "Personalregister",
                 navContracts: "Anställningsavtal",
                 navHandbook: "Personalhandbok",
-                navRadar: "Lagradar",
+                navRadar: "Lagradar & trösklar",
                 navExpert: "Simployer Jurist",
+                navAuditPack: "Revisionspaket",
                 oneReadyTitle: "Simployer One Redo",
                 oneReadySubtitle: "Data uppdateras strukturerat i bakgrunden utan behov av migrering.",
                 hubTitle: "Åtgärdscenter",
@@ -2078,13 +2084,15 @@ public enum L10n {
                 staff124: "124 employees",
                 overviewSection: "Overview",
                 navHub: "Actions",
+                navAgentLog: "Agent Log & Timeline",
                 complianceSection: "Directory & records",
                 navIngest: "Sources",
                 navRegister: "Employee Directory",
                 navContracts: "Employment Contracts",
                 navHandbook: "Employee Handbook",
-                navRadar: "Statutory Radar",
+                navRadar: "Statutory Radar & Thresholds",
                 navExpert: "Simployer Legal Desk",
+                navAuditPack: "Audit Packages",
                 oneReadyTitle: "Simployer One Ready",
                 oneReadySubtitle: "Records are continuously structured in the background with zero migration.",
                 hubTitle: "Action Hub",

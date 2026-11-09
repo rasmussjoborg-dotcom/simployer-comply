@@ -79,6 +79,142 @@ public class ComplyStore: ObservableObject {
     @Published public var selectedConnectModal: String? = nil
     @Published public var activeFileViewTab: String = "overview"
     
+    // MARK: - Agent Activity Log & Compliance Timeline State (REP-03)
+    @Published public var selectedAgentCategoryFilter: String = "all"
+    @Published public var agentEvents: [AgentEvent] = [
+        AgentEvent(
+            timestampString: "Idag kl. 06:00",
+            category: .sweep,
+            title: "Morgonsvep: 8 anställningsavtal kontrollerade",
+            description: "Autonom regelvalidering mot AML § 14-6 genomförd. 7 klausulavvikelser identifierade och förberedda för godkännande.",
+            statute: "AML § 14-6",
+            affectedEntity: "8 anställda",
+            statusBadge: "Klart för signering",
+            auditHash: "SHA-256: 7b31d8e4",
+            isAutonomous: true
+        ),
+        AgentEvent(
+            timestampString: "Igår kl. 18:30",
+            category: .definitions,
+            title: "Regelverksuppdatering: Simployer Legal Cloud v2026.11",
+            description: "Nya föreskrifter för dygnsvila (AML kap. 10) och ferielovens överföringsregler inlästa och aktiverade i bakgrunden.",
+            statute: "AML kap. 10 & Ferieloven",
+            affectedEntity: "Hela bolaget",
+            statusBadge: "Uppdaterat",
+            auditHash: "VER-2026.11.08",
+            isAutonomous: true
+        ),
+        AgentEvent(
+            timestampString: "Igår kl. 14:15",
+            category: .ingestion,
+            title: "Trojan Horse: Dokument synkat från OneDrive",
+            description: "\"Anställningsavtal_2024_Standard.docx\" indexerat. 6 berörda medarbetare identifierade och kopplade till personalregistret.",
+            statute: "AML § 14-5",
+            affectedEntity: "OneDrive / HR",
+            statusBadge: "Indexerat",
+            auditHash: "SHA-256: c910a3bf",
+            isAutonomous: true
+        ),
+        AgentEvent(
+            timestampString: "07 nov kl. 11:00",
+            category: .guardrail,
+            title: "Dygnsvila & arbetstidskontroll",
+            description: "Genomgång av stämpelklocka och schema för senaste 30 dagarna. 0 övertidsöverträdelser registrerade.",
+            statute: "AML § 10-2",
+            affectedEntity: "Drift & Support",
+            statusBadge: "Uppfyllt",
+            auditHash: "SHA-256: e441c901",
+            isAutonomous: true
+        ),
+        AgentEvent(
+            timestampString: "04 nov kl. 09:30",
+            category: .guardrail,
+            title: "Lönekartläggning & jämställdhetsanalys",
+            description: "Löneanalys genomförd mellan könsgrupper. Inga osakliga löneskillnader identifierade inom lika/likvärdigt arbete.",
+            statute: "Likestillingsloven § 26",
+            affectedEntity: "Personalregister (8 pers)",
+            statusBadge: "Uppfyllt",
+            auditHash: "SHA-256: a12bc780",
+            isAutonomous: true
+        ),
+        AgentEvent(
+            timestampString: "01 nov kl. 15:40",
+            category: .guardrail,
+            title: "Rutin för visselblåsning verifierad",
+            description: "Oberoende krypterad rapporteringskanal aktiv och tillgänglig för samtliga medarbetare.",
+            statute: "AML kap. 2 A",
+            affectedEntity: "Fjord Dynamics",
+            statusBadge: "Säkrat",
+            auditHash: "SHA-256: f80291ba",
+            isAutonomous: true
+        ),
+        AgentEvent(
+            timestampString: "28 okt kl. 16:12",
+            category: .definitions,
+            title: "Skatteregler & traktamente reviderade",
+            description: "Simployer Legal Engine synkade Skatteverkets/Skatteetatens nya schabloner för tjänsteresor.",
+            statute: "Skattebetalingsloven",
+            affectedEntity: "Ekonomi",
+            statusBadge: "Synkroniserat",
+            auditHash: "VER-2026.10.28",
+            isAutonomous: true
+        )
+    ]
+    
+    // MARK: - Headcount Duties & Milestone Thresholds (RAD-01 .. RAD-05)
+    @Published public var currentHeadcountStep: Int = 8
+    @Published public var headcountDuties: [HeadcountDuty] = [
+        HeadcountDuty(
+            id: "duty_5",
+            threshold: 5,
+            title: "Obligatoriskt skyddsombud (Verneombud)",
+            statute: "AML § 6-1",
+            description: "Företag med minst 5 anställda måste välja skyddsombud bland personalen.",
+            penaltyRisk: "Skyddsstopp och pålägg vid tillsyn från Arbetsmiljöverket/Arbeidstilsynet",
+            actionLabel: "Starta digitalt val"
+        ),
+        HeadcountDuty(
+            id: "duty_10",
+            threshold: 10,
+            title: "KMA / HMS-kurs för VD & ledning",
+            statute: "AML § 3-5",
+            description: "Verkställande direktör är lagstadgat skyldig att genomgå formell utbildning i hälsa, miljö och säkerhet.",
+            penaltyRisk: "Personligt straffansvar och företagsbot för VD vid arbetsplatsolycka",
+            actionLabel: "Boka utbildning (Simployer Learn)"
+        ),
+        HeadcountDuty(
+            id: "duty_20",
+            threshold: 20,
+            title: "Lönekartläggning & jämställdhetsrapport",
+            statute: "Likestillingsloven § 26 / Diskrimineringslagen",
+            description: "Lagstadgad kartläggning och analys av löneskillnader mellan könen.",
+            penaltyRisk: "Vite från Diskrimineringsombudsmannen vid bristande redovisning",
+            actionLabel: "Skapa jämställdhetsrapport"
+        ),
+        HeadcountDuty(
+            id: "duty_30",
+            threshold: 30,
+            title: "Arbetsmiljökommitté (AMU)",
+            statute: "AML § 7-1",
+            description: "Företag med över 30 anställda måste inrätta en formell partssammansatt arbetsmiljökommitté.",
+            penaltyRisk: "Tillsynsföreläggande och krav på protokollförda kvartalsmöten",
+            actionLabel: "Konstituera kommitté"
+        ),
+        HeadcountDuty(
+            id: "duty_50",
+            threshold: 50,
+            title: "Lagstadgad visselblåsarkanal & rutiner",
+            statute: "AML kap. 2 A / EU Whistleblowing Directive",
+            description: "Krav på formell, oberoende och skyddad rapporteringskanal för missförhållanden.",
+            penaltyRisk: "Sanktionsavgift upp till 500 000 SEK/NOK vid avsaknad av godkänd kanal",
+            actionLabel: "Aktivera säker kanal"
+        )
+    ]
+    
+    // MARK: - Inspection & Due Diligence Packages (REP-02)
+    @Published public var showInspectionModal: Bool = false
+    @Published public var selectedInspectionPack: InspectionPackType? = nil
+    
     // In-memory scenario datasets
     @Published public var scenarios: [CompanyYear: YearScenarioData] = [:]
     
@@ -313,8 +449,29 @@ public class ComplyStore: ObservableObject {
             }
         }
         scenarios[currentYear] = scenario
+        
+        // Log BankID Signature Event in Agentlogg (CON-04 / CON-05)
+        let event = AgentEvent(
+            timestampString: "Idag kl. \(currentTimeFormatted())",
+            category: .signature,
+            title: "BankID-signering commit: 7 anställningsavtal åtgärdade",
+            description: "Lagstadgade klausuler för arbetstid och övertid godkända av VD. Digitalt signaturcertifikat distribuerat till personal.",
+            statute: "AML § 14-6",
+            affectedEntity: "7 anställda",
+            statusBadge: "Signerat (BankID)",
+            auditHash: "SHA-256: 4f8a9e2b1c7d3f0a",
+            isAutonomous: false
+        )
+        agentEvents.insert(event, at: 0)
+        
         lastSyncTimestamp = Date()
         broadcastSync()
+    }
+    
+    private func currentTimeFormatted() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: Date())
     }
     
     public func resolveAllActionHubItems() {
