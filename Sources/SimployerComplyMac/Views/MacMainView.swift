@@ -31,6 +31,8 @@ struct MacMainView: View {
         case planerat = "planerat"
     }
     @State private var selectedHorizonFilter: ComplianceHorizonFilter = .all
+    @State private var expandedSecondaryCard: String? = nil
+    @State private var showContinuousGuardrailsDetails: Bool = false
     
     // MARK: - Live Ingestion Analysis State
     @State private var isAnalyzingDrop: Bool = false
@@ -1109,16 +1111,16 @@ struct MacMainView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Horizon 1: Akut Section
+    // MARK: - Horizon 1: Akut Section (HERO FOCUS — Expanded by default)
     @ViewBuilder
     private var horizonAkutSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Circle()
                     .fill(SolTokens.red700)
                     .frame(width: 7, height: 7)
                 
-                Text(store.language == .se ? "AKUT — GÖR BOLAGET ICKE-COMPLIANT" : "CRITICAL — ACTIVE NON-COMPLIANCE")
+                Text(store.language == .se ? "AKUT — KRÄVER DITT GODKÄNNANDE" : "CRITICAL — REQUIRES APPROVAL")
                     .font(.inter(11, .bold))
                     .tracking(0.8)
                     .foregroundColor(SolTokens.ink900)
@@ -1127,7 +1129,7 @@ struct MacMainView: View {
                     .font(.inter(10.5, .semibold))
                     .foregroundColor(SolTokens.red700)
                     .padding(.horizontal, 7)
-                    .padding(.vertical, 2.5)
+                    .padding(.vertical, 2)
                     .background(SolTokens.red100)
                     .clipShape(Capsule())
                     .overlay(Capsule().stroke(SolTokens.redBorder, lineWidth: 1))
@@ -1136,18 +1138,12 @@ struct MacMainView: View {
                 
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.octagon.fill")
-                        .font(.system(size: 10))
-                    Text(store.language == .se ? "Aktiv sanktionsrisk föreligger" : "Active penalty exposure")
-                        .font(.inter(11, .medium))
+                        .font(.system(size: 9.5))
+                    Text(store.language == .se ? "Aktiv sanktionsrisk" : "Active penalty exposure")
+                        .font(.inter(10.5, .medium))
                 }
                 .foregroundColor(SolTokens.red700)
             }
-            
-            Text(store.language == .se ? "Dessa punkter bryter mot lagstiftning idag. Sanktionsavgift och rättslig exponering löper omgående utan vd-beslut." : "These items violate statutory labor law today. Fines and legal exposure run continuously until authorized.")
-                .font(.inter(11.5, .regular))
-                .foregroundColor(SolTokens.ink600)
-                .padding(.leading, 15)
-                .padding(.bottom, 2)
             
             switch store.currentYear {
             case .y2024:
@@ -1160,67 +1156,64 @@ struct MacMainView: View {
         }
     }
 
-    // MARK: - Horizon 2: Snart Section
+    // MARK: - Horizon 2: Snart Section (Collapsed by Default in All View)
     @ViewBuilder
     private var horizonSnartSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Circle()
                     .fill(SolTokens.amber400)
                     .frame(width: 7, height: 7)
                 
-                Text(store.language == .se ? "SNART — INNAN DET ÄR FÖR SENT" : "SOON — BEFORE DEADLINE EXPIRES")
+                Text(store.language == .se ? "SNART — KOMMANDE DEADLINES" : "SOON — UPCOMING DEADLINES")
                     .font(.inter(11, .bold))
                     .tracking(0.8)
                     .foregroundColor(SolTokens.ink900)
                 
-                Text(store.language == .se ? "Deadline om 18 dagar" : "Deadline in 18 days")
+                Text(store.language == .se ? "Deadline om 18 dgr" : "Deadline in 18 days")
                     .font(.inter(10.5, .semibold))
                     .foregroundColor(SolTokens.amber400)
                     .padding(.horizontal, 7)
-                    .padding(.vertical, 2.5)
+                    .padding(.vertical, 2)
                     .background(SolTokens.amber100)
                     .clipShape(Capsule())
                     .overlay(Capsule().stroke(SolTokens.amberBorder, lineWidth: 1))
                 
                 Spacer()
-                
-                HStack(spacing: 4) {
-                    Image(systemName: "clock.badge.exclamationmark.fill")
-                        .font(.system(size: 10))
-                    Text(store.language == .se ? "Lagstadgad tidsfrist löper" : "Statutory window running")
-                        .font(.inter(11, .medium))
-                }
-                .foregroundColor(SolTokens.amber400)
             }
             
-            Text(store.language == .se ? "Obligatoriska processer kopplade till bolagets storlek. Måste initieras och slutföras innan tillsynsföreläggande." : "Mandated statutory procedures triggered by workforce scale. Must be finalized before inspection intervention.")
-                .font(.inter(11.5, .regular))
-                .foregroundColor(SolTokens.ink600)
-                .padding(.leading, 15)
-                .padding(.bottom, 2)
-            
-            switch store.currentYear {
-            case .y2024:
-                hubCardVerneombud
-            case .y2025:
-                hubCardEqualPay
-            case .y2027:
-                EmptyView()
+            if selectedHorizonFilter == .snart || expandedSecondaryCard == "verneombud" || expandedSecondaryCard == "equalPay" {
+                switch store.currentYear {
+                case .y2024:
+                    hubCardVerneombud
+                case .y2025:
+                    hubCardEqualPay
+                case .y2027:
+                    EmptyView()
+                }
+            } else {
+                switch store.currentYear {
+                case .y2024:
+                    compactRowVerneombud
+                case .y2025:
+                    compactRowEqualPay
+                case .y2027:
+                    EmptyView()
+                }
             }
         }
     }
 
-    // MARK: - Horizon 3: Planerat Section
+    // MARK: - Horizon 3: Planerat Section (Collapsed by Default in All View)
     @ViewBuilder
     private var horizonPlaneratSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Circle()
                     .fill(SolTokens.lav500)
                     .frame(width: 7, height: 7)
                 
-                Text(store.language == .se ? "PLANERAT & HORISONT — BOLAGSRESAN" : "PLANNED & HORIZON — GROWTH MILESTONES")
+                Text(store.language == .se ? "PLANERAT — BOLAGSRESAN" : "PLANNED — GROWTH MILESTONES")
                     .font(.inter(11, .bold))
                     .tracking(0.8)
                     .foregroundColor(SolTokens.ink900)
@@ -1229,37 +1222,279 @@ struct MacMainView: View {
                     .font(.inter(10.5, .semibold))
                     .foregroundColor(SolTokens.lav400)
                     .padding(.horizontal, 7)
-                    .padding(.vertical, 2.5)
+                    .padding(.vertical, 2)
                     .background(SolTokens.lav100)
                     .clipShape(Capsule())
                     .overlay(Capsule().stroke(SolTokens.lavBorder, lineWidth: 1))
                 
                 Spacer()
-                
-                HStack(spacing: 4) {
-                    Image(systemName: "calendar.badge.clock")
-                        .font(.system(size: 10))
-                    Text(store.language == .se ? "Obligatorisk kompetens & tröskel" : "Mandatory executive training")
-                        .font(.inter(11, .medium))
-                }
-                .foregroundColor(SolTokens.lav400)
             }
             
-            Text(store.language == .se ? "Lagstadgade kompetenskrav för företagsledningen och framtida trösklar inför bolagets nästa tillväxtfas." : "Statutory competencies for leadership and growth milestones before expanding the workforce.")
-                .font(.inter(11.5, .regular))
-                .foregroundColor(SolTokens.ink600)
-                .padding(.leading, 15)
-                .padding(.bottom, 2)
-            
-            switch store.currentYear {
-            case .y2024:
-                hubCardHMS
-            case .y2025:
-                hubCardProbation
-            case .y2027:
-                EmptyView()
+            if selectedHorizonFilter == .planerat || expandedSecondaryCard == "hms" || expandedSecondaryCard == "probation" {
+                switch store.currentYear {
+                case .y2024:
+                    hubCardHMS
+                case .y2025:
+                    hubCardProbation
+                case .y2027:
+                    EmptyView()
+                }
+            } else {
+                switch store.currentYear {
+                case .y2024:
+                    compactRowHMS
+                case .y2025:
+                    compactRowProbation
+                case .y2027:
+                    EmptyView()
+                }
             }
         }
+    }
+
+    // MARK: - Compact Linear Horizon Rows (Restrained Secondary Items)
+    private var compactRowVerneombud: some View {
+        let voActive = store.verneombudElectionActive
+        return HStack(spacing: 12) {
+            Circle()
+                .fill(voActive ? SolTokens.green800 : SolTokens.amber400)
+                .frame(width: 7, height: 7)
+            
+            Text(store.l10n.hubCardVoStatute)
+                .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(SolTokens.paper200)
+                .foregroundColor(SolTokens.ink700)
+                .cornerRadius(4)
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
+            
+            Text(store.l10n.hubCardVoTitle)
+                .font(.inter(13, .semibold))
+                .foregroundColor(SolTokens.ink900)
+            
+            HStack(spacing: 4) {
+                Image(systemName: "clock")
+                    .font(.system(size: 9))
+                Text(store.language == .se ? "Deadline 18 dgr" : "Deadline 18 days")
+                    .font(.inter(11, .medium))
+            }
+            .foregroundColor(SolTokens.amber400)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 2)
+            .background(SolTokens.amber100)
+            .cornerRadius(4)
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.amberBorder, lineWidth: 1))
+            
+            Spacer()
+            
+            if !voActive {
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        expandedSecondaryCard = "verneombud"
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(store.language == .se ? "Öppna val" : "Open election")
+                            .font(.inter(11.5, .medium))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 8, weight: .semibold))
+                    }
+                    .foregroundColor(SolTokens.ink700)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4.5)
+                    .background(SolTokens.paper200)
+                    .cornerRadius(6)
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            } else {
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(SolTokens.green800)
+                    Text(store.l10n.hubCardVoResolved)
+                        .font(.inter(11.5, .medium))
+                        .foregroundColor(SolTokens.green800)
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(SolTokens.paper100)
+        .cornerRadius(8)
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(voActive ? SolTokens.green800 : SolTokens.amber400)
+                .frame(width: 3)
+                .padding(.vertical, 6)
+                .padding(.leading, 1)
+        }
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+    }
+
+    private var compactRowHMS: some View {
+        let hmsDone = store.hmsTrainingEnrolled
+        return HStack(spacing: 12) {
+            Circle()
+                .fill(hmsDone ? SolTokens.green800 : SolTokens.lav500)
+                .frame(width: 7, height: 7)
+            
+            Text(store.l10n.hubCardHmsStatute)
+                .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(SolTokens.paper200)
+                .foregroundColor(SolTokens.ink700)
+                .cornerRadius(4)
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
+            
+            Text(store.l10n.hubCardHmsTitle)
+                .font(.inter(13, .semibold))
+                .foregroundColor(SolTokens.ink900)
+            
+            Text(store.language == .se ? "Kommande kvartal" : "Upcoming quarter")
+                .font(.inter(11, .medium))
+                .foregroundColor(SolTokens.lav400)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 2)
+                .background(SolTokens.lav100)
+                .cornerRadius(4)
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.lavBorder, lineWidth: 1))
+            
+            Spacer()
+            
+            Text(store.l10n.hubHmsPrice)
+                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                .foregroundColor(SolTokens.ink600)
+            
+            if !hmsDone {
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        expandedSecondaryCard = "hms"
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(store.language == .se ? "Visa kurs" : "View course")
+                            .font(.inter(11.5, .medium))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 8, weight: .semibold))
+                    }
+                    .foregroundColor(SolTokens.ink700)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4.5)
+                    .background(SolTokens.paper200)
+                    .cornerRadius(6)
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            } else {
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(SolTokens.green800)
+                    Text(store.l10n.hubHmsBookedConfirmation)
+                        .font(.inter(11.5, .medium))
+                        .foregroundColor(SolTokens.green800)
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(SolTokens.paper100)
+        .cornerRadius(8)
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(hmsDone ? SolTokens.green800 : SolTokens.lav500)
+                .frame(width: 3)
+                .padding(.vertical, 6)
+                .padding(.leading, 1)
+        }
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+    }
+
+    private var compactRowEqualPay: some View {
+        let epDone = store.equalPayReportGenerated
+        return HStack(spacing: 12) {
+            Circle()
+                .fill(epDone ? SolTokens.green800 : SolTokens.amber400)
+                .frame(width: 7, height: 7)
+            Text(store.l10n.hubCardEqualPayStatute)
+                .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(SolTokens.paper200)
+                .foregroundColor(SolTokens.ink700)
+                .cornerRadius(4)
+            Text(store.l10n.hubCardEqualPayTitle)
+                .font(.inter(13, .semibold))
+                .foregroundColor(SolTokens.ink900)
+            Spacer()
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                    expandedSecondaryCard = "equalPay"
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(store.l10n.hubOpenDetails)
+                        .font(.inter(11.5, .medium))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 8))
+                }
+                .foregroundColor(SolTokens.ink700)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 4.5)
+                .background(SolTokens.paper200)
+                .cornerRadius(6)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(SolTokens.paper100)
+        .cornerRadius(8)
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+    }
+
+    private var compactRowProbation: some View {
+        let probDone = store.probationConfirmed
+        return HStack(spacing: 12) {
+            Circle()
+                .fill(probDone ? SolTokens.green800 : SolTokens.lav500)
+                .frame(width: 7, height: 7)
+            Text(store.l10n.hubCardProbationStatute)
+                .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(SolTokens.paper200)
+                .foregroundColor(SolTokens.ink700)
+                .cornerRadius(4)
+            Text(store.l10n.hubCardProbationTitle)
+                .font(.inter(13, .semibold))
+                .foregroundColor(SolTokens.ink900)
+            Spacer()
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                    expandedSecondaryCard = "probation"
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(store.l10n.hubOpenDetails)
+                        .font(.inter(11.5, .medium))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 8))
+                }
+                .foregroundColor(SolTokens.ink700)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 4.5)
+                .background(SolTokens.paper200)
+                .cornerRadius(6)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(SolTokens.paper100)
+        .cornerRadius(8)
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
     }
 
     // MARK: - Reassurance Banner for Filtered Horizon
@@ -1436,51 +1671,81 @@ struct MacMainView: View {
         )
     }
     
-    // MARK: - Continuous Guardrails Section
+    // MARK: - Continuous Guardrails Section (Restrained Collapsible Drawer)
     private var hubContinuousGuardrailsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Text(store.l10n.hubSectionSecuredTitle.uppercased())
-                    .font(.inter(11, .bold))
-                    .tracking(0.8)
+        VStack(spacing: 8) {
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                    showContinuousGuardrailsDetails.toggle()
+                }
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .foregroundColor(SolTokens.green800)
+                        .font(.system(size: 13))
+                    
+                    Text(store.language == .se ? "4 aktiva skydd bevakas autonomt i bakgrunden" : "4 active guardrails monitored autonomously")
+                        .font(.inter(12, .semibold))
+                        .foregroundColor(SolTokens.ink700)
+                    
+                    Text("·  Arbetstid, jämställdhet, visselblåsning, semester")
+                        .font(.inter(11.5))
+                        .foregroundColor(SolTokens.ink450)
+                        .lineLimit(1)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 4) {
+                        Text(showContinuousGuardrailsDetails ? store.l10n.close : store.l10n.hubOpenDetails)
+                            .font(.inter(11, .medium))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 8, weight: .semibold))
+                            .rotationEffect(.degrees(showContinuousGuardrailsDetails ? 180 : 0))
+                    }
                     .foregroundColor(SolTokens.ink600)
-                
-                LinearStatusPill(
-                    text: store.l10n.hubSecuredBadge,
-                    dotColor: SolTokens.green800
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 9)
+                .background(SolTokens.paper100)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(SolTokens.paper300, lineWidth: 1)
                 )
-                
-                Spacer()
             }
+            .buttonStyle(.plain)
             
-            VStack(spacing: 8) {
-                hubGuardrailRow(
-                    title: store.l10n.hubGuardrail1Title,
-                    statute: store.l10n.hubGuardrail1Statute,
-                    desc: store.l10n.hubGuardrail1Desc,
-                    statusText: store.l10n.hubGuardrail1Status
-                )
-                
-                hubGuardrailRow(
-                    title: store.l10n.hubGuardrail2Title,
-                    statute: store.l10n.hubGuardrail2Statute,
-                    desc: store.l10n.hubGuardrail2Desc,
-                    statusText: store.l10n.hubGuardrail2Status
-                )
-                
-                hubGuardrailRow(
-                    title: store.l10n.hubGuardrail3Title,
-                    statute: store.l10n.hubGuardrail3Statute,
-                    desc: store.l10n.hubGuardrail3Desc,
-                    statusText: store.l10n.hubGuardrail3Status
-                )
-                
-                hubGuardrailRow(
-                    title: store.l10n.hubGuardrail4Title,
-                    statute: store.l10n.hubGuardrail4Statute,
-                    desc: store.l10n.hubGuardrail4Desc,
-                    statusText: store.l10n.hubGuardrail4Status
-                )
+            if showContinuousGuardrailsDetails {
+                VStack(spacing: 8) {
+                    hubGuardrailRow(
+                        title: store.l10n.hubGuardrail1Title,
+                        statute: store.l10n.hubGuardrail1Statute,
+                        desc: store.l10n.hubGuardrail1Desc,
+                        statusText: store.l10n.hubGuardrail1Status
+                    )
+                    
+                    hubGuardrailRow(
+                        title: store.l10n.hubGuardrail2Title,
+                        statute: store.l10n.hubGuardrail2Statute,
+                        desc: store.l10n.hubGuardrail2Desc,
+                        statusText: store.l10n.hubGuardrail2Status
+                    )
+                    
+                    hubGuardrailRow(
+                        title: store.l10n.hubGuardrail3Title,
+                        statute: store.l10n.hubGuardrail3Statute,
+                        desc: store.l10n.hubGuardrail3Desc,
+                        statusText: store.l10n.hubGuardrail3Status
+                    )
+                    
+                    hubGuardrailRow(
+                        title: store.l10n.hubGuardrail4Title,
+                        statute: store.l10n.hubGuardrail4Statute,
+                        desc: store.l10n.hubGuardrail4Desc,
+                        statusText: store.l10n.hubGuardrail4Status
+                    )
+                }
+                .transition(.linearAccordion)
             }
         }
     }
