@@ -21,9 +21,8 @@ struct InspectionExportView: View {
                 // Export & Download Bar
                 exportActionBar
             }
-            .padding(.horizontal, 32)
-            .padding(.top, 24)
-            .padding(.bottom, 48)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
         }
         .background(SolTokens.paper50)
     }

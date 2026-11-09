@@ -49,6 +49,9 @@ struct MacMainView: View {
             HStack(spacing: 0) {
                 // Left Sidebar (resizable)
                 VStack(alignment: .leading, spacing: 3.5) {
+                    // Simployer Comply Brand Header (Aligned with Breadcrumb Bar height)
+                    sidebarBrandHeader
+                    
                     // Unified Company Header & Overview Nav (Fjord Dynamics = Top-level Overview)
                     companyHeaderView
                     
@@ -407,6 +410,29 @@ struct MacMainView: View {
         }
     }
     
+    // MARK: - Brand Header (Simployer Comply Brand Area aligning with breadcrumb row)
+    private var sidebarBrandHeader: some View {
+        HStack(spacing: 8) {
+            SimployerLogoView()
+                .frame(width: 17, height: 17)
+            
+            HStack(spacing: 4) {
+                Text("Simployer")
+                    .font(.inter(13, .bold))
+                    .foregroundColor(SolTokens.ink900)
+                Text("Comply")
+                    .font(.inter(13, .semibold))
+                    .foregroundColor(SolTokens.lav400)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 38)
+        .padding(.top, 10)
+        .padding(.bottom, 24)
+    }
+
     // MARK: - Company Overview Root Item (Unified Fjord Dynamics Navigation Item)
     private var companyHeaderView: some View {
         let active = store.activeNav == "hub"
@@ -460,7 +486,7 @@ struct MacMainView: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 6)
-        .padding(.top, 10)
+        .padding(.top, 0)
         .padding(.bottom, 2)
         .onHover { isHoveredCompany = $0 }
     }
@@ -976,7 +1002,8 @@ struct MacMainView: View {
                 // 4. Guarded Sources & Live Integrations Panel (Full-width 3-brick executive overview)
                 guardedSourcesCockpitSection
             }
-            .padding(24)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
         }
     }
     
@@ -2554,7 +2581,8 @@ struct MacMainView: View {
                 .cornerRadius(8)
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
             }
-            .padding(20)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
         }
     }
     
@@ -2641,7 +2669,8 @@ struct MacMainView: View {
                     description: store.l10n.radarCard50Desc
                 )
             }
-            .padding(20)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
         }
     }
     
@@ -2948,7 +2977,8 @@ struct MacMainView: View {
                 .cornerRadius(10)
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
             }
-            .padding(20)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
         }
     }
     
@@ -3714,7 +3744,8 @@ struct MacMainView: View {
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
                 }
             }
-            .padding(20)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
         }
     }
     
@@ -4822,7 +4853,7 @@ struct MacMainView: View {
                 reassuranceBarView
             }
             .padding(.horizontal, 24)
-            .padding(.vertical, 20)
+            .padding(.vertical, 24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -4836,7 +4867,6 @@ struct MacMainView: View {
                 .font(.inter(12.5))
                 .foregroundColor(SolTokens.ink600)
         }
-        .padding(.top, 4)
     }
     
     private var heroDropzoneView: some View {
@@ -5760,7 +5790,8 @@ struct MacMainView: View {
             registerTableContent
             registerUpsellBar
         }
-        .padding(16)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 24)
     }
 }
 
