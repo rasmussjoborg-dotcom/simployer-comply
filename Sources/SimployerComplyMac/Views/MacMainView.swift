@@ -40,10 +40,19 @@ struct MacMainView: View {
     @State private var dropProgress: Double = 0.0
     @State private var dropAnalysisStage: Int = 0
     @State private var dropFileName: String = "Anställningsavtal_2024_Standard.docx"
+    @State private var showResetToast: Bool = false
     
     var body: some View {
         ZStack(alignment: .leading) {
             SolTokens.canvasRoot.ignoresSafeArea()
+            
+            // Global keyboard shortcut for immediate prototype reset (⌘R)
+            Button("") {
+                resetEntirePrototype()
+            }
+            .keyboardShortcut("r", modifiers: .command)
+            .opacity(0)
+            .frame(width: 0, height: 0)
             
             // MARK: - Main Content Split (Linear Sidebar + Framed Canvas)
             HStack(spacing: 0) {
@@ -226,6 +235,29 @@ struct MacMainView: View {
                             }
                             
                             Spacer()
+                            
+                            // Quick Reset Prototype Button (Apple standard: always accessible in header bar)
+                            Button {
+                                resetEntirePrototype()
+                            } label: {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "arrow.counterclockwise")
+                                        .font(.system(size: 9.5, weight: .semibold))
+                                    Text(store.language == .se ? "Återställ (⌘R)" : (store.language == .no ? "Tilbakestill (⌘R)" : "Reset (⌘R)"))
+                                        .font(.inter(11, .medium))
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(SolTokens.paper200)
+                                .foregroundColor(SolTokens.ink600)
+                                .cornerRadius(5)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(SolTokens.paper300, lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .help("Återställ prototypen till utgångsläget (⌘R)")
                         }
                         .padding(.horizontal, 18)
                         .padding(.vertical, 10)
@@ -359,6 +391,26 @@ struct MacMainView: View {
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.18), radius: 12, y: 4)
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.lav400, lineWidth: 1))
+                .padding(24)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if showResetToast {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(SolTokens.green800)
+                    Text(store.language == .se ? "Prototypen återställd till utgångsläge" : (store.language == .no ? "Prototypen tilbakestilt til startposisjon" : "Prototype reset to default state"))
+                        .font(.inter(12, .semibold))
+                        .foregroundColor(SolTokens.ink900)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(SolTokens.paper100)
+                .cornerRadius(8)
+                .shadow(color: Color.black.opacity(0.18), radius: 12, y: 4)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.greenBorder, lineWidth: 1))
                 .padding(24)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -583,6 +635,40 @@ struct MacMainView: View {
         case "auditPack": return "shield.lefthalf.filled"
         case "settings": return "gearshape"
         default: return "shield.checkered"
+        }
+    }
+    
+    // MARK: - Full Prototype Reset Engine (Default 2024 Initial State)
+    private func resetEntirePrototype() {
+        withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+            autoplay.stopDemo { _ in }
+            autoplay.currentStepIndex = 0
+            autoplay.currentStep = nil
+            store.resetDemoState()
+            self.vanishedCardIds.removeAll()
+            self.showCompletedArchive = false
+            self.expandedHubCard = nil
+            self.selectedDiffEmployee = nil
+            self.expandedEmployeeRowId = nil
+            self.employeeSearchText = ""
+            self.employeeStatusFilter = "all"
+            self.selectedHorizonFilter = .all
+            self.expandedSecondaryCard = nil
+            self.showContinuousGuardrailsDetails = false
+            self.isAnalyzingDrop = false
+            self.dropProgress = 0.0
+            self.dropAnalysisStage = 0
+            self.dropFileName = "Anställningsavtal_2024_Standard.docx"
+            self.showDemoControls = false
+            self.showSearchPalette = false
+            self.isDropTargeted = false
+            store.activeNav = "hub"
+            self.showResetToast = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self.showResetToast = false
+            }
         }
     }
     
@@ -1191,7 +1277,7 @@ struct MacMainView: View {
                                 }
                             }
                         } else {
-                            store.activeNav = "employees"
+                            store.activeNav = "register"
                         }
                     }
                 }
@@ -3336,6 +3422,28 @@ struct MacMainView: View {
                                 }
                                 .buttonStyle(.plain)
                                 
+                                // Direct Reset Demo Button
+                                Button {
+                                    resetEntirePrototype()
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "arrow.counterclockwise")
+                                            .font(.inter(11))
+                                        Text(store.language == .se ? "Återställ demo (⌘R)" : (store.language == .no ? "Tilbakestill demo (⌘R)" : "Reset demo (⌘R)"))
+                                            .font(.inter(12, .semibold))
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6.5)
+                                    .background(SolTokens.paper200)
+                                    .foregroundColor(SolTokens.ink700)
+                                    .cornerRadius(6)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(SolTokens.paper300, lineWidth: 1)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                
                                 // Open Demo Popover Button
                                 Button {
                                     showDemoControls.toggle()
@@ -3369,11 +3477,7 @@ struct MacMainView: View {
                                             }
                                         },
                                         onReset: {
-                                            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
-                                                self.vanishedCardIds.removeAll()
-                                                self.showCompletedArchive = false
-                                                self.expandedHubCard = nil
-                                            }
+                                            resetEntirePrototype()
                                         }
                                     )
                                 }
@@ -6997,10 +7101,8 @@ struct DemoControlsPopover: View {
                 Spacer()
                 
                 Button {
-                    withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
-                        store.resetDemoState()
-                        onReset?()
-                    }
+                    isPresented = false
+                    onReset?()
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "arrow.counterclockwise")
