@@ -11,14 +11,5 @@
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
             <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.0/Simployer-Comply-1.0.0.zip" length="4351965" type="application/octet-stream" sparkle:edSignature="+J5TB5bSgGlYt8sXiN9DaRqRkPQIvfXekrsk4cWyr0oHasCmGnfHOKpPU2elYb4mA2vYtJMaJ08dVuL4j7eLDw=="/>
         </item>
-        <item>
-            <title>1.0.0</title>
-            <pubDate>Mon, 09 Nov 2026 09:19:06 +0100</pubDate>
-            <sparkle:version>202611090917</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.0/Simployer-Comply-1.0.0.zip" length="4351757" type="application/octet-stream"/>
-        </item>
     </channel>
 </rss>
