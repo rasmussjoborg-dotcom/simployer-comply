@@ -51,7 +51,20 @@ struct MacMainView: View {
                     // Linear Company Header (Dynamic Badge + Radar Dot + Search + Compose)
                     companyHeaderView
                         
-                    // Section 1: Skydd & System (Primary Executive Focus)
+                    // Top Standalone Hero Item (No section header clutter)
+                    SidebarButton(
+                        id: "hub",
+                        label: store.l10n.navHub,
+                        icon: "shield.checkered",
+                        badge: store.pendingActionCount > 0 ? "\(store.pendingActionCount)" : nil,
+                        badgeStyle: .alert,
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "hub"
+                    }
+                    .padding(.top, 10)
+                    
+                    // Section 1: Verksamhet & Bevakning (Live Internal Reality)
                     HStack(spacing: 4) {
                         Text(store.l10n.overviewSection.uppercased())
                             .font(.inter(10, .bold))
@@ -62,18 +75,38 @@ struct MacMainView: View {
                             .foregroundColor(SolTokens.ink450)
                     }
                     .padding(.horizontal, 10)
-                    .padding(.top, 16)
+                    .padding(.top, 14)
                     .padding(.bottom, 3)
                     
                     SidebarButton(
-                        id: "hub",
-                        label: store.l10n.navHub,
-                        icon: "shield.checkered",
-                        badge: store.pendingActionCount > 0 ? "\(store.pendingActionCount)" : nil,
-                        badgeStyle: .alert,
+                        id: "ingest",
+                        label: store.l10n.navIngest,
+                        icon: "folder.badge.gearshape",
+                        badge: "3",
+                        badgeStyle: .neutral,
                         activeNav: store.activeNav
                     ) {
-                        store.activeNav = "hub"
+                        store.activeNav = "ingest"
+                    }
+                    
+                    SidebarButton(
+                        id: "register",
+                        label: store.l10n.navRegister,
+                        icon: "person.2",
+                        badge: "\(store.currentScenario.headcount)",
+                        badgeStyle: .neutral,
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "register"
+                    }
+                    
+                    SidebarButton(
+                        id: "handbook",
+                        label: store.l10n.navHandbook,
+                        icon: "book.closed",
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "handbook"
                     }
                     
                     SidebarButton(
@@ -87,18 +120,7 @@ struct MacMainView: View {
                         store.activeNav = "agentLog"
                     }
                     
-                    SidebarButton(
-                        id: "ingest",
-                        label: store.l10n.navIngest,
-                        icon: "folder.badge.gearshape",
-                        badge: "3",
-                        badgeStyle: .neutral,
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "ingest"
-                    }
-                    
-                    // Section 2: Fordjupning & Register (Quiet Reference)
+                    // Section 2: Lag, Revision & Jurist (External Intelligence, Strategy & Legal)
                     HStack(spacing: 4) {
                         Text(store.l10n.complianceSection.uppercased())
                             .font(.inter(10, .bold))
@@ -109,27 +131,9 @@ struct MacMainView: View {
                             .foregroundColor(SolTokens.ink450)
                     }
                     .padding(.horizontal, 10)
-                    .padding(.top, 18)
+                    .padding(.top, 16)
                     .padding(.bottom, 3)
                         
-                    SidebarButton(
-                        id: "register",
-                        label: store.l10n.navRegister,
-                        icon: "person.2",
-                        badge: "\(store.currentScenario.headcount)",
-                        badgeStyle: .neutral,
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "register"
-                    }
-                    SidebarButton(
-                        id: "handbook",
-                        label: store.l10n.navHandbook,
-                        icon: "book.closed",
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "handbook"
-                    }
                     SidebarButton(
                         id: "radar",
                         label: store.l10n.navRadar,
@@ -139,14 +143,7 @@ struct MacMainView: View {
                     ) {
                         store.activeNav = "radar"
                     }
-                    SidebarButton(
-                        id: "expert",
-                        label: store.l10n.navExpert,
-                        icon: "bubble.left.and.bubble.right",
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "expert"
-                    }
+                    
                     SidebarButton(
                         id: "auditPack",
                         label: store.l10n.navAuditPack,
@@ -155,6 +152,19 @@ struct MacMainView: View {
                     ) {
                         store.activeNav = "auditPack"
                     }
+                    
+                    SidebarButton(
+                        id: "expert",
+                        label: store.l10n.navExpert,
+                        icon: "bubble.left.and.bubble.right",
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "expert"
+                    }
+                        
+                    Spacer()
+                    
+                    // Pinned Bottom Settings Row
                     SidebarButton(
                         id: "settings",
                         label: store.l10n.navSettings,
@@ -163,12 +173,11 @@ struct MacMainView: View {
                     ) {
                         store.activeNav = "settings"
                     }
+                    .padding(.bottom, 2)
                         
-                        Spacer()
-                        
-                        // MARK: - Bottom Section: Utilities (Language + Demo) & Mobile Diffs
-                        sidebarBottomSection
-                    }
+                    // MARK: - Bottom Section: Utilities (Language + Demo) & Mobile Diffs
+                    sidebarBottomSection
+                }
                     .frame(width: CGFloat(sidebarWidth))
                     .fixedSize(horizontal: true, vertical: false)
                     .layoutPriority(10)
