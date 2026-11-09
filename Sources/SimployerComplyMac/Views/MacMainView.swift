@@ -948,62 +948,62 @@ struct MacMainView: View {
         let ctaTitle: String = store.l10n.hubMacroResolveButton
         
         return HStack(alignment: .center, spacing: 32) {
-            // Column 1: Ambient Radial Glow & 140pt Dial
+            // Column 1: Ambient Radial Glow & Enlarged 152pt Dial
             ZStack {
                 // Subtle Ambient Radial Aura Blur behind the ring
                 Circle()
                     .fill(isCompliant ? SolTokens.green800.opacity(0.18) : SolTokens.indigo.opacity(0.22))
-                    .frame(width: 156, height: 156)
-                    .blur(radius: 28)
+                    .frame(width: 174, height: 174)
+                    .blur(radius: 30)
                 
                 // Background Track
                 Circle()
-                    .stroke(SolTokens.paper300, lineWidth: 10)
-                    .frame(width: 136, height: 136)
+                    .stroke(SolTokens.paper300, lineWidth: 11)
+                    .frame(width: 152, height: 152)
                 
                 // Progress Arc
                 Circle()
                     .trim(from: 0.0, to: CGFloat(secured) / CGFloat(totalCount))
                     .stroke(
                         isCompliant ? SolTokens.green800 : SolTokens.linearIndigo,
-                        style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                        style: StrokeStyle(lineWidth: 11, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .frame(width: 136, height: 136)
+                    .frame(width: 152, height: 152)
                     .animation(.spring(response: 0.6, dampingFraction: 0.8), value: secured)
                 
                 // Inside Hero Dial Contents
                 VStack(spacing: 2) {
                     if isCompliant {
                         Image(systemName: "checkmark.shield.fill")
-                            .font(.system(size: 34, weight: .bold))
+                            .font(.system(size: 38, weight: .bold))
                             .foregroundColor(SolTokens.green800)
                         
                         Text("100%")
-                            .font(.system(size: 19, weight: .heavy, design: .rounded))
+                            .font(.system(size: 21, weight: .heavy, design: .rounded))
                             .foregroundColor(SolTokens.green800)
                         
                         Text(store.language == .se ? "SÄKRAT" : (store.language == .no ? "SIKRET" : "SECURED"))
-                            .font(.system(size: 8.5, weight: .heavy))
-                            .tracking(1.4)
+                            .font(.system(size: 9, weight: .heavy))
+                            .tracking(1.5)
                             .foregroundColor(SolTokens.green800)
                     } else {
                         Text("\(percent)%")
-                            .font(.system(size: 32, weight: .heavy, design: .rounded))
+                            .font(.system(size: 36, weight: .heavy, design: .rounded))
                             .foregroundColor(SolTokens.ink900)
                         
                         Text("\(secured)/\(totalCount) " + (store.language == .se ? "lagkrav" : (store.language == .no ? "lovkrav" : "duties")))
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .font(.system(size: 11.5, weight: .bold, design: .monospaced))
                             .foregroundColor(SolTokens.ink600)
                         
                         Text(store.language == .se ? "SÄKRAT" : (store.language == .no ? "SIKRET" : "SECURED"))
-                            .font(.system(size: 8.5, weight: .heavy))
-                            .tracking(1.4)
+                            .font(.system(size: 9, weight: .heavy))
+                            .tracking(1.5)
                             .foregroundColor(SolTokens.indigo)
                     }
                 }
             }
-            .frame(width: 144, height: 144)
+            .frame(width: 160, height: 160)
             
             // Column 2: Status Badges, Headline, Subtitle, and Primary CTA
             VStack(alignment: .leading, spacing: 10) {
@@ -1027,16 +1027,20 @@ struct MacMainView: View {
                 .cornerRadius(5)
                 
                 Text(headline)
-                    .font(.inter(22, .bold))
+                    .font(.inter(25, .bold))
                     .foregroundColor(SolTokens.ink900)
                 
                 Text(subtitle)
-                    .font(.inter(13.5, .regular))
+                    .font(.inter(14, .regular))
                     .foregroundColor(SolTokens.ink600)
-                    .lineSpacing(3)
+                    .lineSpacing(3.5)
                     .fixedSize(horizontal: false, vertical: true)
-                
-                // Macro Action / Compliant Status
+            }
+            
+            Spacer(minLength: 28)
+            
+            // Column 3: Primary Action / CTA Column
+            VStack(alignment: .trailing, spacing: 8) {
                 if !isCompliant {
                     Button {
                         withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
@@ -1047,44 +1051,48 @@ struct MacMainView: View {
                             Image(systemName: "checkmark.shield.fill")
                                 .font(.system(size: 14, weight: .bold))
                             Text(ctaTitle)
-                                .font(.inter(14, .bold))
+                                .font(.inter(14.5, .bold))
                         }
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, 26)
+                        .padding(.vertical, 13)
                         .background(SolTokens.linearIndigo)
                         .foregroundColor(Color.white)
                         .clipShape(Capsule())
                         .contentShape(Capsule())
-                        .shadow(color: SolTokens.indigo.opacity(0.32), radius: 8, y: 3)
+                        .shadow(color: SolTokens.indigo.opacity(0.35), radius: 10, y: 4)
                     }
                     .buttonStyle(.plain)
-                    .padding(.top, 4)
+                    
+                    Text(store.language == .se ? "Gäller samtliga öppna avvikelser" : (store.language == .no ? "Gjelder samtlige åpne avvik" : "Applies to all open infractions"))
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
                 } else {
-                    HStack(spacing: 7) {
+                    HStack(spacing: 8) {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 13))
+                            .font(.system(size: 14))
                             .foregroundColor(SolTokens.green800)
                         Text(store.language == .se 
-                             ? "Alla lagkrav säkrade · Kontrolleras automatiskt i bakgrunden" 
+                             ? "Alla lagkrav säkrade" 
                              : (store.language == .no 
-                                ? "Alle lovkrav sikret · Kontrolleres automatisk i bakgrunnen"
-                                : "All statutory duties secured · Monitored continuously in background"))
-                            .font(.inter(12.5, .medium))
-                            .foregroundColor(SolTokens.ink600)
+                                ? "Alle lovkrav sikret" 
+                                : "All duties secured"))
+                            .font(.inter(13.5, .bold))
+                            .foregroundColor(SolTokens.green800)
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
                     .background(SolTokens.green100)
                     .cornerRadius(8)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.greenBorder, lineWidth: 1))
-                    .padding(.top, 4)
+                    
+                    Text(store.language == .se ? "Kontrolleras i bakgrunden" : (store.language == .no ? "Overvåkes i bakgrunnen" : "Monitored in background"))
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
                 }
             }
-            
-            Spacer(minLength: 0)
         }
-        .padding(.vertical, 24)
-        .padding(.horizontal, 28)
+        .padding(.vertical, 28)
+        .padding(.horizontal, 32)
         .frame(maxWidth: .infinity)
         .background(SolTokens.paper100)
         .cornerRadius(14)
