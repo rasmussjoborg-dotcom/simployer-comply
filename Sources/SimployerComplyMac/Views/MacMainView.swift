@@ -3241,7 +3241,7 @@ struct MacMainView: View {
                                         .foregroundColor(SolTokens.ink900)
                                     
                                     LinearStatusPill(
-                                        text: "v1.0.0 (Build 1)",
+                                        text: "v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.1") (Build \(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"))",
                                         dotColor: SolTokens.green800
                                     )
                                 }
