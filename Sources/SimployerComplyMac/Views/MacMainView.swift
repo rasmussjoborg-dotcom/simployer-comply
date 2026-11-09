@@ -1063,7 +1063,7 @@ struct MacMainView: View {
                     }
                     .buttonStyle(.plain)
                     
-                    Text(store.language == .se ? "Uppdaterar 7 avtal automatiskt · Granskat av Simployer Jurist" : (store.language == .no ? "Oppdaterer 7 avtaler automatisk · Gjennomgått av Simployer Jurist" : "Updates 7 contracts automatically · Vetted by Simployer Legal"))
+                    Text(store.language == .se ? "Uppdaterar 7 avtal automatiskt" : (store.language == .no ? "Oppdaterer 7 avtaler automatisk" : "Updates 7 contracts automatically"))
                         .font(.system(size: 11, design: .monospaced))
                         .foregroundColor(SolTokens.ink450)
                 } else {
