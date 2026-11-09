@@ -33,6 +33,7 @@ struct MacMainView: View {
     @State private var selectedHorizonFilter: ComplianceHorizonFilter = .all
     @State private var expandedSecondaryCard: String? = nil
     @State private var showContinuousGuardrailsDetails: Bool = false
+    @State private var isHoveredCompany: Bool = false
     
     // MARK: - Live Ingestion Analysis State
     @State private var isAnalyzingDrop: Bool = false
@@ -48,21 +49,8 @@ struct MacMainView: View {
             HStack(spacing: 0) {
                 // Left Sidebar (resizable)
                 VStack(alignment: .leading, spacing: 3.5) {
-                    // Linear Company Header (Dynamic Badge + Radar Dot + Search + Compose)
+                    // Unified Company Header & Overview Nav (Fjord Dynamics = Top-level Overview)
                     companyHeaderView
-                        
-                    // Top Standalone Hero Item (No section header clutter)
-                    SidebarButton(
-                        id: "hub",
-                        label: store.l10n.navHub,
-                        icon: "shield.checkered",
-                        badge: store.pendingActionCount > 0 ? "\(store.pendingActionCount)" : nil,
-                        badgeStyle: .alert,
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "hub"
-                    }
-                    .padding(.top, 10)
                     
                     // Section 1: Verksamhet & Bevakning (Live Internal Reality)
                     HStack(spacing: 4) {
@@ -419,58 +407,105 @@ struct MacMainView: View {
         }
     }
     
-    // MARK: - Company Header (Linear-Style: Dynamic Badge + Radar Dot + Search + Compose)
+    // MARK: - Company Overview Root Item (Unified Fjord Dynamics Cockpit Header & Overview Nav)
     private var companyHeaderView: some View {
-        HStack(spacing: 7) {
-            // Dynamic Compliance Badge with Active Radar Dot
-            companyComplianceBadge
-            
-            HStack(spacing: 4) {
-                Text("Fjord Dynamics")
-                    .font(.inter(13, .semibold))
-                    .foregroundColor(SolTokens.ink900)
-                Image(systemName: "arrowtriangle.down.fill")
-                    .font(.system(size: 6.5))
-                    .foregroundColor(SolTokens.ink450)
+        let active = store.activeNav == "hub"
+        return HStack(spacing: 7) {
+            // Clickable company label area (logo + name)
+            Button {
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                    store.activeNav = "hub"
+                }
+            } label: {
+                HStack(spacing: 7) {
+                    companyComplianceBadge
+                    
+                    Text("Fjord Dynamics")
+                        .font(.inter(13, active ? .bold : .semibold))
+                        .foregroundColor(active ? Color.white : SolTokens.ink900)
+                        .lineLimit(1)
+                }
             }
+            .buttonStyle(.plain)
+            
+            // Company Switcher Menu Chevron
+            Menu {
+                Button {
+                    store.activeNav = "hub"
+                } label: {
+                    Label("Fjord Dynamics AS (Aktiv)", systemImage: "checkmark")
+                }
+                Button {
+                    // Switch company
+                } label: {
+                    Text("Kyst Studio AS")
+                }
+                Button {
+                    // Switch company
+                } label: {
+                    Text("Nordic SaaS AB")
+                }
+            } label: {
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 7.5, weight: .bold))
+                    .foregroundColor(active ? Color.white.opacity(0.8) : SolTokens.ink450)
+                    .frame(width: 14, height: 18)
+                    .contentShape(Rectangle())
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+            .help("Byt bolag")
             
             Spacer()
             
-            // Linear-Style Search Button (clean hover icon)
+            // Alert badge if issues require attention
+            if store.pendingActionCount > 0 {
+                Button {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                        store.activeNav = "hub"
+                    }
+                } label: {
+                    Text("\(store.pendingActionCount)")
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundColor(active ? SolTokens.ink700 : SolTokens.amber400)
+                        .padding(.horizontal, 5.5)
+                        .padding(.vertical, 1.5)
+                        .background(active ? SolTokens.paper250 : SolTokens.amber100)
+                        .cornerRadius(4)
+                }
+                .buttonStyle(.plain)
+            }
+            
+            // Search Button (⌘K)
             Button {
                 showSearchPalette.toggle()
             } label: {
                 Image(systemName: "magnifyingglass")
-                    .font(.inter(12, .medium))
-                    .foregroundColor(SolTokens.ink600)
-                    .frame(width: 22, height: 22)
+                    .font(.inter(11.5, .medium))
+                    .foregroundColor(active ? Color.white.opacity(0.8) : SolTokens.ink600)
+                    .frame(width: 20, height: 20)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .keyboardShortcut("k", modifiers: .command)
-            .help("Søk eller hopp til... (⌘K)")
-            
-            // Linear-Style Compose / Quick Action Button
-            Button {
-                showSearchPalette.toggle()
-            } label: {
-                Image(systemName: "square.and.pencil")
-                    .font(.inter(11, .medium))
-                    .foregroundColor(SolTokens.ink600)
-                    .frame(width: 22, height: 22)
-                    .background(SolTokens.paper200)
-                    .cornerRadius(6)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
-                    )
-            }
-            .buttonStyle(.plain)
-            .help("Hurtighandling eller opprettelse")
+            .help("Sök eller hoppa till... (⌘K)")
         }
-        .padding(.horizontal, 10)
-        .padding(.top, 10)
-        .padding(.bottom, 6)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(active ? SolTokens.linearIndigo : (isHoveredCompany ? SolTokens.paper200 : Color.clear))
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                store.activeNav = "hub"
+            }
+        }
+        .onHover { isHoveredCompany = $0 }
+        .padding(.horizontal, 6)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
     }
     
     // MARK: - Company Compliance Badge with Active Radar Indicator
