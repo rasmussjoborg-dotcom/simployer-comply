@@ -22,6 +22,10 @@ struct MacMainView: View {
     @State private var employeeSearchText: String = ""
     @State private var employeeStatusFilter: String = "all"
     @AppStorage("comply_sidebar_width") private var sidebarWidth: Double = 220.0
+    @AppStorage("comply_col_employee_width") private var colEmployeeWidth: Double = 220.0
+    @AppStorage("comply_col_role_width") private var colRoleDeptWidth: Double = 300.0
+    @AppStorage("comply_col_employment_width") private var colEmploymentWidth: Double = 210.0
+    @AppStorage("comply_col_status_width") private var colStatusWidth: Double = 240.0
     
     // MARK: - Compliance Horizon State (Linear-style Urgency & Temporal Grouping)
     enum ComplianceHorizonFilter: String, CaseIterable {
@@ -5613,38 +5617,72 @@ struct MacMainView: View {
     }
 
     private var registerTableHeader: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 0) {
             HStack(spacing: 5) {
                 Image(systemName: "person.2.fill")
                     .font(.system(size: 9))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colEmployee)
+                Spacer()
             }
-            .frame(width: 200, alignment: .leading)
+            .frame(width: CGFloat(colEmployeeWidth), alignment: .leading)
+            
+            TableColumnResizeHandle(
+                width: $colEmployeeWidth,
+                minWidth: 160,
+                maxWidth: 360,
+                defaultWidth: 220
+            )
             
             HStack(spacing: 5) {
                 Image(systemName: "briefcase.fill")
                     .font(.system(size: 8.5))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colRoleDept)
+                Spacer()
             }
-            .frame(minWidth: 160, maxWidth: .infinity, alignment: .leading)
+            .frame(width: CGFloat(colRoleDeptWidth), alignment: .leading)
+            
+            TableColumnResizeHandle(
+                width: $colRoleDeptWidth,
+                minWidth: 180,
+                maxWidth: 450,
+                defaultWidth: 300
+            )
             
             HStack(spacing: 5) {
                 Image(systemName: "doc.text.fill")
                     .font(.system(size: 8.5))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colSalary)
+                Spacer()
             }
-            .frame(width: 140, alignment: .leading)
+            .frame(width: CGFloat(colEmploymentWidth), alignment: .leading)
+            
+            TableColumnResizeHandle(
+                width: $colEmploymentWidth,
+                minWidth: 150,
+                maxWidth: 340,
+                defaultWidth: 210
+            )
             
             HStack(spacing: 5) {
                 Image(systemName: "shield.checkerboard")
                     .font(.system(size: 8.5))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colStatus)
+                Spacer()
             }
-            .frame(minWidth: 160, maxWidth: 210, alignment: .leading)
+            .frame(width: CGFloat(colStatusWidth), alignment: .leading)
+            
+            TableColumnResizeHandle(
+                width: $colStatusWidth,
+                minWidth: 170,
+                maxWidth: 400,
+                defaultWidth: 240
+            )
+            
+            Spacer()
             
             Text(store.l10n.colAction)
                 .frame(width: 98, alignment: .trailing)
@@ -5652,7 +5690,7 @@ struct MacMainView: View {
         .font(.system(size: 11, weight: .semibold, design: .monospaced))
         .foregroundColor(SolTokens.ink450)
         .padding(.horizontal, 16)
-        .padding(.vertical, 11)
+        .padding(.vertical, 10)
         .background(SolTokens.paper100)
     }
 
@@ -5660,7 +5698,7 @@ struct MacMainView: View {
         let isHmsIssue = (emp.statusLabel.contains("Mangler") || emp.statusLabel.contains("Saknar") || emp.statusLabel.contains("Missing")) && !store.hmsTrainingEnrolled
         let isEmployeeOk = emp.status == .ok && !isHmsIssue
         return VStack(spacing: 0) {
-            HStack(spacing: 12) {
+            HStack(spacing: 0) {
                 // Name & Linear Multi-Color Avatar Badge
                 HStack(spacing: 10) {
                     LinearAvatarBadge(name: emp.name, size: 26)
@@ -5673,7 +5711,10 @@ struct MacMainView: View {
                             .foregroundColor(SolTokens.ink600)
                     }
                 }
-                .frame(width: 200, alignment: .leading)
+                .frame(width: CGFloat(colEmployeeWidth), alignment: .leading)
+                
+                // Gap matching the divider width (10pt)
+                Color.clear.frame(width: 10)
                 
                 // Role & Department
                 HStack(spacing: 6) {
@@ -5689,7 +5730,9 @@ struct MacMainView: View {
                         .background(SolTokens.paper250)
                         .cornerRadius(3)
                 }
-                .frame(minWidth: 160, maxWidth: .infinity, alignment: .leading)
+                .frame(width: CGFloat(colRoleDeptWidth), alignment: .leading)
+                
+                Color.clear.frame(width: 10)
                 
                 // Employment Type & Contract Template (replaces raw salary exposure)
                 VStack(alignment: .leading, spacing: 2) {
@@ -5700,7 +5743,9 @@ struct MacMainView: View {
                         .font(.system(size: 10, design: .monospaced))
                         .foregroundColor(SolTokens.ink450)
                 }
-                .frame(width: 140, alignment: .leading)
+                .frame(width: CGFloat(colEmploymentWidth), alignment: .leading)
+                
+                Color.clear.frame(width: 10)
                 
                 // Status: Linear Capsule Pill with Colored Micro-Dot (Calm Neutral Text)
                 HStack {
@@ -5717,7 +5762,9 @@ struct MacMainView: View {
                         )
                     }
                 }
-                .frame(minWidth: 160, maxWidth: 210, alignment: .leading)
+                .frame(width: CGFloat(colStatusWidth), alignment: .leading)
+                
+                Spacer()
                 
                 // Inspect Button
                 Button {
@@ -5879,6 +5926,11 @@ struct MacMainView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 24)
+        .onAppear {
+            if colRoleDeptWidth < 280 {
+                colRoleDeptWidth = 300.0
+            }
+        }
     }
 }
 
@@ -6071,6 +6123,85 @@ struct SidebarResizeHandle: View {
             TapGesture(count: 2).onEnded {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                     sidebarWidth = defaultWidth
+                }
+            }
+        )
+        .onDisappear {
+            updateCursor(active: false)
+        }
+    }
+}
+
+// MARK: - Draggable Table Column Divider (macOS Native Tactile Column Resizer)
+struct TableColumnResizeHandle: View {
+    @Binding var width: Double
+    let minWidth: Double
+    let maxWidth: Double
+    let defaultWidth: Double
+    
+    @State private var isHovering: Bool = false
+    @State private var isDragging: Bool = false
+    @State private var hasPushedCursor: Bool = false
+    @State private var dragInitialWidth: Double? = nil
+    
+    private func updateCursor(active: Bool) {
+        if active && !hasPushedCursor {
+            NSCursor.resizeLeftRight.push()
+            hasPushedCursor = true
+        } else if !active && hasPushedCursor {
+            NSCursor.pop()
+            hasPushedCursor = false
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            // Invisible wider hit-testing zone (10pt)
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 10, height: 26)
+                .contentShape(Rectangle())
+            
+            // Tactile 1px divider, glows lavender on hover/drag
+            Rectangle()
+                .fill(
+                    isDragging
+                        ? SolTokens.lav500
+                        : (isHovering ? SolTokens.lav400 : SolTokens.paper300.opacity(0.8))
+                )
+                .frame(width: isDragging || isHovering ? 2 : 1, height: 16)
+                .cornerRadius(1)
+                .animation(.easeOut(duration: 0.15), value: isHovering)
+                .animation(.easeOut(duration: 0.15), value: isDragging)
+        }
+        .frame(width: 10)
+        .onHover { hovering in
+            isHovering = hovering
+            updateCursor(active: hovering || isDragging)
+        }
+        .gesture(
+            DragGesture(minimumDistance: 1, coordinateSpace: .global)
+                .onChanged { gesture in
+                    if dragInitialWidth == nil {
+                        dragInitialWidth = width
+                        isDragging = true
+                        updateCursor(active: true)
+                    }
+                    let newWidth = (dragInitialWidth ?? defaultWidth) + Double(gesture.translation.width)
+                    width = min(max(newWidth, minWidth), maxWidth)
+                }
+                .onEnded { _ in
+                    dragInitialWidth = nil
+                    isDragging = false
+                    if !isHovering {
+                        updateCursor(active: false)
+                    }
+                }
+        )
+        .simultaneousGesture(
+            TapGesture(count: 2).onEnded {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    width = defaultWidth
                 }
             }
         )
