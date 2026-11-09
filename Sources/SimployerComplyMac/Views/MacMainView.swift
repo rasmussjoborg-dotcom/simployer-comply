@@ -929,8 +929,8 @@ struct MacMainView: View {
             headline = store.language == .se ? "Fjord Dynamics är 100% skyddat" : (store.language == .no ? "Fjord Dynamics er 100% sikret" : "Fjord Dynamics is 100% protected")
             subtitle = store.language == .se ? "Alla 10 lagkrav är uppfyllda. 3 datakällor och 8 anställningsakter bevakas kontinuerligt i bakgrunden." : (store.language == .no ? "Alle 10 lovkrav er oppfylt. 3 datakilder og 8 personalmapper overvåkes kontinuerlig i bakgrunnen." : "All 10 duties are secured. 3 data sources and 8 employee records continuously monitored.")
         } else if pending > 1 {
-            headline = store.language == .se ? "Fjord Dynamics är delvis skyddat (70%)" : (store.language == .no ? "Fjord Dynamics er delvis sikret (70%)" : "Fjord Dynamics is partially protected (70%)")
-            subtitle = store.language == .se ? "\(pending) öppna avvikelser kräver åtgärd för att säkra bolaget mot tillsynsavgifter och tvister." : (store.language == .no ? "\(pending) åpne avvik krever tiltak for å sikre selskapet mot gebyrer og tvister." : "\(pending) pending issues require action to secure the company against penalties and disputes.")
+            headline = store.language == .se ? "3 åtgärder krävs för fullt lagskydd" : (store.language == .no ? "3 tiltak kreves for fullt lovvern" : "3 actions required for full legal protection")
+            subtitle = store.language == .se ? "Comply har förberett färdiga lagklausuler och valunderlag. Godkänn nedan så uppdateras och arkiveras personalakterna automatiskt." : (store.language == .no ? "Comply har klargjort lovklausuler og valggrunnlag. Godkjenn nedenfor for automatisk oppdatering og arkivering." : "Comply prepared compliant clauses and election docs. Approve below to update and archive records automatically.")
         } else if hasContractGap {
             headline = store.language == .se ? "1 anställningsavtal saknar lagstadgade klausuler" : (store.language == .no ? "1 ansettelsesavtale mangler lovpålagte klausuler" : "1 contract lacks statutory clauses")
             subtitle = store.language == .se ? "Standardavtal saknar klausuler enligt AML § 14-6. Inga avgifter föreligger om åtgärd genomförs." : (store.language == .no ? "Standardavtale mangler klausuler etter AML § 14-6. Ingen gebyrer ilegges når avvik rettes." : "Contract lacks statutory clauses under AML § 14-6. No sanctions apply if resolved.")
@@ -1063,7 +1063,7 @@ struct MacMainView: View {
                     }
                     .buttonStyle(.plain)
                     
-                    Text(store.language == .se ? "Gäller samtliga öppna avvikelser" : (store.language == .no ? "Gjelder samtlige åpne avvik" : "Applies to all open infractions"))
+                    Text(store.language == .se ? "Uppdaterar 7 avtal automatiskt · Granskat av Simployer Jurist" : (store.language == .no ? "Oppdaterer 7 avtaler automatisk · Gjennomgått av Simployer Jurist" : "Updates 7 contracts automatically · Vetted by Simployer Legal"))
                         .font(.system(size: 11, design: .monospaced))
                         .foregroundColor(SolTokens.ink450)
                 } else {
@@ -1173,12 +1173,12 @@ struct MacMainView: View {
                 statusColor: hasContractGap ? SolTokens.red700 : SolTokens.green800,
                 statusBg: hasContractGap ? SolTokens.red100 : SolTokens.green100,
                 headlineOutcome: hasContractGap 
-                    ? (store.language == .se ? "7 avtal saknar villkor" : "7 contracts miss clauses")
-                    : (store.language == .se ? "Alla 8 avtal lagstadgade" : "All 8 contracts compliant"),
+                    ? (store.language == .se ? "7 avtal behöver uppdateras" : (store.language == .no ? "7 avtaler må oppdateres" : "7 contracts need updating"))
+                    : (store.language == .se ? "Alla 8 avtal lagstadgade" : (store.language == .no ? "Alle 8 avtaler lovfestet" : "All 8 contracts compliant")),
                 description: hasContractGap
-                    ? (store.language == .se ? "Standardavtal saknar obligatoriska klausuler om arbetstid & övertid." : "Standard contracts lack statutory work hours & overtime terms.")
-                    : (store.language == .se ? "Verifierade och signerade med BankID utan öppna tvister." : "Verified and signed via BankID with zero open disputes."),
-                actionLabel: hasContractGap ? (store.language == .se ? "Granska diff →" : "Review diff →") : (store.language == .se ? "Visa avtal →" : "View →"),
+                    ? (store.language == .se ? "Standardavtal saknar lagstadgad övertids- och kompetensbestämmelse." : (store.language == .no ? "Standardavtaler mangler lovpålagt overtids- og kompetansebestemmelse." : "Standard contracts lack statutory overtime and competence clauses."))
+                    : (store.language == .se ? "Verifierade och signerade med BankID utan öppna tvister." : (store.language == .no ? "Verifisert og signert med BankID uten tvister." : "Verified and signed via BankID with zero open disputes.")),
+                actionLabel: hasContractGap ? (store.language == .se ? "Granska 7 avtal →" : (store.language == .no ? "Gjennomgå 7 avtaler →" : "Review 7 contracts →")) : nil,
                 action: {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
                         if hasContractGap {
@@ -1233,10 +1233,8 @@ struct MacMainView: View {
                 description: store.language == .se 
                     ? "Löpande kontroll av 11-timmars dygnsvila och max övertid mot stämplingar."
                     : "Continuous tracking of daily rest and overtime against time logs.",
-                actionLabel: store.language == .se ? "Visa logg →" : "View log →",
-                action: {
-                    store.activeNav = "agentLog"
-                }
+                actionLabel: nil,
+                action: nil
             )
             
             // Pillar 4: Jämställdhet & Lön (Likestillingsloven § 26)
@@ -1251,10 +1249,8 @@ struct MacMainView: View {
                 description: store.language == .se 
                     ? "Lönekartläggning genomförd för alla 8 anställda utan osakliga skillnader."
                     : "Wage audit completed for all 8 employees with zero unjustified gap.",
-                actionLabel: store.language == .se ? "Se analys →" : "View analysis →",
-                action: {
-                    store.activeNav = "auditPack"
-                }
+                actionLabel: nil,
+                action: nil
             )
         }
     }
@@ -1308,7 +1304,7 @@ struct MacMainView: View {
                 
                 Text(statute)
                     .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                    .foregroundColor(SolTokens.ink600)
+                    .foregroundColor(SolTokens.ink450)
             }
             
             // Headline Outcome
