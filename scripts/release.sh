@@ -108,13 +108,17 @@ if [ ! -f .sparkle_privkey ]; then
     exit 1
 fi
 
+mkdir -p releases/sparkle_archives
+cp -f "$ZIP_PATH" releases/sparkle_archives/
+
 ./bin/sparkle/bin/generate_appcast \
     --download-url-prefix "https://github.com/$REPO_SLUG/releases/download/v$VERSION/" \
+    --account simployer-comply \
     --ed-key-file .sparkle_privkey \
-    releases/
+    releases/sparkle_archives/
 
 # Copy appcast.xml to project root
-cp -f releases/appcast.xml ./appcast.xml
+cp -f releases/sparkle_archives/appcast.xml ./appcast.xml
 
 # 8. Commit and Push appcast.xml & project.yml
 echo "📤 Committing and pushing appcast.xml to GitHub..."

@@ -41,6 +41,7 @@
 		00B6537BB24759CF0CE91C54 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		086ACCD9AE2438B4E15D97FD /* SimployerComplyMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimployerComplyMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09CB3BDDE43752266AD231E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0E49B780874AE7D2156B0ABC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		200ACC54A98903C2A2A25A3C /* IOSMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSMainView.swift; sourceTree = "<group>"; };
 		20A5522E233037659B174066 /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
 		22378A870BFFEA3829D51606 /* SimployerComplyIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimployerComplyIOSApp.swift; sourceTree = "<group>"; };
@@ -104,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				ED98779A166ED77F3D90FB13 /* Assets.xcassets */,
+				0E49B780874AE7D2156B0ABC /* Info.plist */,
 				6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */,
 				AE4AD684FD1432F1D8985192 /* Resources */,
 				AF3810657B3A125DA2506D0E /* Services */,
@@ -347,17 +349,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 202611090917;
 				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Sources/SimployerComplyMac/Info.plist;
 				INFOPLIST_KEY_ATSApplicationFontsPath = Fonts;
 				INFOPLIST_KEY_CFBundleDisplayName = "Simployer Comply";
 				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
 				INFOPLIST_KEY_LSUIElement = NO;
-				INFOPLIST_KEY_SUAllowsAutomaticUpdates = YES;
-				INFOPLIST_KEY_SUEnableAutomaticChecks = YES;
-				INFOPLIST_KEY_SUFeedURL = "https://raw.githubusercontent.com/rasmussjoborg-dotcom/simployer-comply/main/appcast.xml";
-				INFOPLIST_KEY_SUPublicEDKey = "wrzbkG27b8tElYYupt+GjaxRxPjSbm6wXRJUnyAYwec=";
-				INFOPLIST_KEY_SUScheduledCheckInterval = 3600;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -375,17 +373,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 202611090917;
 				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Sources/SimployerComplyMac/Info.plist;
 				INFOPLIST_KEY_ATSApplicationFontsPath = Fonts;
 				INFOPLIST_KEY_CFBundleDisplayName = "Simployer Comply";
 				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
 				INFOPLIST_KEY_LSUIElement = NO;
-				INFOPLIST_KEY_SUAllowsAutomaticUpdates = YES;
-				INFOPLIST_KEY_SUEnableAutomaticChecks = YES;
-				INFOPLIST_KEY_SUFeedURL = "https://raw.githubusercontent.com/rasmussjoborg-dotcom/simployer-comply/main/appcast.xml";
-				INFOPLIST_KEY_SUPublicEDKey = "wrzbkG27b8tElYYupt+GjaxRxPjSbm6wXRJUnyAYwec=";
-				INFOPLIST_KEY_SUScheduledCheckInterval = 3600;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
