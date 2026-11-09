@@ -980,6 +980,7 @@ struct MacMainView: View {
     }
     
     // MARK: - CleanMyMac Smart Care Hero Stage (Centered Dial + Ambient Glow + Magnetic BankID Macro Action)
+    // MARK: - CleanMyMac Smart Care Hero Stage (Centered Dial + Ambient Glow + Magnetic BankID Macro Action)
     private var cleanMyMacHeroStage: some View {
         let isCompliant = store.pendingActionCount == 0
         let totalCount = 10
@@ -1011,7 +1012,7 @@ struct MacMainView: View {
             subtitle = store.language == .se ? "Granska och genomför åtgärder för att uppnå 100% säkrat skydd." : "Review and complete actions to achieve 100% protection."
         }
         
-        return VStack(spacing: 20) {
+        return VStack(spacing: 22) {
             // Ambient Radial Glow & Large 150pt Dial
             ZStack {
                 // Subtle Ambient Radial Aura Blur behind the ring
@@ -1071,38 +1072,22 @@ struct MacMainView: View {
             
             // Status Badges & Headline & Subtitle (Centered)
             VStack(spacing: 8) {
-                HStack(spacing: 8) {
-                    HStack(spacing: 5) {
-                        Circle()
-                            .fill(isCompliant ? SolTokens.green800 : SolTokens.red700)
-                            .frame(width: 6, height: 6)
-                        Text(isCompliant 
-                             ? (store.language == .se ? "100% SÄKRAT MOT LAGAVVIKELSER" : "100% SECURED AGAINST INFRACTIONS")
-                             : (store.language == .se 
-                                ? (pending == 1 ? "1 AVVIKELSE KRÄVER DITT GODKÄNNANDE" : "\(pending) AVVIKELSER KRÄVER DITT GODKÄNNANDE")
-                                : (pending == 1 ? "1 VIOLATION REQUIRES APPROVAL" : "\(pending) VIOLATIONS REQUIRE APPROVAL")))
-                            .font(.inter(10.5, .bold))
-                            .foregroundColor(isCompliant ? SolTokens.green800 : SolTokens.red700)
-                    }
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 4)
-                    .background(isCompliant ? SolTokens.green100 : SolTokens.red100)
-                    .cornerRadius(5)
-                    
-                    HStack(spacing: 4) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 9.5))
-                            .foregroundColor(SolTokens.green800)
-                        Text(store.language == .se ? "Lagdefinitioner: Idag 06:00 (AML & Folketrygdloven)" : "Statute definitions: Today 06:00 (AML)")
-                            .font(.inter(10, .medium))
-                            .foregroundColor(SolTokens.ink600)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(SolTokens.paper200)
-                    .cornerRadius(5)
-                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(isCompliant ? SolTokens.green800 : SolTokens.red700)
+                        .frame(width: 6, height: 6)
+                    Text(isCompliant 
+                         ? (store.language == .se ? "100% SÄKRAT MOT LAGAVVIKELSER" : "100% SECURED AGAINST INFRACTIONS")
+                         : (store.language == .se 
+                            ? (pending == 1 ? "1 AVVIKELSE KRÄVER DITT GODKÄNNANDE" : "\(pending) AVVIKELSER KRÄVER DITT GODKÄNNANDE")
+                            : (pending == 1 ? "1 VIOLATION REQUIRES APPROVAL" : "\(pending) VIOLATIONS REQUIRE APPROVAL")))
+                        .font(.inter(10.5, .bold))
+                        .foregroundColor(isCompliant ? SolTokens.green800 : SolTokens.red700)
                 }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4.5)
+                .background(isCompliant ? SolTokens.green100 : SolTokens.red100)
+                .cornerRadius(5)
                 
                 Text(headline)
                     .font(.inter(22, .bold))
@@ -1113,148 +1098,56 @@ struct MacMainView: View {
                     .font(.inter(13.5, .regular))
                     .foregroundColor(SolTokens.ink600)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 620)
+                    .frame(maxWidth: 600)
             }
             
-            // Giant Magnetic Action Button / Secondary Action
-            VStack(spacing: 12) {
-                if !isCompliant {
-                    Button {
-                        withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
-                            store.resolveAllActionHubItems()
-                        }
-                    } label: {
-                        HStack(spacing: 9) {
-                            Image(systemName: "signature")
-                                .font(.system(size: 15, weight: .bold))
-                            Text(hasContractGap 
-                                 ? (store.language == .se ? "Åtgärda & säkra bolaget med BankID (45 sek)" : "Resolve & secure company via BankID (45s)")
-                                 : (store.language == .se ? "Åtgärda alla öppna punkter (BankID)" : "Resolve all pending items (BankID)"))
-                                .font(.inter(14, .bold))
-                        }
-                        .frame(minWidth: 360)
-                        .padding(.horizontal, 28)
-                        .padding(.vertical, 13)
-                        .background(SolTokens.linearIndigo)
-                        .foregroundColor(Color.white)
-                        .clipShape(Capsule())
-                        .shadow(color: SolTokens.indigo.opacity(0.35), radius: 10, y: 4)
-                    }
-                    .buttonStyle(.plain)
-                    
-                    // Quiet Secondary Links
-                    HStack(spacing: 18) {
-                        Button {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
-                                if expandedHubCard == "contracts" {
-                                    expandedHubCard = nil
-                                } else {
-                                    expandedHubCard = "contracts"
-                                    if selectedDiffEmployee == nil || selectedDiffEmployee?.status != .aml14Gap {
-                                        selectedDiffEmployee = store.currentScenario.employees.first(where: { $0.status == .aml14Gap })
-                                    }
-                                }
-                            }
-                        } label: {
-                            HStack(spacing: 5) {
-                                Image(systemName: expandedHubCard == "contracts" ? "chevron.up" : "doc.text.magnifyingglass")
-                                    .font(.system(size: 11))
-                                Text(expandedHubCard == "contracts" 
-                                     ? (store.language == .se ? "Dölj granskning" : "Hide diff")
-                                     : (store.language == .se ? "Förhandsgranska avtalsdiff" : "Preview contract diff"))
-                                    .font(.inter(12, .medium))
-                            }
-                            .foregroundColor(SolTokens.indigo)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Text("•")
-                            .foregroundColor(SolTokens.paper300)
-                        
-                        Button {
-                            store.activeNav = "auditPack"
-                        } label: {
-                            HStack(spacing: 5) {
-                                Image(systemName: "shield.lefthalf.filled")
-                                    .font(.system(size: 11))
-                                Text(store.language == .se ? "Tillsynspaket (PDF)" : "Inspection Pack (PDF)")
-                                    .font(.inter(12, .medium))
-                            }
-                            .foregroundColor(SolTokens.ink600)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                } else {
-                    HStack(spacing: 14) {
-                        Button {
-                            store.broadcastSync()
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "arrow.clockwise")
-                                    .font(.system(size: 11.5, weight: .bold))
-                                Text(store.language == .se ? "Kör manuell lagskanning" : "Run manual scan")
-                                    .font(.inter(12.5, .semibold))
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 9)
-                            .background(SolTokens.paper200)
-                            .foregroundColor(SolTokens.ink800)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Button {
-                            store.activeNav = "auditPack"
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "shield.lefthalf.filled")
-                                    .font(.system(size: 11.5))
-                                Text(store.language == .se ? "Generera tillsynspaket (PDF)" : "Generate Inspection Pack (PDF)")
-                                    .font(.inter(12.5, .semibold))
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 9)
-                            .background(SolTokens.paper200)
-                            .foregroundColor(SolTokens.ink800)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-            .padding(.top, 4)
-            
-            Divider()
-                .overlay(SolTokens.paper300)
-                .padding(.top, 4)
-            
-            // Bolagsresan Growth Threshold Rail (Clean, centered or wide)
-            HStack(spacing: 8) {
-                Image(systemName: "figure.walk.arrival")
-                    .font(.system(size: 11.5))
-                    .foregroundColor(SolTokens.indigo)
-                
-                Text(store.language == .se ?
-                     "Bolagsresan: Fjord Dynamics har 8 anställda · 2 kvar till tröskel 10 (Obligatorisk VD KMA/HMS-kurs, AML § 3-5)" :
-                     "Growth Journey: Fjord Dynamics has 8 staff · 2 remaining to threshold 10 (Mandatory CEO HSE Training, AML § 3-5)")
-                    .font(.inter(11.5))
-                    .foregroundColor(SolTokens.ink600)
-                
-                Spacer()
-                
+            // Single Macro Action / Compliant Status (Radically Focused: ONE Action)
+            if !isCompliant {
                 Button {
-                    store.activeNav = "radar"
+                    withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
+                        store.resolveAllActionHubItems()
+                    }
                 } label: {
-                    Text(store.language == .se ? "Se trösklar (5/10/20/30/50) →" : "View thresholds (5/10/20/30/50) →")
-                        .font(.inter(11.5, .medium))
-                        .foregroundColor(SolTokens.indigo)
+                    HStack(spacing: 9) {
+                        Image(systemName: "signature")
+                            .font(.system(size: 15, weight: .bold))
+                        Text(hasContractGap 
+                             ? (store.language == .se ? "Åtgärda & säkra bolaget med BankID (45 sek)" : "Resolve & secure company via BankID (45s)")
+                             : (store.language == .se ? "Åtgärda alla öppna punkter (BankID)" : "Resolve all pending items (BankID)"))
+                            .font(.inter(14, .bold))
+                    }
+                    .frame(minWidth: 380)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 14)
+                    .background(SolTokens.linearIndigo)
+                    .foregroundColor(Color.white)
+                    .clipShape(Capsule())
+                    .shadow(color: SolTokens.indigo.opacity(0.35), radius: 10, y: 4)
                 }
                 .buttonStyle(.plain)
+                .padding(.top, 4)
+            } else {
+                HStack(spacing: 7) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 13))
+                        .foregroundColor(SolTokens.green800)
+                    Text(store.language == .se 
+                         ? "Alla lagkrav säkrade · Kontrolleras automatiskt i bakgrunden" 
+                         : "All statutory duties secured · Monitored continuously in background")
+                        .font(.inter(12.5, .medium))
+                        .foregroundColor(SolTokens.ink600)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(SolTokens.green100)
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.greenBorder, lineWidth: 1))
+                .padding(.top, 4)
             }
         }
-        .padding(26)
+        .padding(.vertical, 32)
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity)
         .background(SolTokens.paper100)
         .cornerRadius(14)
         .overlay(
