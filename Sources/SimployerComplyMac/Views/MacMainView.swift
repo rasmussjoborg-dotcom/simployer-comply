@@ -195,10 +195,17 @@ struct MacMainView: View {
                             HStack(spacing: 7) {
                                 Image(systemName: currentNavIcon)
                                     .font(.inter(12))
-                                    .foregroundColor(SolTokens.lav400)
-                                Text("Fjord Dynamics")
-                                    .font(.inter(12.5, .medium))
-                                    .foregroundColor(SolTokens.ink600)
+                                    .foregroundColor(store.activeNav == "hub" ? companyBadgeIconColor : SolTokens.lav400)
+                                Button {
+                                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                        store.activeNav = "hub"
+                                    }
+                                } label: {
+                                    Text("Fjord Dynamics")
+                                        .font(.inter(12.5, .medium))
+                                        .foregroundColor(SolTokens.ink600)
+                                }
+                                .buttonStyle(.plain)
                                 Text("›")
                                     .font(.inter(12, .regular))
                                     .foregroundColor(SolTokens.ink450)
@@ -441,16 +448,8 @@ struct MacMainView: View {
     // MARK: - Company Overview Root Item (Unified Fjord Dynamics Navigation Item)
     private var companyHeaderView: some View {
         let active = store.activeNav == "hub"
-        let shieldColor: Color = {
-            switch store.complianceSeverity {
-            case .compliant:
-                return SolTokens.green800
-            case .warning:
-                return SolTokens.amber400
-            case .behind:
-                return SolTokens.red700
-            }
-        }()
+        let iconName = store.complianceSeverity.iconName
+        let shieldColor = store.complianceSeverity.color
         
         return Button {
             withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
@@ -458,7 +457,7 @@ struct MacMainView: View {
             }
         } label: {
             HStack(spacing: 9) {
-                Image(systemName: "shield.fill")
+                Image(systemName: iconName)
                     .font(.system(size: 13, weight: .regular, design: .rounded))
                     .foregroundColor(shieldColor)
                     .frame(width: 18, alignment: .center)
@@ -548,25 +547,11 @@ struct MacMainView: View {
     }
     
     private var companyBadgeIconColor: Color {
-        switch store.complianceSeverity {
-        case .compliant:
-            return SolTokens.green800
-        case .warning:
-            return SolTokens.amber400
-        case .behind:
-            return SolTokens.red700
-        }
+        store.complianceSeverity.color
     }
     
     private var companyBadgeIcon: String {
-        switch store.complianceSeverity {
-        case .compliant:
-            return "checkmark.shield.fill"
-        case .warning:
-            return "shield.checkered"
-        case .behind:
-            return "exclamationmark.shield.fill"
-        }
+        store.complianceSeverity.iconName
     }
     
 
@@ -588,7 +573,7 @@ struct MacMainView: View {
     
     private var currentNavIcon: String {
         switch store.activeNav {
-        case "hub": return "shield.checkered"
+        case "hub": return store.complianceSeverity.iconName
         case "agentLog": return "clock.arrow.circlepath"
         case "ingest": return "tray"
         case "register": return "person.2"

@@ -60,14 +60,15 @@ struct IOSMainView: View {
                         
                         // Permanent Compliance Status Bar
                         let isCompliant = store.pendingActionCount == 0
+                        let severity = store.complianceSeverity
                         HStack(spacing: 12) {
                             ZStack {
                                 Circle()
-                                    .fill(isCompliant ? SolTokens.green100 : SolTokens.amber100)
+                                    .fill(severity == .compliant ? SolTokens.green100 : (severity == .behind ? SolTokens.red100 : SolTokens.amber100))
                                     .frame(width: 32, height: 32)
-                                Image(systemName: isCompliant ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
+                                Image(systemName: severity.iconName)
                                     .font(.system(size: 15))
-                                    .foregroundColor(isCompliant ? SolTokens.green800 : SolTokens.amber400)
+                                    .foregroundColor(severity.color)
                             }
                             
                             VStack(alignment: .leading, spacing: 2) {

@@ -395,6 +395,22 @@ public class ComplyStore: ObservableObject {
         case compliant // Green: All required compliance tasks satisfied
         case warning   // Orange/Yellow: Actions required, but within window
         case behind    // Red: Behind on submitting statutory requirement
+        
+        public var iconName: String {
+            switch self {
+            case .compliant: return "checkmark.shield"
+            case .warning: return "exclamationmark.shield"
+            case .behind: return "xmark.shield"
+            }
+        }
+        
+        public var color: Color {
+            switch self {
+            case .compliant: return SolTokens.green800
+            case .warning: return SolTokens.amber400
+            case .behind: return SolTokens.red700
+            }
+        }
     }
     
     public var complianceSeverity: ComplianceSeverity {
