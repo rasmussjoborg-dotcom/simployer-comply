@@ -5469,7 +5469,10 @@ struct MacMainView: View {
 
     private var registerHeaderView: some View {
         let totalCount = store.currentScenario.employees.count
-        let issuesCount = store.currentScenario.employees.filter { $0.status != .ok || $0.statusLabel.contains("Mangler") || $0.statusLabel.contains("Saknar") || $0.statusLabel.contains("Missing") }.count
+        let contractGaps = store.currentScenario.employees.filter { $0.status == .aml14Gap }.count
+        let isHmsPending = !store.hmsTrainingEnrolled && store.currentScenario.employees.contains { $0.id == "01" }
+        let otherIssues = store.currentScenario.employees.filter { $0.status == .sickD14 || $0.status == .probationSoon }.count
+        let issuesCount = contractGaps + (isHmsPending ? 1 : 0) + otherIssues
         let okCount = max(0, totalCount - issuesCount)
         
         return HStack(alignment: .center) {
@@ -5482,22 +5485,37 @@ struct MacMainView: View {
                     Text("\(totalCount) \(store.l10n.staffCountLabel)")
                         .font(.inter(12.5, .medium))
                         .foregroundColor(SolTokens.ink600)
-                    Text("·")
-                        .foregroundColor(SolTokens.ink450)
-                    HStack(spacing: 4) {
-                        Circle().fill(SolTokens.green800).frame(width: 5, height: 5)
-                        Text("\(okCount) \(store.l10n.directoryCompliantSummary)")
-                            .font(.inter(12, .medium))
-                            .foregroundColor(SolTokens.ink700)
+                    
+                    if okCount > 0 {
+                        Text("·")
+                            .foregroundColor(SolTokens.ink450)
+                        HStack(spacing: 4) {
+                            Circle().fill(SolTokens.green800).frame(width: 5, height: 5)
+                            Text("\(okCount) \(store.l10n.directoryCompliantSummary)")
+                                .font(.inter(12, .medium))
+                                .foregroundColor(SolTokens.ink700)
+                        }
                     }
-                    if issuesCount > 0 {
+                    
+                    if contractGaps > 0 {
                         Text("·")
                             .foregroundColor(SolTokens.ink450)
                         HStack(spacing: 4) {
                             Circle().fill(SolTokens.amber400).frame(width: 5, height: 5)
-                            Text("\(issuesCount) \(store.l10n.directoryIssuesSummary)")
+                            Text(store.language == .se ? "\(contractGaps) kräver avtalsuppdatering" : (store.language == .no ? "\(contractGaps) krever avtaleoppdatering" : "\(contractGaps) require contract update"))
                                 .font(.inter(12, .medium))
                                 .foregroundColor(SolTokens.amber400)
+                        }
+                    }
+                    
+                    if isHmsPending {
+                        Text("·")
+                            .foregroundColor(SolTokens.ink450)
+                        HStack(spacing: 4) {
+                            Circle().fill(SolTokens.lav400).frame(width: 5, height: 5)
+                            Text(store.language == .se ? "1 utbildningskrav" : (store.language == .no ? "1 opplæringskrav" : "1 training requirement"))
+                                .font(.inter(12, .medium))
+                                .foregroundColor(SolTokens.lav400)
                         }
                     }
                 }
@@ -5505,32 +5523,54 @@ struct MacMainView: View {
             
             Spacer()
             
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    store.rosterUploadToast = store.l10n.rosterUploadedBanner
+            HStack(spacing: 10) {
+                // Autonomous sync status pill
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(SolTokens.emerald800)
+                        .frame(width: 5.5, height: 5.5)
+                    Text(store.language == .se ? "Synkad med Fortnox & personalakter" : (store.language == .no ? "Synket med Tripletex & personalmapper" : "Synced with HR & payroll records"))
+                        .font(.inter(11.5))
+                        .foregroundColor(SolTokens.ink600)
                 }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "square.and.arrow.down")
-                        .font(.inter(11))
-                    Text(store.l10n.uploadRosterButton)
-                }
-                .font(.inter(12, .medium))
-                .padding(.horizontal, 11)
-                .padding(.vertical, 6)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 5.5)
                 .background(SolTokens.paper100)
-                .foregroundColor(SolTokens.ink900)
                 .cornerRadius(6)
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+                
+                if contractGaps > 0 {
+                    Button {
+                        withAnimation(.spring(response: 0.38, dampingFraction: 0.85)) {
+                            store.approveAllContracts()
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "signature")
+                                .font(.inter(11, .semibold))
+                            Text(store.language == .se ? "Uppdatera alla \(contractGaps) avtal (BankID)" : (store.language == .no ? "Oppdater alle \(contractGaps) avtaler (BankID)" : "Update all \(contractGaps) contracts (BankID)"))
+                        }
+                        .font(.inter(12, .semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(SolTokens.plum900)
+                        .foregroundColor(Color.white)
+                        .cornerRadius(6)
+                        .shadow(color: SolTokens.plum900.opacity(0.3), radius: 4, y: 2)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            .buttonStyle(.plain)
         }
         .padding(.bottom, 2)
     }
 
     private var registerFilterBar: some View {
         let totalCount = store.currentScenario.employees.count
-        let issuesCount = store.currentScenario.employees.filter { $0.status != .ok || $0.statusLabel.contains("Mangler") || $0.statusLabel.contains("Saknar") || $0.statusLabel.contains("Missing") }.count
+        let contractGaps = store.currentScenario.employees.filter { $0.status == .aml14Gap }.count
+        let isHmsPending = !store.hmsTrainingEnrolled && store.currentScenario.employees.contains { $0.id == "01" }
+        let otherIssues = store.currentScenario.employees.filter { $0.status == .sickD14 || $0.status == .probationSoon }.count
+        let issuesCount = contractGaps + (isHmsPending ? 1 : 0) + otherIssues
         let okCount = max(0, totalCount - issuesCount)
         
         return HStack(spacing: 10) {
@@ -5583,24 +5623,24 @@ struct MacMainView: View {
             .frame(width: 200, alignment: .leading)
             
             HStack(spacing: 5) {
-                Image(systemName: "sparkle")
-                    .font(.system(size: 8))
+                Image(systemName: "briefcase.fill")
+                    .font(.system(size: 8.5))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colRoleDept)
             }
             .frame(minWidth: 160, maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: 5) {
-                Image(systemName: "sparkle")
-                    .font(.system(size: 8))
+                Image(systemName: "doc.text.fill")
+                    .font(.system(size: 8.5))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colSalary)
             }
-            .frame(width: 95, alignment: .leading)
+            .frame(width: 140, alignment: .leading)
             
             HStack(spacing: 5) {
-                Image(systemName: "sparkle")
-                    .font(.system(size: 8))
+                Image(systemName: "shield.checkerboard")
+                    .font(.system(size: 8.5))
                     .foregroundColor(SolTokens.ink450)
                 Text(store.l10n.colStatus)
             }
@@ -5617,7 +5657,8 @@ struct MacMainView: View {
     }
 
     private func registerEmployeeRow(emp: Employee) -> some View {
-        let isEmployeeOk = emp.status == .ok && !(emp.statusLabel.contains("Mangler") || emp.statusLabel.contains("Saknar") || emp.statusLabel.contains("Missing"))
+        let isHmsIssue = (emp.statusLabel.contains("Mangler") || emp.statusLabel.contains("Saknar") || emp.statusLabel.contains("Missing")) && !store.hmsTrainingEnrolled
+        let isEmployeeOk = emp.status == .ok && !isHmsIssue
         return VStack(spacing: 0) {
             HStack(spacing: 12) {
                 // Name & Linear Multi-Color Avatar Badge
@@ -5650,11 +5691,16 @@ struct MacMainView: View {
                 }
                 .frame(minWidth: 160, maxWidth: .infinity, alignment: .leading)
                 
-                // Salary
-                Text("\(emp.salary) \(store.l10n.currencyUnit)")
-                    .font(.system(size: 12, design: .monospaced))
-                    .foregroundColor(SolTokens.ink700)
-                    .frame(width: 95, alignment: .leading)
+                // Employment Type & Contract Template (replaces raw salary exposure)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(localizedEmploymentType(emp.type, lang: store.language))
+                        .font(.inter(12, .medium))
+                        .foregroundColor(SolTokens.ink900)
+                    Text(emp.contractVersion)
+                        .font(.system(size: 10, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
+                }
+                .frame(width: 140, alignment: .leading)
                 
                 // Status: Linear Capsule Pill with Colored Micro-Dot (Calm Neutral Text)
                 HStack {
@@ -5759,40 +5805,68 @@ struct MacMainView: View {
     }
 
     private var registerUpsellBar: some View {
-        let scenario = store.l10n.scenarios[store.currentYear]
-        let upsellProduct = scenario?.upsellProduct ?? store.currentScenario.recommendedUpsell.product
-        let upsellTitle = scenario?.upsellTitle ?? store.currentScenario.recommendedUpsell.title
-        let upsellBenefit = scenario?.upsellBenefit ?? store.currentScenario.recommendedUpsell.benefit
+        let isHmsDone = store.hmsTrainingEnrolled
         
-        return HStack(spacing: 12) {
-            Image(systemName: "sparkles")
-                .foregroundColor(SolTokens.lav500)
-                .font(.inter(15))
-            VStack(alignment: .leading, spacing: 2) {
-                Text("\(store.l10n.upsellPrefix): \(upsellProduct)")
-                    .font(.inter(12.5, .bold))
-                    .foregroundColor(SolTokens.lav400)
-                Text("\(upsellTitle) · \(upsellBenefit)")
-                    .font(.inter(11.5))
-                    .foregroundColor(SolTokens.ink700)
-            }
-            Spacer()
-            Button(store.l10n.activateModule) {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    store.activeNav = "hub"
+        return Group {
+            if isHmsDone {
+                HStack(spacing: 10) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .foregroundColor(SolTokens.green800)
+                        .font(.inter(15))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(store.language == .se ? "Lagstadgade utbildningar säkrade" : (store.language == .no ? "Lovpålagt opplæring fullført" : "Statutory training verified"))
+                            .font(.inter(12, .bold))
+                            .foregroundColor(SolTokens.ink900)
+                        Text(store.language == .se ? "Godkänt SAM/HMS-kursintyg för VD är arkiverat och kopplat till bolagets revisionsprofil." : (store.language == .no ? "Godkjent HMS-kursbevis for daglig leder er arkivert og koblet til selskapets revisjonsprofil." : "Approved certificate archived."))
+                            .font(.inter(11))
+                            .foregroundColor(SolTokens.ink600)
+                    }
+                    Spacer()
                 }
+                .padding(12)
+                .background(SolTokens.green800.opacity(0.08))
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.green800.opacity(0.25), lineWidth: 1))
+            } else {
+                HStack(spacing: 12) {
+                    Image(systemName: "graduationcap.fill")
+                        .foregroundColor(SolTokens.lav500)
+                        .font(.inter(15))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(store.language == .se ? "Obligatorisk utbildning för VD: SAM-kurs" : (store.language == .no ? "Lovpålagt opplæring: HMS-kurs for daglig leder" : "Mandatory CEO training: OHS Course"))
+                            .font(.inter(12.5, .bold))
+                            .foregroundColor(SolTokens.ink900)
+                        Text(store.language == .se ? "Enligt Arbetsmiljölagen krävs godkänt kursintyg för VD. Kan genomföras digitalt på 4 timmar." : (store.language == .no ? "AML § 3-5 krever at daglig leder har gjennomgått HMS-opplæring. Kan gjennomføres digitalt på 4 timer." : "AML § 3-5 requires approved training. Can be completed digitally."))
+                            .font(.inter(11.5))
+                            .foregroundColor(SolTokens.ink700)
+                    }
+                    Spacer()
+                    Button {
+                        withAnimation(.spring(response: 0.38, dampingFraction: 0.85)) {
+                            store.enrollHmsCourse()
+                        }
+                    } label: {
+                        HStack(spacing: 5) {
+                            Image(systemName: "book.closed.fill")
+                                .font(.inter(11))
+                            Text(store.language == .se ? "Boka via Simployer Learn" : (store.language == .no ? "Meld på via Simployer Learn" : "Enroll via Simployer Learn"))
+                        }
+                        .font(.inter(11.5, .semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(SolTokens.plum900)
+                        .foregroundColor(Color.white)
+                        .cornerRadius(6)
+                        .shadow(color: SolTokens.plum900.opacity(0.25), radius: 3, y: 1)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(13)
+                .background(SolTokens.paper100)
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.lav500.opacity(0.35), lineWidth: 1))
             }
-            .buttonStyle(.borderedProminent)
-            .tint(SolTokens.plum900)
-            .font(.inter(12, .semibold))
         }
-        .padding(14)
-        .background(SolTokens.paper100)
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(SolTokens.paper300, lineWidth: 1)
-        )
     }
 
     private var macRegisterTableView: some View {
@@ -5806,6 +5880,19 @@ struct MacMainView: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 24)
     }
+}
+
+fileprivate func localizedEmploymentType(_ raw: String, lang: AppLanguage) -> String {
+    if lang == .se {
+        return raw
+            .replacingOccurrences(of: "Fast", with: "Tillsvidare")
+            .replacingOccurrences(of: "Prøvetid", with: "Provanställning")
+    } else if lang == .en {
+        return raw
+            .replacingOccurrences(of: "Fast", with: "Permanent")
+            .replacingOccurrences(of: "Prøvetid", with: "Probation")
+    }
+    return raw
 }
 
 fileprivate func localizedStatus(for emp: Employee, l10n: LocalizedStrings) -> String {
