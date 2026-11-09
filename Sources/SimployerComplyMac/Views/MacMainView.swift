@@ -23,6 +23,15 @@ struct MacMainView: View {
     @State private var employeeStatusFilter: String = "all"
     @AppStorage("comply_sidebar_width") private var sidebarWidth: Double = 220.0
     
+    // MARK: - Compliance Horizon State (Linear-style Urgency & Temporal Grouping)
+    enum ComplianceHorizonFilter: String, CaseIterable {
+        case all = "alla"
+        case akut = "akut"
+        case snart = "snart"
+        case planerat = "planerat"
+    }
+    @State private var selectedHorizonFilter: ComplianceHorizonFilter = .all
+    
     // MARK: - Live Ingestion Analysis State
     @State private var isAnalyzingDrop: Bool = false
     @State private var dropProgress: Double = 0.0
@@ -709,6 +718,40 @@ struct MacMainView: View {
         }
     }
     
+    // MARK: - Temporal Horizon Counts (Akut / Snart / Planerat)
+    private var akutCount: Int {
+        switch store.currentYear {
+        case .y2024:
+            return shouldShowInActiveList("contracts") && !isCardResolved("contracts") ? 1 : 0
+        case .y2025:
+            return shouldShowInActiveList("sickLeave") && !isCardResolved("sickLeave") ? 1 : 0
+        case .y2027:
+            return shouldShowInActiveList("defense") && !isCardResolved("defense") ? 1 : 0
+        }
+    }
+    
+    private var snartCount: Int {
+        switch store.currentYear {
+        case .y2024:
+            return shouldShowInActiveList("verneombud") && !isCardResolved("verneombud") ? 1 : 0
+        case .y2025:
+            return shouldShowInActiveList("equalPay") && !isCardResolved("equalPay") ? 1 : 0
+        case .y2027:
+            return 0
+        }
+    }
+    
+    private var planeratCount: Int {
+        switch store.currentYear {
+        case .y2024:
+            return shouldShowInActiveList("hms") && !isCardResolved("hms") ? 1 : 0
+        case .y2025:
+            return shouldShowInActiveList("probation") && !isCardResolved("probation") ? 1 : 0
+        case .y2027:
+            return 0
+        }
+    }
+
     private var completedCountForCurrentYear: Int {
         cardIdsForCurrentYear.filter { isCardResolved($0) }.count
     }
@@ -890,37 +933,59 @@ struct MacMainView: View {
                     .opacity(expandedHubCard != nil ? 0.35 : 1.0)
                     .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
                 
-                // Tier 1: Pending Actions (KRÄVER DITT GODKÄNNANDE)
-                if store.pendingActionCount > 0 {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Text(store.l10n.hubSectionPendingTitle.uppercased())
-                                .font(.inter(11, .bold))
-                                .tracking(0.8)
-                                .foregroundColor(SolTokens.ink600)
-                            
-                            Text("\(store.pendingActionCount)")
-                                .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(SolTokens.paper200)
-                                .foregroundColor(SolTokens.ink600)
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(SolTokens.paper300, lineWidth: 1))
-                            
-                            Spacer()
-                        }
-                        
-                        // Specific Action Hub Cards according to Year
-                        switch store.currentYear {
-                        case .y2024:
-                            hub2024Cards
-                        case .y2025:
-                            hub2025Cards
-                        case .y2027:
-                            hub2027Cards
-                        }
-                    }
+                // Linear Horizon Filter Bar & Temporal Overview
+                horizonFilterBar
+                    .opacity(expandedHubCard != nil ? 0.35 : 1.0)
+                    .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                
+                // Horizon 1: 🔴 AKUT — KRÄVER ÅTGÄRD IDAG (Gör bolaget icke-compliant)
+                if (selectedHorizonFilter == .all || selectedHorizonFilter == .akut) && akutCount > 0 {
+                    horizonAkutSection
+                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
+                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                }
+                
+                // Horizon 2: 🟡 SNART — INNAN DET ÄR FÖR SENT (Lagstadgad tidsfrist)
+                if (selectedHorizonFilter == .all || selectedHorizonFilter == .snart) && snartCount > 0 {
+                    horizonSnartSection
+                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
+                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                }
+                
+                // Horizon 3: ⚪️ PLANERAT & HORISONT — BOLAGSRESAN (Kompetens & Trösklar)
+                if (selectedHorizonFilter == .all || selectedHorizonFilter == .planerat) && planeratCount > 0 {
+                    horizonPlaneratSection
+                        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
+                        .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
+                }
+                
+                // Horizon Specific Resolution Banners (when filtered to a clean horizon)
+                if selectedHorizonFilter == .akut && akutCount == 0 {
+                    horizonResolvedBanner(
+                        title: store.language == .se ? "Inga akuta lagavvikelser" : "No critical violations",
+                        subtitle: store.language == .se ? "Alla anställningsavtal och akuta lagkrav är säkrade. Bolaget riskerar inga sanktionsavgifter." : "All employment contracts and immediate statutory requirements are secured.",
+                        icon: "checkmark.shield.fill",
+                        color: SolTokens.green800
+                    )
+                } else if selectedHorizonFilter == .snart && snartCount == 0 {
+                    horizonResolvedBanner(
+                        title: store.language == .se ? "Inga öppna tidsfrister" : "No pending deadlines",
+                        subtitle: store.language == .se ? "Inga pågående valprocesser eller förfallande tidsfönster kräver tillsynsåtgärd." : "No active election procedures or expiring statutory windows require action.",
+                        icon: "checkmark.circle.fill",
+                        color: SolTokens.green800
+                    )
+                } else if selectedHorizonFilter == .planerat && planeratCount == 0 {
+                    horizonResolvedBanner(
+                        title: store.language == .se ? "Alla planerade krav säkrade" : "All planned milestones secured",
+                        subtitle: store.language == .se ? "Obligatoriska kompetenskrav för företagsledningen är bokade eller uppfyllda." : "Mandated executive competence requirements are booked or satisfied.",
+                        icon: "graduationcap.fill",
+                        color: SolTokens.green800
+                    )
+                }
+                
+                // All Compliant Overall Reassurance Card (when 0 pending total)
+                if store.pendingActionCount == 0 && selectedHorizonFilter == .all {
+                    allCompliantBanner
                 }
                 
                 // Completed Archive Section (placed directly below active actions, before guardrails)
@@ -937,6 +1002,310 @@ struct MacMainView: View {
             }
             .padding(20)
         }
+    }
+    
+    // MARK: - Temporal Horizon Filter Bar
+    private var horizonFilterBar: some View {
+        HStack(spacing: 8) {
+            horizonFilterButton(
+                filter: .all,
+                title: store.language == .se ? "Alla horisonter" : "All horizons",
+                count: store.pendingActionCount,
+                color: SolTokens.ink700
+            )
+            
+            if akutCount > 0 {
+                horizonFilterButton(
+                    filter: .akut,
+                    title: store.language == .se ? "Akut (Idag)" : "Critical (Now)",
+                    count: akutCount,
+                    color: SolTokens.red700
+                )
+            }
+            
+            if snartCount > 0 {
+                horizonFilterButton(
+                    filter: .snart,
+                    title: store.language == .se ? "Snart (Inom 30 dgr)" : "Soon (30 days)",
+                    count: snartCount,
+                    color: SolTokens.amber400
+                )
+            }
+            
+            if planeratCount > 0 {
+                horizonFilterButton(
+                    filter: .planerat,
+                    title: store.language == .se ? "Planerat (Horisont)" : "Planned (Horizon)",
+                    count: planeratCount,
+                    color: SolTokens.lav400
+                )
+            }
+            
+            Spacer()
+            
+            // Reassuring summary pill
+            HStack(spacing: 5) {
+                Circle()
+                    .fill(store.pendingActionCount == 0 ? SolTokens.green800 : SolTokens.red700)
+                    .frame(width: 5, height: 5)
+                Text(store.pendingActionCount == 0 
+                     ? (store.language == .se ? "Full efterlevnad" : "Fully compliant") 
+                     : (store.language == .se ? "\(store.pendingActionCount) kräver beslut" : "\(store.pendingActionCount) require decision"))
+                    .font(.inter(11, .medium))
+                    .foregroundColor(SolTokens.ink600)
+            }
+            .padding(.horizontal, 9)
+            .padding(.vertical, 4.5)
+            .background(SolTokens.paper100)
+            .cornerRadius(6)
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+        }
+        .padding(.top, 2)
+    }
+
+    private func horizonFilterButton(
+        filter: ComplianceHorizonFilter,
+        title: String,
+        count: Int,
+        color: Color
+    ) -> some View {
+        let isSelected = selectedHorizonFilter == filter
+        return Button {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.85)) {
+                selectedHorizonFilter = filter
+            }
+        } label: {
+            HStack(spacing: 6) {
+                if filter != .all {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 6, height: 6)
+                }
+                
+                Text(title)
+                    .font(.inter(11.5, isSelected ? .semibold : .medium))
+                    .foregroundColor(isSelected ? SolTokens.ink900 : SolTokens.ink600)
+                
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5.5)
+                        .padding(.vertical, 1.5)
+                        .background(isSelected ? color.opacity(0.18) : SolTokens.paper250)
+                        .foregroundColor(isSelected ? (filter == .all ? SolTokens.ink900 : color) : SolTokens.ink600)
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(isSelected ? color.opacity(0.4) : SolTokens.paper300, lineWidth: 1))
+                }
+            }
+            .padding(.horizontal, 11)
+            .padding(.vertical, 6)
+            .background(isSelected ? SolTokens.paper200 : SolTokens.paper100)
+            .cornerRadius(7)
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .stroke(isSelected ? SolTokens.paper400 : SolTokens.paper300, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Horizon 1: Akut Section
+    @ViewBuilder
+    private var horizonAkutSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(SolTokens.red700)
+                    .frame(width: 7, height: 7)
+                
+                Text(store.language == .se ? "AKUT — GÖR BOLAGET ICKE-COMPLIANT" : "CRITICAL — ACTIVE NON-COMPLIANCE")
+                    .font(.inter(11, .bold))
+                    .tracking(0.8)
+                    .foregroundColor(SolTokens.ink900)
+                
+                Text("\(akutCount) " + (store.language == .se ? (akutCount == 1 ? "olaglig avvikelse" : "olagliga avvikelser") : "violation"))
+                    .font(.inter(10.5, .semibold))
+                    .foregroundColor(SolTokens.red700)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2.5)
+                    .background(SolTokens.red100)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(SolTokens.redBorder, lineWidth: 1))
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.octagon.fill")
+                        .font(.system(size: 10))
+                    Text(store.language == .se ? "Aktiv sanktionsrisk föreligger" : "Active penalty exposure")
+                        .font(.inter(11, .medium))
+                }
+                .foregroundColor(SolTokens.red700)
+            }
+            
+            Text(store.language == .se ? "Dessa punkter bryter mot lagstiftning idag. Sanktionsavgift och rättslig exponering löper omgående utan vd-beslut." : "These items violate statutory labor law today. Fines and legal exposure run continuously until authorized.")
+                .font(.inter(11.5, .regular))
+                .foregroundColor(SolTokens.ink600)
+                .padding(.leading, 15)
+                .padding(.bottom, 2)
+            
+            switch store.currentYear {
+            case .y2024:
+                hubCardContracts
+            case .y2025:
+                hubCardSickLeave
+            case .y2027:
+                hubCardDefense
+            }
+        }
+    }
+
+    // MARK: - Horizon 2: Snart Section
+    @ViewBuilder
+    private var horizonSnartSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(SolTokens.amber400)
+                    .frame(width: 7, height: 7)
+                
+                Text(store.language == .se ? "SNART — INNAN DET ÄR FÖR SENT" : "SOON — BEFORE DEADLINE EXPIRES")
+                    .font(.inter(11, .bold))
+                    .tracking(0.8)
+                    .foregroundColor(SolTokens.ink900)
+                
+                Text(store.language == .se ? "Deadline om 18 dagar" : "Deadline in 18 days")
+                    .font(.inter(10.5, .semibold))
+                    .foregroundColor(SolTokens.amber400)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2.5)
+                    .background(SolTokens.amber100)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(SolTokens.amberBorder, lineWidth: 1))
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "clock.badge.exclamationmark.fill")
+                        .font(.system(size: 10))
+                    Text(store.language == .se ? "Lagstadgad tidsfrist löper" : "Statutory window running")
+                        .font(.inter(11, .medium))
+                }
+                .foregroundColor(SolTokens.amber400)
+            }
+            
+            Text(store.language == .se ? "Obligatoriska processer kopplade till bolagets storlek. Måste initieras och slutföras innan tillsynsföreläggande." : "Mandated statutory procedures triggered by workforce scale. Must be finalized before inspection intervention.")
+                .font(.inter(11.5, .regular))
+                .foregroundColor(SolTokens.ink600)
+                .padding(.leading, 15)
+                .padding(.bottom, 2)
+            
+            switch store.currentYear {
+            case .y2024:
+                hubCardVerneombud
+            case .y2025:
+                hubCardEqualPay
+            case .y2027:
+                EmptyView()
+            }
+        }
+    }
+
+    // MARK: - Horizon 3: Planerat Section
+    @ViewBuilder
+    private var horizonPlaneratSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(SolTokens.lav500)
+                    .frame(width: 7, height: 7)
+                
+                Text(store.language == .se ? "PLANERAT & HORISONT — BOLAGSRESAN" : "PLANNED & HORIZON — GROWTH MILESTONES")
+                    .font(.inter(11, .bold))
+                    .tracking(0.8)
+                    .foregroundColor(SolTokens.ink900)
+                
+                Text(store.language == .se ? "Kommande kvartal" : "Upcoming quarter")
+                    .font(.inter(10.5, .semibold))
+                    .foregroundColor(SolTokens.lav400)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2.5)
+                    .background(SolTokens.lav100)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(SolTokens.lavBorder, lineWidth: 1))
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "calendar.badge.clock")
+                        .font(.system(size: 10))
+                    Text(store.language == .se ? "Obligatorisk kompetens & tröskel" : "Mandatory executive training")
+                        .font(.inter(11, .medium))
+                }
+                .foregroundColor(SolTokens.lav400)
+            }
+            
+            Text(store.language == .se ? "Lagstadgade kompetenskrav för företagsledningen och framtida trösklar inför bolagets nästa tillväxtfas." : "Statutory competencies for leadership and growth milestones before expanding the workforce.")
+                .font(.inter(11.5, .regular))
+                .foregroundColor(SolTokens.ink600)
+                .padding(.leading, 15)
+                .padding(.bottom, 2)
+            
+            switch store.currentYear {
+            case .y2024:
+                hubCardHMS
+            case .y2025:
+                hubCardProbation
+            case .y2027:
+                EmptyView()
+            }
+        }
+    }
+
+    // MARK: - Reassurance Banner for Filtered Horizon
+    private func horizonResolvedBanner(title: String, subtitle: String, icon: String, color: Color) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(color)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.inter(12.5, .bold))
+                    .foregroundColor(SolTokens.ink900)
+                Text(subtitle)
+                    .font(.inter(11.5))
+                    .foregroundColor(SolTokens.ink600)
+            }
+            Spacer()
+        }
+        .padding(14)
+        .background(SolTokens.paper100)
+        .cornerRadius(9)
+        .overlay(RoundedRectangle(cornerRadius: 9).stroke(SolTokens.paper300, lineWidth: 1))
+    }
+
+    // MARK: - All Compliant Hero Banner
+    private var allCompliantBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 20))
+                .foregroundColor(SolTokens.green800)
+            
+            VStack(alignment: .leading, spacing: 3) {
+                Text(store.language == .se ? "Alla lagkrav säkrade och i full efterlevnad" : "All statutory requirements secured")
+                    .font(.inter(13.5, .bold))
+                    .foregroundColor(SolTokens.ink900)
+                Text(store.language == .se ? "Inga öppna avvikelser, sanktionsrisker eller förfallande tidsfrister." : "Zero open violations, financial penalties, or overdue statutory deadlines.")
+                    .font(.inter(12))
+                    .foregroundColor(SolTokens.ink600)
+            }
+            Spacer()
+        }
+        .padding(16)
+        .background(SolTokens.green100)
+        .cornerRadius(10)
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.greenBorder, lineWidth: 1))
     }
     
     // MARK: - Permanent Executive Compliance Cockpit Status Bar
@@ -2438,13 +2807,15 @@ struct MacMainView: View {
             .buttonStyle(.plain)
         }
     }
-    // MARK: - 2024 Hub Cards
+    // MARK: - 2024 Hub Cards Modular Views
+    
+    // Card 1: Employment Contracts (AML § 14-6) — AKUT (Olagligt idag)
     @ViewBuilder
-    private var hub2024Cards: some View {
+    private var hubCardContracts: some View {
         let unapprovedEmployees = store.currentScenario.employees.filter { $0.status == .aml14Gap }
         let hasUnapproved = !unapprovedEmployees.isEmpty
+        let contractsDone = !hasUnapproved
         
-        // Card 1: Employment Contracts (AML § 14-6)
         if shouldShowInActiveList("contracts") {
             VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
@@ -2605,20 +2976,30 @@ struct MacMainView: View {
                     .transition(.linearAccordion)
             }
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(hasUnapproved ? SolTokens.red700 : SolTokens.green800)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(hasUnapproved ? SolTokens.paper300 : SolTokens.greenBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(hasUnapproved ? SolTokens.redBorder : SolTokens.greenBorder, lineWidth: 1)
         )
         .opacity(expandedHubCard != nil && expandedHubCard != "contracts" ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
         .transition(.cardVanishTransition)
         }
-        
-        // Card 2: Verneombud Election (AML § 6-1)
+    }
+    
+    // Card 2: Verneombud Election (AML § 6-1) — SNART (Lagstadgad tidsfrist)
+    @ViewBuilder
+    private var hubCardVerneombud: some View {
         if shouldShowInActiveList("verneombud") {
             let voActive = store.verneombudElectionActive
             VStack(alignment: .leading, spacing: 10) {
@@ -2771,20 +3152,30 @@ struct MacMainView: View {
                     .transition(.linearAccordion)
             }
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(voActive ? SolTokens.green800 : SolTokens.amber400)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(voActive ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(voActive ? SolTokens.greenBorder : SolTokens.amberBorder, lineWidth: 1)
         )
         .opacity(expandedHubCard != nil && expandedHubCard != "verneombud" ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
         .transition(.cardVanishTransition)
         }
-        
-        // Card 3: Leader HMS (AML § 3-5)
+    }
+    
+    // Card 3: Leader HMS (AML § 3-5) — PLANERAT (Bolagsresan & Kompetenskrav)
+    @ViewBuilder
+    private var hubCardHMS: some View {
         if shouldShowInActiveList("hms") {
             let hmsDone = store.hmsTrainingEnrolled
             VStack(alignment: .leading, spacing: 10) {
@@ -2968,26 +3359,42 @@ struct MacMainView: View {
                     .transition(.linearAccordion)
             }
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(hmsDone ? SolTokens.green800 : SolTokens.lav500)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(hmsDone ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(hmsDone ? SolTokens.greenBorder : SolTokens.lavBorder, lineWidth: 1)
         )
-        .opacity(expandedHubCard != nil ? 0.35 : 1.0)
+        .opacity(expandedHubCard != nil && expandedHubCard != "hms" ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
         .transition(.cardVanishTransition)
         }
     }
     
-    // MARK: - 2025 Hub Cards
+    // MARK: - 2024 Hub Cards Composite
     @ViewBuilder
-    private var hub2025Cards: some View {
+    private var hub2024Cards: some View {
+        hubCardContracts
+        hubCardVerneombud
+        hubCardHMS
+    }
+    
+    // MARK: - 2025 Hub Cards Modular Views
+    
+    // Card 1: Equal Pay / ARP Statement (Likestillingsloven § 26) — SNART (Lagstadgad tidsfrist)
+    @ViewBuilder
+    private var hubCardEqualPay: some View {
         let epDone = store.equalPayReportGenerated
         
-        // Card 1: Equal Pay / ARP Statement (Likestillingsloven § 26)
         if shouldShowInActiveList("equalPay") {
             VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
@@ -3086,20 +3493,30 @@ struct MacMainView: View {
                     .transition(.linearAccordion)
             }
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(epDone ? SolTokens.green800 : SolTokens.amber400)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(epDone ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(epDone ? SolTokens.greenBorder : SolTokens.amberBorder, lineWidth: 1)
         )
         .opacity(expandedHubCard != nil && expandedHubCard != "equalPay" ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
         .transition(.cardVanishTransition)
         }
-        
-        // Card 2: Sick Leave Day 14 Follow-Up (AML § 4-6)
+    }
+    
+    // Card 2: Sick Leave Day 14 Follow-Up (AML § 4-6) — AKUT (Förfallen lagfrist)
+    @ViewBuilder
+    private var hubCardSickLeave: some View {
         if shouldShowInActiveList("sickLeave") {
             let sickDone = store.sickLeavePlanDispatched
             VStack(alignment: .leading, spacing: 10) {
@@ -3199,20 +3616,30 @@ struct MacMainView: View {
                     .transition(.linearAccordion)
             }
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(sickDone ? SolTokens.green800 : SolTokens.red700)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(sickDone ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(sickDone ? SolTokens.greenBorder : SolTokens.redBorder, lineWidth: 1)
         )
         .opacity(expandedHubCard != nil && expandedHubCard != "sickLeave" ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
         .transition(.cardVanishTransition)
         }
-        
-        // Card 3: Probation Expirations (AML § 15-6)
+    }
+    
+    // Card 3: Probation Expirations (AML § 15-6) — PLANERAT (Bolagsresan)
+    @ViewBuilder
+    private var hubCardProbation: some View {
         if shouldShowInActiveList("probation") {
             let probDone = store.probationConfirmed
             VStack(alignment: .leading, spacing: 10) {
@@ -3283,12 +3710,20 @@ struct MacMainView: View {
             }
             .padding(.top, 4)
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(probDone ? SolTokens.green800 : SolTokens.lav500)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(probDone ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(probDone ? SolTokens.greenBorder : SolTokens.lavBorder, lineWidth: 1)
         )
         .opacity(expandedHubCard != nil ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
@@ -3296,12 +3731,21 @@ struct MacMainView: View {
         }
     }
     
-    // MARK: - 2027 Hub Cards
+    // MARK: - 2025 Hub Cards Composite
     @ViewBuilder
-    private var hub2027Cards: some View {
+    private var hub2025Cards: some View {
+        hubCardEqualPay
+        hubCardSickLeave
+        hubCardProbation
+    }
+    
+    // MARK: - 2027 Hub Cards Modular Views
+    
+    // Card 1: Dismissal Defense (AML § 15-1) — AKUT (14 dagars lagfrist)
+    @ViewBuilder
+    private var hubCardDefense: some View {
         let defenseDone = store.juristHandoffCompleted
         
-        // Card 1: Dismissal Defense (AML § 15-1)
         if shouldShowInActiveList("defense") {
             VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
@@ -3400,18 +3844,31 @@ struct MacMainView: View {
                     .transition(.linearAccordion)
             }
         }
-        .padding(16)
+        .padding(14)
         .background(SolTokens.paper100)
         .cornerRadius(10)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(defenseDone ? SolTokens.green800 : SolTokens.red700)
+                .frame(width: 3.5)
+                .padding(.vertical, 8)
+                .padding(.leading, 1)
+        }
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(defenseDone ? SolTokens.greenBorder : SolTokens.paper300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(defenseDone ? SolTokens.greenBorder : SolTokens.redBorder, lineWidth: 1)
         )
         .opacity(expandedHubCard != nil && expandedHubCard != "defense" ? 0.35 : 1.0)
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: expandedHubCard)
         .transition(.cardVanishTransition)
         }
+    }
+    
+    // MARK: - 2027 Hub Cards Composite
+    @ViewBuilder
+    private var hub2027Cards: some View {
+        hubCardDefense
     }
     
     // MARK: - Ingestion Canvas & Cloud Sources Hub (The Apple Standard: Calm, Restrained, One Clear Hero)
