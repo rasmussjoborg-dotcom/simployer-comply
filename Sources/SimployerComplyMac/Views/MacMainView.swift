@@ -1363,202 +1363,72 @@ struct MacMainView: View {
     }
 
 
-    // MARK: - Active Background Sentinel (Real-Time Folder & Source Guard)
+    // MARK: - Active Background Sentinel (Real-Time Proof-of-Work Strip)
     private var guardedSourcesCockpitSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            // Header: Sentinel Status + What Comply Does
-            HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
-                        HStack(spacing: 5) {
-                            Circle()
-                                .fill(SolTokens.green800)
-                                .frame(width: 6, height: 6)
-                            Text(store.language == .se ? "AKTIVT REALTIDSSKYDD" : (store.language == .no ? "AKTIV SANNTIDSBESKYTTELSE" : "ACTIVE REAL-TIME SENTINEL"))
-                                .font(.inter(10, .bold))
-                                .foregroundColor(SolTokens.green800)
-                        }
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(SolTokens.green100)
-                        .cornerRadius(4)
-                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.greenBorder, lineWidth: 1))
-                        
-                        Text(store.language == .se ? "Comply vaktar dina mappar & system dygnet runt" : (store.language == .no ? "Comply vokter mappene & systemene dine døgnet rundt" : "Comply actively guards your folders & systems 24/7"))
-                            .font(.inter(14, .bold))
-                            .foregroundColor(SolTokens.ink900)
-                    }
-                    
-                    Text(store.language == .se 
-                         ? "Inga filer behöver laddas upp eller flyttas. Comply läser avtal direkt i dina lokala mappar och matchar stämplingar mot lagen i bakgrunden."
-                         : (store.language == .no 
-                            ? "Ingen filer må lastes opp eller flyttes. Comply leser avtaler direkte i lokale mapper og matcher stemplinger mot loven i bakgrunnen."
-                            : "No files need to be uploaded or moved. Comply reads contracts directly in your existing folders and matches timestamps against the law in the background."))
-                        .font(.inter(12, .regular))
-                        .foregroundColor(SolTokens.ink600)
-                }
-                
-                Spacer()
-                
-                Button {
-                    store.activeNav = "ingest"
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 10, weight: .bold))
-                        Text(store.language == .se ? "Bevaka ny mapp / källa" : (store.language == .no ? "Vokt ny mappe / kilde" : "Guard new folder / source"))
-                            .font(.inter(11.5, .medium))
-                    }
-                    .foregroundColor(SolTokens.ink700)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(SolTokens.paper200)
-                    .cornerRadius(6)
-                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
+        HStack(spacing: 12) {
+            // Live Status Pill
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(SolTokens.green800)
+                    .frame(width: 6, height: 6)
+                Text(store.language == .se ? "Realtidsskydd aktivt" : (store.language == .no ? "Sanntidsvern aktivt" : "Real-time active"))
+                    .font(.inter(10.5, .bold))
+                    .foregroundColor(SolTokens.green800)
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(SolTokens.green100)
+            .cornerRadius(6)
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.greenBorder, lineWidth: 1))
             
-            // 3 Live Guarded Sentinel Nodes
-            HStack(spacing: 12) {
-                // Node 1: HR Folder & Documents (Local disk / Cloud)
-                sourceBrickCard(
-                    icon: "folder.fill.badge.gearshape",
-                    iconColor: SolTokens.linearIndigo,
-                    iconBg: SolTokens.linearIndigo.opacity(0.18),
-                    title: "~/Dokument/Personalakter",
-                    statute: store.language == .se ? "Lokal Mac-mapp · SharePoint & OneDrive" : "Local Mac folder · SharePoint & OneDrive",
-                    statusText: store.language == .se ? "Lyssnar i realtid" : (store.language == .no ? "Lytter i sanntid" : "Live watcher"),
-                    statusColor: SolTokens.green800,
-                    metaText: store.language == .se 
-                        ? "8 avtal indexerade. Nya och ändrade filer skannas automatiskt." 
-                        : "8 contracts indexed. New and modified files scanned automatically."
-                )
+            // Concise Human Proof-of-Work
+            HStack(spacing: 6) {
+                Text(store.language == .se 
+                    ? "3 källor bevakas kontinuerligt (Personalakter, Fortnox, Bolagsverket)"
+                    : (store.language == .no 
+                        ? "3 kilder voktes kontinuerlig (Personalmapper, Tripletex, Brønnøysund)"
+                        : "3 sources guarded continuously (Contracts, Payroll, Registry)"))
+                    .font(.inter(12, .medium))
+                    .foregroundColor(SolTokens.ink900)
                 
-                // Node 2: Payroll & Attendance API
-                sourceBrickCard(
-                    icon: "clock.badge.checkmark.fill",
-                    iconColor: SolTokens.green800,
-                    iconBg: SolTokens.green100,
-                    title: "Tripletex / Fortnox API",
-                    statute: store.language == .se ? "Lön, stämplingar & dygnsvila" : "Payroll, clock-ins & rest periods",
-                    statusText: store.language == .se ? "Synkad idag 06:00" : (store.language == .no ? "Synkronisert i dag 06:00" : "Synced today 06:00"),
-                    statusColor: SolTokens.green800,
-                    metaText: store.language == .se 
-                        ? "Löpande kontroll av 11h dygnsvila och max tillåten övertid." 
-                        : "Continuous tracking of 11h daily rest and statutory overtime limits."
-                )
-                
-                // Node 3: Company Registry
-                sourceBrickCard(
-                    icon: "building.columns.fill",
-                    iconColor: SolTokens.lav500,
-                    iconBg: SolTokens.lav100,
-                    title: "Brønnøysund / Bolagsverket",
-                    statute: "Org.nr 928 341 902",
-                    statusText: store.language == .se ? "Tröskelradar aktiv" : (store.language == .no ? "Terskelradar aktiv" : "Threshold radar active"),
-                    statusColor: SolTokens.green800,
-                    metaText: store.language == .se 
-                        ? "Bevakar personalantal mot lagkrav och hämtar nya föreskrifter." 
-                        : "Monitors headcount thresholds and fetches new statutory regulations."
-                )
-            }
-            
-            // Proof of Work Quiet Footer
-            HStack(spacing: 8) {
-                Image(systemName: "bolt.shield.fill")
-                    .font(.system(size: 11.5))
-                    .foregroundColor(SolTokens.indigo)
+                Text("·")
+                    .foregroundColor(SolTokens.ink450)
                 
                 Text(store.language == .se 
-                     ? "38 autonoma bakgrundskontroller genomförda denna månad utan att störa verksamheten."
-                     : (store.language == .no 
-                        ? "38 autonome bakgrunnskontroller gjennomført denne måneden uten forstyrrelser."
-                        : "38 autonomous background checks executed this month with zero business disruption."))
-                    .font(.inter(11.5))
+                    ? "38 autonoma bakgrundskontroller genomförda denna månad utan avbrott"
+                    : (store.language == .no 
+                        ? "38 autonome bakgrunnskontroller gjennomført denne måneden uten forstyrrelser"
+                        : "38 autonomous background audits completed this month with zero disruption"))
+                    .font(.inter(12, .regular))
                     .foregroundColor(SolTokens.ink600)
-                
-                Spacer()
-                
-                Button {
-                    store.activeNav = "agentLog"
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(store.language == .se ? "Se realtidsaktivitet i Skyddsloggen" : (store.language == .no ? "Se sanntidsaktivitet i Beskyttelsesloggen" : "View Real-Time Protection Log"))
-                            .font(.inter(11.5, .semibold))
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 9))
-                    }
-                    .foregroundColor(SolTokens.indigo)
-                }
-                .buttonStyle(.plain)
             }
-            .padding(.top, 4)
+            
+            Spacer()
+            
+            // Secondary Action: Go to detailed sources view
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                    store.activeNav = "ingest"
+                }
+            } label: {
+                HStack(spacing: 5) {
+                    Text(store.language == .se ? "Hantera källor" : (store.language == .no ? "Administrer kilder" : "Manage sources"))
+                        .font(.inter(11.5, .medium))
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 9.5, weight: .semibold))
+                }
+                .foregroundColor(SolTokens.indigo)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(SolTokens.paper200)
+                .cornerRadius(6)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
         }
-        .padding(18)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(SolTokens.paper100)
-        .cornerRadius(12)
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(SolTokens.paper300, lineWidth: 1))
-    }
-
-    private func sourceBrickCard(
-        icon: String,
-        iconColor: Color,
-        iconBg: Color,
-        title: String,
-        statute: String,
-        statusText: String,
-        statusColor: Color,
-        metaText: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 9) {
-            HStack(spacing: 9) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(iconBg)
-                        .frame(width: 32, height: 32)
-                    Image(systemName: icon)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(iconColor)
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.inter(12.5, .bold))
-                        .foregroundColor(SolTokens.ink900)
-                        .lineLimit(1)
-                    Text(statute)
-                        .font(.system(size: 10, weight: .medium, design: .monospaced))
-                        .foregroundColor(SolTokens.ink600)
-                        .lineLimit(1)
-                }
-                
-                Spacer()
-            }
-            
-            HStack(spacing: 5) {
-                Circle()
-                    .fill(statusColor)
-                    .frame(width: 5, height: 5)
-                Text(statusText)
-                    .font(.inter(10.5, .bold))
-                    .foregroundColor(statusColor)
-            }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 3)
-            .background(statusColor.opacity(0.12))
-            .cornerRadius(4)
-            
-            Text(metaText)
-                .font(.inter(11, .regular))
-                .foregroundColor(SolTokens.ink700)
-                .lineSpacing(2)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(minHeight: 32, alignment: .topLeading)
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(SolTokens.paper50)
         .cornerRadius(10)
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
     }
