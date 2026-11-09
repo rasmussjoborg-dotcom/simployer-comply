@@ -21,7 +21,7 @@ public class ComplyStore: ObservableObject {
         }
         return .no
     }()
-    @Published public var activeNav: String = "hub"
+    @Published public var activeNav: String = CommandLine.arguments.contains("--ingest") ? "ingest" : "hub"
     @Published public var hasIngestedFiles: Bool = false
     @Published public var selectedDiffEmployee: Employee? = nil
     @Published public var verneombudElectionActive: Bool = false
