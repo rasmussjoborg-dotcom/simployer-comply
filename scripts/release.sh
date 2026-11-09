@@ -89,6 +89,28 @@ codesign --force --timestamp --options runtime --deep --sign "$SIGNING_IDENTITY"
 codesign --verify --deep --strict --verbose=2 "$BUILT_APP"
 echo "✅ Code signature verified successfully."
 
+# 3b. Apple Notarization & Stapling for App Bundle
+NOTARY_KEY="$HOME/.appstoreconnect/AuthKey_24XS7Z9A52.p8"
+NOTARY_KEY_ID="24XS7Z9A52"
+NOTARY_ISSUER="a30665e1-2f29-4890-8a33-53d34a059f0d"
+
+if [ -f "$NOTARY_KEY" ] && [ -n "$NOTARY_ISSUER" ]; then
+    echo "🍏 Submitting app bundle to Apple Notary Service via API Key ($NOTARY_KEY_ID)..."
+    TMP_NOTARY_ZIP=$(mktemp /tmp/comply_app_notary.XXXXXX.zip)
+    ditto -c -k --sequesterRsrc --keepParent "$BUILT_APP" "$TMP_NOTARY_ZIP"
+    xcrun notarytool submit "$TMP_NOTARY_ZIP" \
+        --key "$NOTARY_KEY" \
+        --key-id "$NOTARY_KEY_ID" \
+        --issuer "$NOTARY_ISSUER" \
+        --wait
+    rm -f "$TMP_NOTARY_ZIP"
+
+    echo "📎 Stapling notarization ticket to app bundle..."
+    xcrun stapler staple "$BUILT_APP"
+    echo "✅ Simployer Comply.app successfully notarized and stapled."
+    spctl -a -vvv "$BUILT_APP"
+fi
+
 # 4. Prepare releases directory
 mkdir -p releases
 ZIP_NAME="Simployer-Comply-$VERSION.zip"
@@ -114,6 +136,23 @@ rm -rf "$TMP_DMG_DIR"
 codesign --force --timestamp --sign "$SIGNING_IDENTITY" "$DMG_PATH"
 codesign --verify --verbose=2 "$DMG_PATH"
 echo "✅ DMG created and signed."
+
+# 6b. Apple Notarization & Stapling for DMG
+if [ -f "$NOTARY_KEY" ] && [ -n "$NOTARY_ISSUER" ]; then
+    echo "🍏 Submitting DMG to Apple Notary Service via API Key ($NOTARY_KEY_ID)..."
+    xcrun notarytool submit "$DMG_PATH" \
+        --key "$NOTARY_KEY" \
+        --key-id "$NOTARY_KEY_ID" \
+        --issuer "$NOTARY_ISSUER" \
+        --wait
+
+    echo "📎 Stapling notarization ticket to DMG..."
+    xcrun stapler staple "$DMG_PATH"
+    echo "✅ $DMG_NAME successfully notarized and stapled."
+
+    echo "🔍 Verifying Gatekeeper acceptance on DMG..."
+    spctl -a -vvv -t open --context context:primary-signature "$DMG_PATH"
+fi
 
 # 7. Generate Sparkle Appcast Feed & In-App Release Notes
 echo "📡 Generating Sparkle appcast feed with embedded changelog..."
