@@ -4817,11 +4817,11 @@ struct MacMainView: View {
     // MARK: - Ingestion Canvas & Cloud Sources Hub (The Apple Standard: Calm, Restrained, One Clear Hero)
     private var macIngestDropView: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 18) {
                 ingestHeaderView
-                heroDropzoneView
-                monitoredSourcesListView
+                enterpriseIntegrationsSection
                 reassuranceBarView
+                heroDropzoneView
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 24)
@@ -4830,44 +4830,277 @@ struct MacMainView: View {
     }
     
     private var ingestHeaderView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(store.l10n.ingestSourcesTitle)
-                .font(.inter(18, .bold))
-                .foregroundColor(SolTokens.ink900)
-            Text(store.l10n.ingestSourcesSubtitle)
-                .font(.inter(12.5))
-                .foregroundColor(SolTokens.ink600)
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(store.language == .se ? "Källor & Dokumentövervakning" : (store.language == .no ? "Kilder & Dokumentovervåking" : "Sources & Document Sentinel"))
+                    .font(.inter(18, .bold))
+                    .foregroundColor(SolTokens.ink900)
+                Text(store.language == .se 
+                    ? "Comply ansluter direkt till företagets befintliga system för att automatiskt bevaka avtal, stämplingar och myndighetskrav i realtid." 
+                    : (store.language == .no 
+                        ? "Comply kobler seg direkte til bedriftens eksisterende systemer for å overvåke avtaler, stemplinger og myndighetskrav i sanntid." 
+                        : "Comply connects directly to your systems to monitor contracts, attendance and statutory regulations in real time."))
+                    .font(.inter(12.5))
+                    .foregroundColor(SolTokens.ink600)
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(SolTokens.green800)
+                    .frame(width: 6, height: 6)
+                Text(store.language == .se ? "3 aktiva källor · 100% driftsstatus" : (store.language == .no ? "3 aktive kilder · 100% driftsstatus" : "3 active sources · 100% healthy"))
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .foregroundColor(SolTokens.green800)
+            }
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .background(SolTokens.green100)
+            .cornerRadius(6)
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.greenBorder, lineWidth: 1))
         }
     }
     
+    // MARK: - Enterprise Integrations Section
+    private var enterpriseIntegrationsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(store.language == .se ? "Anslutna system & datakällor" : (store.language == .no ? "Tilkoblede systemer & datakilder" : "Connected Systems & Data Sources"))
+                    .font(.inter(13.5, .bold))
+                    .foregroundColor(SolTokens.ink900)
+                
+                Text("· 3 aktiva integrationer")
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundColor(SolTokens.ink450)
+                
+                Spacer()
+            }
+            
+            // 1. Cloud Docs / SharePoint
+            integrationCard(
+                icon: "cloud.fill",
+                iconColor: Color.blue,
+                iconBg: Color.blue.opacity(0.12),
+                title: "Microsoft 365 / SharePoint & OneDrive",
+                subtitle: "simployer.sharepoint.com/sites/hr · Mapp: /Personalakter",
+                statusText: store.language == .se ? "Realtidssynk aktiv" : (store.language == .no ? "Sanntidssynk aktiv" : "Live sync active"),
+                statusColor: SolTokens.green800,
+                statusBg: SolTokens.green100,
+                description: store.language == .se 
+                    ? "42 personaldokument indexerade (8 anställningsavtal, 1 personalhandbok). Nya och ändrade filer skannas automatiskt." 
+                    : (store.language == .no 
+                        ? "42 personaldokumenter indeksert (8 ansettelsesavtaler, 1 personalhåndbok). Endringer skannes automatisk." 
+                        : "42 HR documents indexed (8 employment contracts, 1 handbook). New and modified files scanned automatically."),
+                actionTitle: store.language == .se ? "Konfigurera" : (store.language == .no ? "Konfigurer" : "Configure"),
+                action: {}
+            )
+            
+            // 2. Payroll & Time API (Fortnox / Tripletex)
+            integrationCard(
+                icon: "clock.badge.checkmark.fill",
+                iconColor: SolTokens.green800,
+                iconBg: SolTokens.green100,
+                title: store.language == .se ? "Fortnox Lön & Tid API" : (store.language == .no ? "Tripletex Lønn & Tid API" : "Payroll & Attendance API"),
+                subtitle: store.language == .se ? "API-koppling aktiv · Klient-ID: #8921-FD" : (store.language == .no ? "API-kobling aktiv · Klient-ID: #8921-FD" : "API active · Client ID: #8921-FD"),
+                statusText: store.language == .se ? "Synkad idag 06:00" : (store.language == .no ? "Synkronisert i dag 06:00" : "Synced today 06:00"),
+                statusColor: SolTokens.green800,
+                statusBg: SolTokens.green100,
+                description: store.language == .se 
+                    ? "8 aktiva löneposter och tidstämplingar. Löpande automatisk kontroll av 11h dygnsvila och max tillåten övertid." 
+                    : (store.language == .no 
+                        ? "8 aktive lønnsposter og stemplinger. Løpende automatisk kontroll av 11t døgnhvile og overtid." 
+                        : "8 active payroll records and time punches. Continuous check of 11h daily rest and overtime limits."),
+                actionTitle: store.language == .se ? "Synka nu" : (store.language == .no ? "Synk nå" : "Sync now"),
+                action: {}
+            )
+            
+            // 3. Government Registry & Radar
+            integrationCard(
+                icon: "building.columns.fill",
+                iconColor: SolTokens.lav400,
+                iconBg: SolTokens.lav100,
+                title: store.language == .se ? "Bolagsverket & Arbetsmiljöverket" : (store.language == .no ? "Brønnøysundregistrene & Arbeidstilsynet" : "Company Registry & Labour Authority"),
+                subtitle: store.language == .se ? "Org.nr 556928-3419 (Fjord Dynamics AB)" : (store.language == .no ? "Org.nr 928 341 902 (Fjord Dynamics AS)" : "Org.nr 928 341 902"),
+                statusText: store.language == .se ? "Tröskelradar aktiv" : (store.language == .no ? "Terskelradar aktiv" : "Threshold radar active"),
+                statusColor: SolTokens.green800,
+                statusBg: SolTokens.green100,
+                description: store.language == .se 
+                    ? "Bevakar bolagets personalantal mot lagstadgade trösklar (skyddsombud vid 5 anställda, AMK vid 50) och hämtar nya föreskrifter." 
+                    : (store.language == .no 
+                        ? "Vokter antall ansatte mot lovpålagte terskler (verneombud ved 5 ansatte, AMU ved 50) og henter nye forskrifter." 
+                        : "Monitors headcount against statutory thresholds (safety rep at 5, committee at 50) and updates compliance rules."),
+                actionTitle: store.language == .se ? "Kontrollera" : (store.language == .no ? "Kontroller" : "Verify"),
+                action: {}
+            )
+            
+            // 4. Monitored Local Folder (Enterprise archive, never ~/Downloads)
+            HStack(spacing: 12) {
+                Image(systemName: "folder.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(SolTokens.lav400)
+                    .frame(width: 20)
+                
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(store.monitoredLocalFolders.first ?? "~/Dokument/Personalakter")
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundColor(SolTokens.ink900)
+                    Text(store.language == .se ? "Lokal arkivmapp på Macen (säkerhetskopia för anställningsakter)" : (store.language == .no ? "Lokal arkivmappe på Macen" : "Local archive folder on Mac"))
+                        .font(.inter(11))
+                        .foregroundColor(SolTokens.ink450)
+                }
+                
+                Spacer()
+                
+                HStack(spacing: 5) {
+                    Circle().fill(SolTokens.green800).frame(width: 5, height: 5)
+                    Text(store.language == .se ? "Aktiv bevakning" : (store.language == .no ? "Aktiv overvåking" : "Guarding"))
+                        .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
+                        .foregroundColor(SolTokens.green800)
+                }
+                .padding(.horizontal, 7)
+                .padding(.vertical, 3)
+                .background(SolTokens.green800.opacity(0.1))
+                .cornerRadius(4)
+                
+                Button {
+                    #if os(macOS)
+                    let panel = NSOpenPanel()
+                    panel.canChooseFiles = false
+                    panel.canChooseDirectories = true
+                    panel.allowsMultipleSelection = false
+                    panel.prompt = store.language == .se ? "Välj mapp" : "Choose"
+                    if panel.runModal() == .OK, let url = panel.url {
+                        let rawPath = url.path
+                        let home = NSHomeDirectory()
+                        let displayPath = rawPath.hasPrefix(home) ? rawPath.replacingOccurrences(of: home, with: "~") : rawPath
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            if !store.monitoredLocalFolders.contains(displayPath) {
+                                store.monitoredLocalFolders.append(displayPath)
+                            }
+                        }
+                    }
+                    #endif
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus")
+                        Text(store.language == .se ? "Byt / Lägg till mapp" : (store.language == .no ? "Bytt / Legg til mappe" : "Add folder"))
+                    }
+                    .font(.inter(11, .medium))
+                    .foregroundColor(SolTokens.ink600)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(SolTokens.paper200)
+                    .cornerRadius(4)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(SolTokens.paper100)
+            .cornerRadius(8)
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+        }
+    }
+    
+    private func integrationCard(
+        icon: String,
+        iconColor: Color,
+        iconBg: Color,
+        title: String,
+        subtitle: String,
+        statusText: String,
+        statusColor: Color,
+        statusBg: Color,
+        description: String,
+        actionTitle: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(iconBg)
+                        .frame(width: 34, height: 34)
+                    Image(systemName: icon)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(iconColor)
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.inter(13, .bold))
+                        .foregroundColor(SolTokens.ink900)
+                    Text(subtitle)
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
+                }
+                
+                Spacer()
+                
+                HStack(spacing: 5) {
+                    Circle().fill(statusColor).frame(width: 5, height: 5)
+                    Text(statusText)
+                        .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
+                        .foregroundColor(statusColor)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(statusBg)
+                .cornerRadius(4)
+                
+                Button(action: action) {
+                    Text(actionTitle)
+                        .font(.inter(11.5, .medium))
+                        .foregroundColor(SolTokens.ink700)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 4)
+                        .background(SolTokens.paper200)
+                        .cornerRadius(5)
+                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            }
+            
+            Text(description)
+                .font(.inter(11.5))
+                .foregroundColor(SolTokens.ink600)
+                .lineSpacing(2)
+        }
+        .padding(14)
+        .background(SolTokens.paper100)
+        .cornerRadius(10)
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+    }
+
     private var heroDropzoneView: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .strokeBorder(
                     isDropTargeted ? SolTokens.lav400 : (isAnalyzingDrop ? SolTokens.lav400.opacity(0.6) : SolTokens.paper300),
-                    style: StrokeStyle(lineWidth: 1.5, dash: isAnalyzingDrop ? [] : [6, 6])
+                    style: StrokeStyle(lineWidth: 1, dash: isAnalyzingDrop ? [] : [5, 5])
                 )
                 .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(isDropTargeted || isAnalyzingDrop ? SolTokens.lav400.opacity(0.06) : SolTokens.paper100)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(isDropTargeted || isAnalyzingDrop ? SolTokens.lav400.opacity(0.06) : SolTokens.paper50.opacity(0.5))
                 )
             
             if isAnalyzingDrop {
-                VStack(spacing: 16) {
+                VStack(spacing: 14) {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle()
                                 .fill(dropAnalysisStage == 4 ? SolTokens.green100 : SolTokens.lav100)
-                                .frame(width: 44, height: 44)
+                                .frame(width: 38, height: 38)
                             Image(systemName: dropAnalysisStage == 4 ? "checkmark.seal.fill" : "doc.text.magnifyingglass")
-                                .font(.system(size: 20, weight: .semibold))
+                                .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(dropAnalysisStage == 4 ? SolTokens.green800 : SolTokens.lav400)
                         }
                         
-                        VStack(alignment: .leading, spacing: 3) {
+                        VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 Text(dropFileName)
-                                    .font(.inter(13.5, .semibold))
+                                    .font(.inter(13, .semibold))
                                     .foregroundColor(SolTokens.ink900)
                                 
                                 Text("· 8 anställda")
@@ -4876,7 +5109,7 @@ struct MacMainView: View {
                             }
                             
                             Text(dropStageDescription)
-                                .font(.inter(12))
+                                .font(.inter(11.5))
                                 .foregroundColor(dropAnalysisStage == 4 ? SolTokens.green800 : SolTokens.ink600)
                         }
                         
@@ -4893,36 +5126,35 @@ struct MacMainView: View {
                                     Text(store.l10n.ingestDropGoToHub)
                                     Image(systemName: "arrow.right")
                                 }
-                                .font(.inter(12, .semibold))
+                                .font(.inter(11.5, .semibold))
                                 .foregroundColor(Color.white)
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 7)
                                 .background(SolTokens.plum900)
-                                .cornerRadius(7)
-                                
+                                .cornerRadius(6)
                             }
                             .buttonStyle(.plain)
                         }
                     }
                     
-                    // Progress Bar & Percentage
+                    // Progress Bar
                     VStack(alignment: .trailing, spacing: 4) {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: 3)
                                     .fill(SolTokens.paper300)
-                                    .frame(height: 6)
+                                    .frame(height: 5)
                                 RoundedRectangle(cornerRadius: 3)
                                     .fill(dropAnalysisStage == 4 ? SolTokens.green800 : SolTokens.lav400)
-                                    .frame(width: max(0, geo.size.width * dropProgress), height: 6)
+                                    .frame(width: max(0, geo.size.width * dropProgress), height: 5)
                                     .animation(.easeInOut(duration: 0.35), value: dropProgress)
                             }
                         }
-                        .frame(height: 6)
+                        .frame(height: 5)
                         
                         HStack {
                             Text(dropAnalysisStage == 4 ? "100 % slutfört" : "\(Int(dropProgress * 100)) %")
-                                .font(.system(size: 10.5, weight: .bold, design: .monospaced))
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
                                 .foregroundColor(SolTokens.ink450)
                             
                             Spacer()
@@ -4944,81 +5176,65 @@ struct MacMainView: View {
                         }
                     }
                 }
-                .padding(.vertical, 24)
-                .padding(.horizontal, 24)
+                .padding(16)
                 .transition(.opacity)
             } else {
-                VStack(spacing: 14) {
+                HStack(spacing: 16) {
                     ZStack {
                         Circle()
                             .fill(SolTokens.lav400.opacity(0.12))
-                            .frame(width: 48, height: 48)
+                            .frame(width: 40, height: 40)
                         Image(systemName: "tray.and.arrow.down.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 17))
                             .foregroundColor(SolTokens.lav400)
                     }
                     
-                    VStack(spacing: 4) {
-                        Text(store.l10n.ingestHeroTitle)
-                            .font(.inter(14, .semibold))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(store.language == .se ? "Manuell dokumentimport (Fallback)" : (store.language == .no ? "Manuell dokumentimport (Fallback)" : "Manual Document Ingestion (Fallback)"))
+                            .font(.inter(12.5, .semibold))
                             .foregroundColor(SolTokens.ink900)
-                        Text(store.l10n.ingestHeroSubtitle)
-                            .font(.inter(12))
+                        Text(store.language == .se 
+                            ? "Har ni avtal som ännu inte sparats i molnet? Släpp PDF- eller Word-filer här för omedelbar granskning." 
+                            : (store.language == .no 
+                                ? "Har dere avtaler som ikke er i skyen? Slipp PDF- eller Word-filer her for umiddelbar gjennomgang." 
+                                : "Have contracts not in cloud storage? Drop PDF or Word files here for instant legal analysis."))
+                            .font(.inter(11))
                             .foregroundColor(SolTokens.ink450)
                     }
                     
-                    HStack(spacing: 10) {
-                        Button {
-                            #if os(macOS)
-                            let panel = NSOpenPanel()
-                            panel.canChooseFiles = true
-                            panel.canChooseDirectories = true
-                            panel.allowsMultipleSelection = false
-                            panel.prompt = store.l10n.ingestBrowseButton
-                            if panel.runModal() == .OK, let url = panel.url {
-                                startSimulatedIngestion(fileName: url.lastPathComponent)
-                            }
-                            #endif
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "doc.badge.plus")
-                                Text(store.l10n.ingestBrowseButton)
-                            }
-                            .font(.inter(12, .medium))
-                            .foregroundColor(SolTokens.ink900)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(SolTokens.paper200)
-                            .cornerRadius(6)
-                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+                    Spacer()
+                    
+                    Button {
+                        #if os(macOS)
+                        let panel = NSOpenPanel()
+                        panel.canChooseFiles = true
+                        panel.canChooseDirectories = true
+                        panel.allowsMultipleSelection = false
+                        panel.prompt = store.language == .se ? "Välj fil" : "Select file"
+                        if panel.runModal() == .OK, let url = panel.url {
+                            startSimulatedIngestion(fileName: url.lastPathComponent)
                         }
-                        .buttonStyle(.plain)
-                        
-                        Button {
-                            startSimulatedIngestion(fileName: "Standardavtal_Fjord_Dynamics_2024.docx")
-                        } label: {
-                            HStack(spacing: 5) {
-                                Text(store.l10n.ingestSimulateButton)
-                                Image(systemName: "arrow.right")
-                            }
-                            .font(.inter(12, .semibold))
-                            .foregroundColor(Color.white)
-                            .padding(.horizontal, 13)
-                            .padding(.vertical, 7)
-                            .background(SolTokens.sidebarActivePill)
-                            .cornerRadius(6)
-                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+                        #endif
+                    } label: {
+                        HStack(spacing: 5) {
+                            Image(systemName: "doc.badge.plus")
+                            Text(store.language == .se ? "Välj från Mac..." : (store.language == .no ? "Velg fra Mac..." : "Choose from Mac..."))
                         }
-                        .buttonStyle(.plain)
+                        .font(.inter(11.5, .medium))
+                        .foregroundColor(SolTokens.ink800)
+                        .padding(.horizontal, 11)
+                        .padding(.vertical, 6)
+                        .background(SolTokens.paper200)
+                        .cornerRadius(6)
+                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
                     }
-                    .padding(.top, 2)
+                    .buttonStyle(.plain)
                 }
-                .padding(.vertical, 32)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 180)
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { _ in
             startSimulatedIngestion(fileName: "Mottaget_Anställningsavtal.docx")
             return true
@@ -5068,232 +5284,6 @@ struct MacMainView: View {
         }
     }
     
-    private var monitoredSourcesListView: some View {
-        let activeSourcesCount = store.monitoredLocalFolders.count + (store.connectedCloudServices.contains("onedrive") ? 1 : 0)
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(store.l10n.monitoredSourcesHeader)
-                    .font(.inter(13, .semibold))
-                    .foregroundColor(SolTokens.ink900)
-                
-                Text("· \(activeSourcesCount) \(store.l10n.activeSuffix)")
-                    .font(.system(size: 11, design: .monospaced))
-                    .foregroundColor(SolTokens.ink450)
-                
-                Spacer()
-                
-                Button {
-                    #if os(macOS)
-                    let panel = NSOpenPanel()
-                    panel.canChooseFiles = false
-                    panel.canChooseDirectories = true
-                    panel.allowsMultipleSelection = false
-                    panel.prompt = store.l10n.addFolderButton
-                    if panel.runModal() == .OK, let url = panel.url {
-                        let rawPath = url.path
-                        let home = NSHomeDirectory()
-                        let displayPath = rawPath.hasPrefix(home) ? rawPath.replacingOccurrences(of: home, with: "~") : rawPath
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                            if !store.monitoredLocalFolders.contains(displayPath) {
-                                store.monitoredLocalFolders.append(displayPath)
-                            }
-                        }
-                    }
-                    #endif
-                } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: "plus")
-                        Text(store.l10n.addFolderButton)
-                    }
-                    .font(.inter(11.5, .medium))
-                    .foregroundColor(SolTokens.lav400)
-                }
-                .buttonStyle(.plain)
-            }
-            
-            VStack(spacing: 0) {
-                // Microsoft 365 / OneDrive Row
-                if store.connectedCloudServices.contains("onedrive") {
-                    HStack(spacing: 12) {
-                        Image(systemName: "cloud.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(Color.blue)
-                            .frame(width: 20)
-                        
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Microsoft 365 / OneDrive")
-                                .font(.inter(12.5, .medium))
-                                .foregroundColor(SolTokens.ink900)
-                            Text("simployer.sharepoint.com · 42 \(store.l10n.filesSyncedSuffix)")
-                                .font(.inter(11))
-                                .foregroundColor(SolTokens.ink450)
-                        }
-                        
-                        Spacer()
-                        
-                        HStack(spacing: 5) {
-                            Circle().fill(SolTokens.green800).frame(width: 5, height: 5)
-                            Text(store.l10n.connectedBadge)
-                                .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
-                                .foregroundColor(SolTokens.green800)
-                        }
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(SolTokens.green800.opacity(0.1))
-                        .cornerRadius(4)
-                        
-                        Button {
-                            withAnimation {
-                                _ = store.connectedCloudServices.remove("onedrive")
-                            }
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(SolTokens.ink450)
-                                .padding(6)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    
-                    Divider().overlay(SolTokens.paper300.opacity(0.5))
-                }
-                
-                // Guarded Local Folders
-                ForEach(Array(store.monitoredLocalFolders.enumerated()), id: \.element) { index, folderPath in
-                    HStack(spacing: 12) {
-                        Image(systemName: "folder.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(SolTokens.lav400)
-                            .frame(width: 20)
-                        
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(folderPath)
-                                .font(.system(size: 12, weight: .medium, design: .monospaced))
-                                .foregroundColor(SolTokens.ink900)
-                            Text(folderPath.contains("Downloads") ? store.l10n.downloadsFolderDesc : store.l10n.documentsFolderDesc)
-                                .font(.inter(11))
-                                .foregroundColor(SolTokens.ink450)
-                        }
-                        
-                        Spacer()
-                        
-                        HStack(spacing: 5) {
-                            Circle().fill(SolTokens.green800).frame(width: 5, height: 5)
-                            Text(store.l10n.guardingBadge)
-                                .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
-                                .foregroundColor(SolTokens.green800)
-                        }
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(SolTokens.green800.opacity(0.1))
-                        .cornerRadius(4)
-                        
-                        Button {
-                            withAnimation {
-                                store.monitoredLocalFolders.removeAll { $0 == folderPath }
-                            }
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(SolTokens.ink450)
-                                .padding(6)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    
-                    if index < store.monitoredLocalFolders.count - 1 {
-                        Divider().overlay(SolTokens.paper300.opacity(0.5))
-                    }
-                }
-            }
-            .background(SolTokens.paper100)
-            .cornerRadius(8)
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
-            
-            // Quiet Integrations Row (connect Google Drive or Dropbox)
-            HStack(spacing: 8) {
-                Text(store.l10n.connectMoreLabel)
-                    .font(.inter(11.5))
-                    .foregroundColor(SolTokens.ink450)
-                
-                Button {
-                    withAnimation {
-                        if store.connectedCloudServices.contains("onedrive") {
-                            _ = store.connectedCloudServices.remove("onedrive")
-                        } else {
-                            store.connectedCloudServices.insert("onedrive")
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "cloud")
-                        Text(store.connectedCloudServices.contains("onedrive") ? "OneDrive (\(store.l10n.connectedBadge))" : "+ OneDrive")
-                    }
-                    .font(.inter(11, .medium))
-                    .foregroundColor(store.connectedCloudServices.contains("onedrive") ? SolTokens.lav400 : SolTokens.ink700)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(SolTokens.paper100)
-                    .cornerRadius(4)
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                
-                Button {
-                    withAnimation {
-                        if store.connectedCloudServices.contains("gdrive") {
-                            _ = store.connectedCloudServices.remove("gdrive")
-                        } else {
-                            store.connectedCloudServices.insert("gdrive")
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "externaldrive")
-                        Text(store.connectedCloudServices.contains("gdrive") ? "Google Drive (\(store.l10n.connectedBadge))" : "+ Google Drive")
-                    }
-                    .font(.inter(11, .medium))
-                    .foregroundColor(store.connectedCloudServices.contains("gdrive") ? SolTokens.green800 : SolTokens.ink700)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(SolTokens.paper100)
-                    .cornerRadius(4)
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                
-                Button {
-                    withAnimation {
-                        if store.connectedCloudServices.contains("dropbox") {
-                            _ = store.connectedCloudServices.remove("dropbox")
-                        } else {
-                            store.connectedCloudServices.insert("dropbox")
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "shippingbox")
-                        Text(store.connectedCloudServices.contains("dropbox") ? "Dropbox (\(store.l10n.connectedBadge))" : "+ Dropbox")
-                    }
-                    .font(.inter(11, .medium))
-                    .foregroundColor(store.connectedCloudServices.contains("dropbox") ? SolTokens.green800 : SolTokens.ink700)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(SolTokens.paper100)
-                    .cornerRadius(4)
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.top, 2)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    
     private var reassuranceBarView: some View {
         HStack(spacing: 12) {
             Image(systemName: "checkmark.shield.fill")
@@ -5301,10 +5291,19 @@ struct MacMainView: View {
                 .foregroundColor(SolTokens.green800)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(store.l10n.reassuranceTitle)
+                Text(store.language == .se 
+                    ? "21 verifierade datapunkter skyddas autonomt" 
+                    : (store.language == .no 
+                        ? "21 verifiserte datapunkter beskyttes autonomt" 
+                        : "21 verified data points protected autonomously"))
                     .font(.inter(12.5, .medium))
                     .foregroundColor(SolTokens.ink900)
-                Text(store.l10n.reassuranceBreakdown)
+                
+                Text(store.language == .se 
+                    ? "8 anställningsavtal · 1 personalhandbok · 8 löneposter från Fortnox · 4 registerposter" 
+                    : (store.language == .no 
+                        ? "8 ansettelsesavtaler · 1 personalhåndbok · 8 lønnsposter fra Tripletex · 4 registerposter" 
+                        : "8 employment contracts · 1 handbook · 8 payroll entries · 4 registry entries"))
                     .font(.inter(11))
                     .foregroundColor(SolTokens.ink450)
             }
@@ -5312,19 +5311,26 @@ struct MacMainView: View {
             Spacer()
             
             Button {
-                store.activeNav = "hub"
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                    store.activeNav = "hub"
+                }
             } label: {
-                HStack(spacing: 4) {
-                    Text(store.l10n.reassuranceButton)
+                HStack(spacing: 5) {
+                    Text(store.language == .se 
+                        ? "Gå till åtgärder (\(store.pendingActionCount))" 
+                        : (store.language == .no 
+                            ? "Gå til handlinger (\(store.pendingActionCount))" 
+                            : "Go to actions (\(store.pendingActionCount))"))
                     Image(systemName: "arrow.right")
+                        .font(.system(size: 9.5, weight: .semibold))
                 }
                 .font(.inter(11.5, .semibold))
-                .foregroundColor(SolTokens.lav400)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
+                .foregroundColor(SolTokens.indigo)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
                 .background(SolTokens.paper200)
-                .cornerRadius(5)
-                .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+                .cornerRadius(6)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
             }
             .buttonStyle(.plain)
         }

@@ -73,8 +73,8 @@ public class ComplyStore: ObservableObject {
     @Published public var juristInquirySent: Bool = false
     
     // MARK: - Ingestion Sources & Local Monitored Guard State
-    @Published public var connectedCloudServices: Set<String> = ["onedrive"]
-    @Published public var monitoredLocalFolders: [String] = ["~/Downloads", "~/Documents/HR"]
+    @Published public var connectedCloudServices: Set<String> = ["onedrive", "fortnox", "registry"]
+    @Published public var monitoredLocalFolders: [String] = ["~/Dokument/Personalakter"]
     @Published public var isScanningSources: Bool = false
     @Published public var selectedConnectModal: String? = nil
     @Published public var activeFileViewTab: String = "overview"
