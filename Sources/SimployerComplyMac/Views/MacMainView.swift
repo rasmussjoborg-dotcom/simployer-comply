@@ -51,9 +51,9 @@ struct MacMainView: View {
                     // Linear Company Header (Dynamic Badge + Radar Dot + Search + Compose)
                     companyHeaderView
                         
-                    // Section 1: Skydd & Oversikt (Primary Executive Focus)
+                    // Section 1: Skydd & System (Primary Executive Focus)
                     HStack(spacing: 4) {
-                        Text(store.language == .se ? "SKYDD & ÖVERSIKT" : "PROTECTION & OVERVIEW")
+                        Text(store.l10n.overviewSection.uppercased())
                             .font(.inter(10, .bold))
                             .tracking(0.7)
                             .foregroundColor(SolTokens.ink600)
@@ -87,9 +87,20 @@ struct MacMainView: View {
                         store.activeNav = "agentLog"
                     }
                     
+                    SidebarButton(
+                        id: "ingest",
+                        label: store.l10n.navIngest,
+                        icon: "folder.badge.gearshape",
+                        badge: "3",
+                        badgeStyle: .neutral,
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "ingest"
+                    }
+                    
                     // Section 2: Fordjupning & Register (Quiet Reference)
                     HStack(spacing: 4) {
-                        Text(store.language == .se ? "FÖRDJUPNING & REGISTER" : "RECORDS & EXPLORATION")
+                        Text(store.l10n.complianceSection.uppercased())
                             .font(.inter(10, .bold))
                             .tracking(0.7)
                             .foregroundColor(SolTokens.ink600)
@@ -101,14 +112,6 @@ struct MacMainView: View {
                     .padding(.top, 18)
                     .padding(.bottom, 3)
                         
-                    SidebarButton(
-                        id: "ingest",
-                        label: store.l10n.navIngest,
-                        icon: "tray",
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "ingest"
-                    }
                     SidebarButton(
                         id: "register",
                         label: store.l10n.navRegister,
@@ -969,8 +972,8 @@ struct MacMainView: View {
                 // 3. Four Modular Protection Shields (The MacKeeper / CleanMyMac 2x2 Grid)
                 antivirusFourShieldsGrid
                 
-                // 4. Ambient Trojan Horse Background Ingestion & Monitor Bar
-                antivirusTrojanMonitorBar
+                // 4. Guarded Sources & Live Integrations Panel (Full-width 3-brick executive overview)
+                guardedSourcesCockpitSection
             }
             .padding(20)
         }
@@ -1484,54 +1487,183 @@ struct MacMainView: View {
         )
     }
 
-    // MARK: - Ambient Trojan Horse Background Ingestion & Monitor Bar
-    private var antivirusTrojanMonitorBar: some View {
-        HStack(spacing: 16) {
-            HStack(spacing: 8) {
-                Image(systemName: "folder.badge.gearshape")
-                    .font(.system(size: 13))
-                    .foregroundColor(SolTokens.indigo)
-                Text(store.language == .se 
-                     ? "Bevakar lokala källor: ~/Dokument/Personalakter och SharePoint (8 aktiva akter)" 
-                     : "Watching local sources: ~/Documents/HR and SharePoint (8 active files)")
-                    .font(.inter(11.5, .medium))
+    // MARK: - Guarded Sources & Integrations Section (Cockpit System View)
+    private var guardedSourcesCockpitSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            // Header
+            HStack(alignment: .center) {
+                HStack(spacing: 7) {
+                    Image(systemName: "folder.badge.gearshape.fill")
+                        .font(.system(size: 13))
+                        .foregroundColor(SolTokens.indigo)
+                    
+                    Text(store.language == .se ? "Bevakade källor & integrationer" : (store.language == .no ? "Overvåkede kilder & integrasjoner" : "Guarded Sources & Integrations"))
+                        .font(.inter(13.5, .bold))
+                        .foregroundColor(SolTokens.ink900)
+                }
+                
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(SolTokens.green800)
+                        .frame(width: 5, height: 5)
+                    Text(store.language == .se ? "3 av 3 källor synkade" : (store.language == .no ? "3 av 3 kilder synkronisert" : "3 of 3 sources synced"))
+                        .font(.inter(11, .semibold))
+                        .foregroundColor(SolTokens.green800)
+                }
+                .padding(.horizontal, 7)
+                .padding(.vertical, 3)
+                .background(SolTokens.green100)
+                .cornerRadius(4)
+                
+                Spacer()
+                
+                Button {
+                    store.activeNav = "ingest"
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 10, weight: .bold))
+                        Text(store.language == .se ? "Anslut källa" : (store.language == .no ? "Koble til kilde" : "Connect Source"))
+                            .font(.inter(11.5, .medium))
+                    }
                     .foregroundColor(SolTokens.ink700)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
+                    .background(SolTokens.paper200)
+                    .cornerRadius(5)
+                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
             }
             
-            Spacer()
+            // 3 Source Cards
+            HStack(spacing: 12) {
+                // Source 1: HR Folder & SharePoint
+                sourceBrickCard(
+                    icon: "folder.fill",
+                    iconColor: SolTokens.indigo,
+                    iconBg: SolTokens.indigo.opacity(0.12),
+                    title: "~/Dokument/Personalakter",
+                    statute: "SharePoint & OneDrive Sync",
+                    statusText: store.language == .se ? "Aktiv realtidsbevakning" : (store.language == .no ? "Aktiv sanntidsovervåking" : "Active realtime monitoring"),
+                    statusColor: SolTokens.green800,
+                    metaText: store.language == .se ? "8 anställningsavtal indexerade" : (store.language == .no ? "8 arbeidsavtaler indeksert" : "8 contracts indexed")
+                )
+                
+                // Source 2: Payroll & Attendance API
+                sourceBrickCard(
+                    icon: "creditcard.fill",
+                    iconColor: SolTokens.green800,
+                    iconBg: SolTokens.green100,
+                    title: "Tripletex / Fortnox API",
+                    statute: store.language == .se ? "Lön, stämpling & arbetstid" : (store.language == .no ? "Lønn, stempling & arbeidstid" : "Payroll & time tracking"),
+                    statusText: store.language == .se ? "Synkad idag 06:00" : (store.language == .no ? "Synkronisert i dag 06:00" : "Synced today 06:00"),
+                    statusColor: SolTokens.green800,
+                    metaText: store.language == .se ? "11-timmars dygnsvila matchas löpande" : (store.language == .no ? "11-timers hviletid matches løpende" : "11h daily rest verified continuously")
+                )
+                
+                // Source 3: Company Registry
+                sourceBrickCard(
+                    icon: "building.2.fill",
+                    iconColor: SolTokens.ink700,
+                    iconBg: SolTokens.paper200,
+                    title: "Brønnøysund / Bolagsverket",
+                    statute: "Org.nr 928 341 902",
+                    statusText: store.language == .se ? "Tröskelradar aktiv" : (store.language == .no ? "Terskelradar aktiv" : "Threshold radar active"),
+                    statusColor: SolTokens.green800,
+                    metaText: store.language == .se ? "8 anställda (2 kvar till tröskel 10)" : (store.language == .no ? "8 ansatte (2 igjen til terskel 10)" : "8 staff (2 to threshold 10)")
+                )
+            }
             
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(SolTokens.green800)
-                    .frame(width: 5, height: 5)
+            // Proof of Work Quiet Footer
+            HStack(spacing: 8) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 11))
+                    .foregroundColor(SolTokens.indigo)
+                
                 Text(store.language == .se 
-                     ? "38 autonoma bakgrundskontroller utförda i november" 
-                     : "38 autonomous background checks run in Nov")
+                     ? "38 autonoma kontroller utförda i bakgrunden i november utan att störa bolaget."
+                     : (store.language == .no 
+                        ? "38 autonome kontroller utført i bakgrunnen i november uten å forstyrre selskapet."
+                        : "38 autonomous background checks executed in November without disrupting operations."))
                     .font(.inter(11.5))
                     .foregroundColor(SolTokens.ink600)
+                
+                Spacer()
+                
+                Button {
+                    store.activeNav = "agentLog"
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(store.language == .se ? "Se aktivitet i Skyddsloggen" : (store.language == .no ? "Se aktivitet i Beskyttelsesloggen" : "View Activity Log"))
+                            .font(.inter(11.5, .semibold))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 9))
+                    }
+                    .foregroundColor(SolTokens.indigo)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.top, 4)
+        }
+        .padding(16)
+        .background(SolTokens.paper100)
+        .cornerRadius(10)
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+    }
+
+    private func sourceBrickCard(
+        icon: String,
+        iconColor: Color,
+        iconBg: Color,
+        title: String,
+        statute: String,
+        statusText: String,
+        statusColor: Color,
+        metaText: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(iconBg)
+                        .frame(width: 26, height: 26)
+                    Image(systemName: icon)
+                        .font(.system(size: 12))
+                        .foregroundColor(iconColor)
+                }
+                
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(.inter(12, .bold))
+                        .foregroundColor(SolTokens.ink900)
+                        .lineLimit(1)
+                    Text(statute)
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundColor(SolTokens.ink600)
+                        .lineLimit(1)
+                }
+                
+                Spacer()
             }
             
-            Button {
-                store.activeNav = "agentLog"
-            } label: {
-                HStack(spacing: 4) {
-                    Text(store.language == .se ? "Öppna Agentlogg" : "Open Agent Log")
-                        .font(.inter(11.5, .semibold))
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 9))
-                }
-                .foregroundColor(SolTokens.indigo)
-                .padding(.horizontal, 9)
-                .padding(.vertical, 4.5)
-                .background(SolTokens.paper200)
-                .cornerRadius(5)
-                .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(statusColor)
+                    .frame(width: 4.5, height: 4.5)
+                Text(statusText)
+                    .font(.inter(10.5, .semibold))
+                    .foregroundColor(statusColor)
             }
-            .buttonStyle(.plain)
+            
+            Text(metaText)
+                .font(.inter(10.5, .regular))
+                .foregroundColor(SolTokens.ink600)
+                .lineLimit(1)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(SolTokens.paper100)
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(SolTokens.paper50)
         .cornerRadius(8)
         .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
     }

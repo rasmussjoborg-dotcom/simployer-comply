@@ -39,7 +39,7 @@ struct AgentLogView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
-                    Text(store.language == .se ? "Agentlogg & Tidslinje" : "Agent Log & Timeline")
+                    Text(store.language == .se ? "Aktivitet & Skyddslogg" : (store.language == .no ? "Aktivitet & Beskyttelseslogg" : "Activity & Protection Log"))
                         .font(.inter(18, .bold))
                         .foregroundColor(SolTokens.ink900)
                     
@@ -47,7 +47,7 @@ struct AgentLogView: View {
                         Circle()
                             .fill(SolTokens.green800)
                             .frame(width: 6, height: 6)
-                        Text(store.language == .se ? "Aktivt realtidsskydd" : "Active Real-Time Protection")
+                        Text(store.language == .se ? "Aktivt realtidsskydd" : (store.language == .no ? "Aktiv sanntidsbeskyttelse" : "Active Real-Time Protection"))
                             .font(.inter(11, .medium))
                             .foregroundColor(SolTokens.green800)
                     }
@@ -59,8 +59,10 @@ struct AgentLogView: View {
                 }
                 
                 Text(store.language == .se ? 
-                     "Simployer Comply arbetar autonomt i bakgrunden. Här loggas alla regelvalideringar, filinläsningar och åtgärder med kryptografisk spårbarhet." : 
-                     "Simployer Comply operates autonomously in the background. Every rule validation, file sweep, and remediation is logged with cryptographic audit trails.")
+                     "Simployer Comply arbetar autonomt i bakgrunden. Här loggas alla regelvalideringar, källändringar och skyddsåtgärder med kryptografisk spårbarhet." : 
+                     (store.language == .no 
+                      ? "Simployer Comply arbeider autonomt i bakgrunnen. Her logges alle regelvalideringer, kildeendringer og beskyttelsestiltak med kryptografisk sporbarhet."
+                      : "Simployer Comply operates autonomously in the background. Every rule validation, file sweep, and remediation is logged with cryptographic audit trails."))
                     .font(.inter(12.5))
                     .foregroundColor(SolTokens.ink600)
             }
