@@ -854,7 +854,223 @@ public struct LocalizedStrings: Sendable {
         }
     }
 
-    // MARK: - Bolagsresan / Growth Timeline
+    // MARK: - Bolagsresan / Growth Timeline & Compliance Runway
+    public var radarHeaderTitle: String {
+        switch languageCode {
+        case "se": return "Lagradar & Tröskelvarnare"
+        case "en": return "Compliance Radar & Threshold Monitor"
+        default: return "Lovradar & Terskelvarsling"
+        }
+    }
+    
+    public var radarHeaderSubtitle: String {
+        switch languageCode {
+        case "se": return "Håller koll på hur personalökningar aktiverar nya lagkrav i god tid innan tillsyn."
+        case "en": return "Monitors how headcount growth triggers new statutory requirements well ahead of inspections."
+        default: return "Holder oversikt over hvordan personalvekst utløser nye lovkrav i god tid før tilsyn."
+        }
+    }
+    
+    public var runwaySectionTitle: String {
+        switch languageCode {
+        case "se": return "LAGSTADGADE TILLVÄXTTRÖSKLAR"
+        case "en": return "STATUTORY GROWTH THRESHOLDS"
+        default: return "LOVPÅLAGTE VEKSTTERSKLER"
+        }
+    }
+    
+    public var runwayThresholdCountBadge: String {
+        switch languageCode {
+        case "se": return "4 TRÖSKLAR"
+        case "en": return "4 THRESHOLDS"
+        default: return "4 TERSKLER"
+        }
+    }
+    
+    public var runwayMilestonePassed: String {
+        switch languageCode {
+        case "se": return "Passerad"
+        case "en": return "Passed"
+        default: return "Passert"
+        }
+    }
+    
+    public var runwayMilestoneCurrent: String {
+        switch languageCode {
+        case "se": return "Nuvarande"
+        case "en": return "Current"
+        default: return "Nåværende"
+        }
+    }
+    
+    public var runwayMilestoneNext: String {
+        switch languageCode {
+        case "se": return "Nästa tröskel"
+        case "en": return "Next threshold"
+        default: return "Neste terskel"
+        }
+    }
+    
+    public var runwayMilestoneFuture: String {
+        switch languageCode {
+        case "se": return "Framtida"
+        case "en": return "Future"
+        default: return "Fremtidig"
+        }
+    }
+    
+    public var runwayCard5Threshold: String {
+        switch languageCode {
+        case "se": return "5 ANSTÄLLDA"
+        case "en": return "5 EMPLOYEES"
+        default: return "5 ANSATTE"
+        }
+    }
+    
+    public var runwayCard5Status: String {
+        switch languageCode {
+        case "se": return "Passerad och säkrad"
+        case "en": return "Passed and secured"
+        default: return "Passert og sikret"
+        }
+    }
+    
+    public var runwayCard5Title: String {
+        switch languageCode {
+        case "se": return "Obligatoriskt skyddsombud & HMS-utbildning"
+        case "en": return "Mandatory Safety Representative & HSE Training"
+        default: return "Obligatorisk verneombud & HMS-opplæring"
+        }
+    }
+    
+    public var runwayCard5Desc: String {
+        switch languageCode {
+        case "se": return "Lagstadgad tröskel sänktes från 10 till 5 anställda. Fjord Dynamics har genomfört val och arkiverat valprotokoll i Källor. VD har genomfört obligatorisk arbetsmiljöutbildning."
+        case "en": return "Statutory threshold lowered from 10 to 5 employees. Fjord Dynamics has completed election and archived protocol in Sources. Mandatory executive HSE training completed."
+        default: return "Lovfestet terskel ble senket fra 10 til 5 ansatte. Fjord Dynamics har gjennomført valg og arkivert protokoll i Kilder. Daglig leder har gjennomført lovpålagt HMS-opplæring."
+        }
+    }
+    
+    public var runwayCard5Footer: String {
+        switch languageCode {
+        case "se": return "Juridiskt verifierat · Protokoll arkiverat i Källor"
+        case "en": return "Legally verified · Protocol archived in Sources"
+        default: return "Juridisk verifisert · Protokoll arkivert i Kilder"
+        }
+    }
+    
+    public var runwayCard8Threshold: String {
+        switch languageCode {
+        case "se": return "8 ANSTÄLLDA (NUVARANDE)"
+        case "en": return "8 EMPLOYEES (CURRENT)"
+        default: return "8 ANSATTE (NÅVÆRENDE)"
+        }
+    }
+    
+    public var runwayCard8Status: String {
+        switch languageCode {
+        case "se": return "Aktiv fas · 3 åtgärder väntar"
+        case "en": return "Active phase · 3 actions pending"
+        default: return "Aktiv fase · 3 tiltak venter"
+        }
+    }
+    
+    public var runwayCard8Title: String {
+        switch languageCode {
+        case "se": return "Krav på uppdaterade anställningsavtal & arbetstidsjournal"
+        case "en": return "Employment Contracts & Working Hours Records"
+        default: return "Krav til oppdaterte arbeidsavtaler & arbeidstidsoversikt"
+        }
+    }
+    
+    public var runwayCard8Desc: String {
+        switch languageCode {
+        case "se": return "Sedan lagändringen 1 juli 2024 ställs utökade krav på skriftliga avtal inom 7 dagar med specificerad arbetstid och kompetensvillkor. 7 anställningsavtal har identifierade avvikelser som väntar på godkännande i Handlingscenter."
+        case "en": return "Statutory amendments mandate written contracts within 7 days with specified hours and training terms. 7 contracts have identified deviations awaiting BankID approval in Action Hub."
+        default: return "Etter lovendringen 1. juli 2024 stilles skjerpede krav til skriftlige avtaler innen 7 dager med presisert arbeidstid og kompetansevilkår. 7 arbeidsavtaler har identifiserte avvik som venter på godkjenning i Handlingssenter."
+        }
+    }
+    
+    public var runwayCard8Action: String {
+        switch languageCode {
+        case "se": return "Åtgärda i Handlingscenter"
+        case "en": return "Resolve in Action Hub"
+        default: return "Gå til Handlingssenter"
+        }
+    }
+    
+    public var runwayCard10Threshold: String {
+        switch languageCode {
+        case "se": return "10 ANSTÄLLDA (NÄSTA TRÖSKEL)"
+        case "en": return "10 EMPLOYEES (NEXT THRESHOLD)"
+        default: return "10 ANSATTE (NESTE TERSKEL)"
+        }
+    }
+    
+    public var runwayCard10Title: String {
+        switch languageCode {
+        case "se": return "Arbetsmiljöutskott (AMU) eller skriftligt undantagsavtal"
+        case "en": return "Working Environment Committee (AMU) or Exemption Agreement"
+        default: return "Arbeidsmiljøutvalg (AMU) eller skriftlig unntaksavtale"
+        }
+    }
+    
+    public var runwayCard10Desc: String {
+        switch languageCode {
+        case "se": return "Vid 10 anställda inträder skyldighet att inrätta ett partsammansatt Arbetsmiljöutskott om part begär det, såvida parterna inte skriftligen avtalar om en förenklad ordning. Vid anställning av er 10:e medarbetare förbereder Comply automatiskt undantagsavtalet för BankID-signering."
+        case "en": return "Crossing 10 employees mandates establishing a joint Working Environment Committee (AMU) if requested by either party, unless an exemption agreement is established. Upon hiring employee #10, Comply automatically prepares the exemption agreement for BankID signing."
+        default: return "Ved passering av 10 ansatte inntrer plikt til å opprette Arbeidsmiljøutvalg dersom en part krever det, med mindre partene skriftlig avtaler en forenklet ordning. Ved registrering av 10. ansatt klargjør Comply automatisk unntaksavtalen for BankID-signering."
+        }
+    }
+    
+    public var runwayCard10Footer: String {
+        switch languageCode {
+        case "se": return "Förhandskontroll redo · Tröskelskydd aktivt"
+        case "en": return "Pre-compliance ready · Threshold protection active"
+        default: return "Forhåndskontroll klar · Terskelsikring aktiv"
+        }
+    }
+    
+    public var runwayCard50Threshold: String {
+        switch languageCode {
+        case "se": return "50 ANSTÄLLDA"
+        case "en": return "50 EMPLOYEES"
+        default: return "50 ANSATTE"
+        }
+    }
+    
+    public var runwayCard50Status: String {
+        switch languageCode {
+        case "se": return "Framtida tillväxtfas"
+        case "en": return "Future growth phase"
+        default: return "Fremtidig vekstfase"
+        }
+    }
+    
+    public var runwayCard50Title: String {
+        switch languageCode {
+        case "se": return "Formell förhandlingsskyldighet & Årlig Lönekartläggning (ARP)"
+        case "en": return "Consultation Duty & Annual Equal Pay Audit (ARP)"
+        default: return "Drøftelsesplikt & Årlig Likestillingsredegjørelse (ARP)"
+        }
+    }
+    
+    public var runwayCard50Desc: String {
+        switch languageCode {
+        case "se": return "Lagstadgad skyldighet till regelbunden samverkan med fackliga företrädare vid verksamhetsförändringar, samt årlig lönekartläggning för att motverka osakliga löneskillnader. Aktiveras automatiskt vid passering av 50 medarbetare."
+        case "en": return "Mandatory formal consultations with employee representatives on operational changes, plus annual gender pay gap audit and reporting. Activates automatically upon crossing 50 employees."
+        default: return "Lovpålagt regelmessig drøfting med tillitsvalgte ved virksomhetsendringer, samt årlig lønnsgap-analyse og redegjørelse for likestilling. Aktiveres automatisk ved passering av 50 ansatte."
+        }
+    }
+    
+    public var runwayCard50Footer: String {
+        switch languageCode {
+        case "se": return "Övervakas automatiskt av Comply Legal Cloud"
+        case "en": return "Monitored automatically by Comply Legal Cloud"
+        default: return "Overvåkes automatisk av Comply Legal Cloud"
+        }
+    }
+    
     public var timelineTrackHeader: String {
         switch languageCode {
         case "se": return "Bolagsresan · Lagstadgade trösklar vid tillväxt"
@@ -1283,17 +1499,17 @@ public enum L10n {
                 staff8: "8 ansatte",
                 staff38: "38 ansatte",
                 staff124: "124 ansatte",
-                overviewSection: "Virksomhet & Overvåking",
+                overviewSection: "Vår virksomhet",
                 navHub: "Oversikt",
                 navAgentLog: "Beskyttelseslogg",
-                complianceSection: "Lov, Revisjon & Jurist",
-                navIngest: "Overvåkede kilder",
+                complianceSection: "Lovbeskyttelse & Tilsyn",
+                navIngest: "Tilkoblede kilder",
                 navRegister: "Personal & Avtaler",
                 navContracts: "Arbeidsavtaler",
                 navHandbook: "Personalhåndbok",
-                navRadar: "Lovradar & trinn",
+                navRadar: "Lovradar & vekst",
                 navExpert: "Simployer Jurist",
-                navAuditPack: "Revisjonspakke",
+                navAuditPack: "Tilsynsunderlag",
                 oneReadyTitle: "Simployer One Ready",
                 oneReadySubtitle: "Data oppdateres strukturert i bakgrunnen uten migreringsbehov.",
                 hubTitle: "Handlingssenter",
@@ -1693,17 +1909,17 @@ public enum L10n {
                 staff8: "8 anställda",
                 staff38: "38 anställda",
                 staff124: "124 anställda",
-                overviewSection: "Verksamhet & Bevakning",
+                overviewSection: "Vår verksamhet",
                 navHub: "Översikt",
                 navAgentLog: "Skyddslogg",
-                complianceSection: "Lag, Revision & Jurist",
-                navIngest: "Bevakade källor",
+                complianceSection: "Lagskydd & Tillsyn",
+                navIngest: "Kopplade källor",
                 navRegister: "Personal & Avtal",
                 navContracts: "Anställningsavtal",
                 navHandbook: "Personalhandbok",
-                navRadar: "Lagradar & trösklar",
+                navRadar: "Lagradar & tillväxt",
                 navExpert: "Simployer Jurist",
-                navAuditPack: "Revisionspaket",
+                navAuditPack: "Tillsynsunderlag",
                 oneReadyTitle: "Simployer One Redo",
                 oneReadySubtitle: "Data uppdateras strukturerat i bakgrunden utan behov av migrering.",
                 hubTitle: "Åtgärdscenter",
@@ -2103,17 +2319,17 @@ public enum L10n {
                 staff8: "8 employees",
                 staff38: "38 employees",
                 staff124: "124 employees",
-                overviewSection: "Operations & Monitoring",
+                overviewSection: "Our Business",
                 navHub: "Overview",
                 navAgentLog: "Protection Log",
-                complianceSection: "Law, Audit & Legal",
-                navIngest: "Guarded Sources",
+                complianceSection: "Compliance & Audit",
+                navIngest: "Connected Sources",
                 navRegister: "Personnel & Contracts",
                 navContracts: "Employment Contracts",
                 navHandbook: "Employee Handbook",
-                navRadar: "Statutory Radar & Thresholds",
+                navRadar: "Compliance Radar",
                 navExpert: "Simployer Legal Desk",
-                navAuditPack: "Audit Packages",
+                navAuditPack: "Inspection Package",
                 oneReadyTitle: "Simployer One Ready",
                 oneReadySubtitle: "Records are continuously structured in the background with zero migration.",
                 hubTitle: "Action Hub",

@@ -1,15 +1,42 @@
 {
-  "fill" : {
-    "solid" : "display-p3:0.04536,0.02188,0.09560,1.00000"
-  },
+  "features" : [
+    "specular-location"
+  ],
+  "fill-specializations" : [
+    {
+      "value" : {
+        "solid" : "display-p3:0.90889,0.88318,1.00000,1.00000"
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "solid" : "display-p3:0.06871,0.05522,0.11710,1.00000"
+      }
+    }
+  ],
   "groups" : [
     {
       "layers" : [
         {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.13635,0.10960,0.23239,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.56974,0.45757,0.96868,1.00000"
+              }
+            }
+          ],
           "image-name" : "simployer-logo.svg",
           "name" : "simployer-logo"
         }
       ],
+      "lighting" : "individual",
       "position" : {
         "scale" : 4.3,
         "translation-in-points" : [
@@ -17,12 +44,18 @@
           0
         ]
       },
+      "refractivity" : {
+        "depth" : 0,
+        "enabled" : false,
+        "strength" : 0.5
+      },
       "shadow" : {
         "kind" : "neutral",
-        "opacity" : 0.5
+        "opacity" : 0.2
       },
+      "specular" : "outside",
       "translucency" : {
-        "enabled" : true,
+        "enabled" : false,
         "value" : 0.3
       }
     }

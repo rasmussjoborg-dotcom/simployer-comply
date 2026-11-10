@@ -22,10 +22,10 @@ struct MacMainView: View {
     @State private var employeeSearchText: String = ""
     @State private var employeeStatusFilter: String = "all"
     @AppStorage("comply_sidebar_width") private var sidebarWidth: Double = 220.0
-    @AppStorage("comply_col_employee_width") private var colEmployeeWidth: Double = 220.0
-    @AppStorage("comply_col_role_width") private var colRoleDeptWidth: Double = 300.0
-    @AppStorage("comply_col_employment_width") private var colEmploymentWidth: Double = 210.0
-    @AppStorage("comply_col_status_width") private var colStatusWidth: Double = 240.0
+    @AppStorage("comply_col_employee_width") private var colEmployeeWidth: Double = 180.0
+    @AppStorage("comply_col_role_width") private var colRoleDeptWidth: Double = 210.0
+    @AppStorage("comply_col_employment_width") private var colEmploymentWidth: Double = 160.0
+    @AppStorage("comply_col_status_width") private var colStatusWidth: Double = 170.0
     
     // MARK: - Handbook State
     @State private var activeHandbookVolume: HandbookVolume = .staff
@@ -89,17 +89,6 @@ struct MacMainView: View {
                     .padding(.bottom, 3)
                     
                     SidebarButton(
-                        id: "ingest",
-                        label: store.l10n.navIngest,
-                        icon: "folder.badge.gearshape",
-                        badge: "3",
-                        badgeStyle: .neutral,
-                        activeNav: store.activeNav
-                    ) {
-                        store.activeNav = "ingest"
-                    }
-                    
-                    SidebarButton(
                         id: "register",
                         label: store.l10n.navRegister,
                         icon: "person.2",
@@ -120,14 +109,14 @@ struct MacMainView: View {
                     }
                     
                     SidebarButton(
-                        id: "agentLog",
-                        label: store.l10n.navAgentLog,
-                        icon: "clock.arrow.circlepath",
-                        badge: "Live",
-                        badgeStyle: .dot,
+                        id: "ingest",
+                        label: store.l10n.navIngest,
+                        icon: "folder.badge.gearshape",
+                        badge: "3",
+                        badgeStyle: .neutral,
                         activeNav: store.activeNav
                     ) {
-                        store.activeNav = "agentLog"
+                        store.activeNav = "ingest"
                     }
                     
                     // Section 2: Lag, Revision & Jurist (External Intelligence, Strategy & Legal)
@@ -141,8 +130,19 @@ struct MacMainView: View {
                             .foregroundColor(SolTokens.ink450)
                     }
                     .padding(.horizontal, 10)
-                    .padding(.top, 16)
+                    .padding(.top, 14)
                     .padding(.bottom, 3)
+                    
+                    SidebarButton(
+                        id: "agentLog",
+                        label: store.l10n.navAgentLog,
+                        icon: "clock.arrow.circlepath",
+                        badge: "Live",
+                        badgeStyle: .dot,
+                        activeNav: store.activeNav
+                    ) {
+                        store.activeNav = "agentLog"
+                    }
                         
                     SidebarButton(
                         id: "radar",
@@ -193,8 +193,9 @@ struct MacMainView: View {
                     }
                     .padding(.bottom, 12)
                 }
-                    .frame(width: CGFloat(sidebarWidth))
+                    .frame(width: CGFloat(sidebarWidth), alignment: .leading)
                     .fixedSize(horizontal: true, vertical: false)
+                    .clipped()
                     .layoutPriority(10)
                     .background(SolTokens.canvasRoot)
                     
@@ -209,14 +210,15 @@ struct MacMainView: View {
                     
                     // MARK: - Linear Framed Main Content Canvas (Panel with rounded corners and border that sticks out)
                     VStack(spacing: 0) {
-                        // Canvas Header Bar (Breadcrumb + Actions)
+                        // Canvas Header Bar (Breadcrumb + Actions) - Fixed height eliminates vertical jitter
                         HStack(alignment: .center) {
                             HStack(spacing: 7) {
                                 Image(systemName: currentNavIcon)
-                                    .font(.inter(12))
+                                    .font(.system(size: 12))
+                                    .frame(width: 16, height: 16)
                                     .foregroundColor(store.activeNav == "hub" ? companyBadgeIconColor : SolTokens.lav400)
                                 Button {
-                                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                    withAnimation(.easeInOut(duration: 0.15)) {
                                         store.activeNav = "hub"
                                     }
                                 } label: {
@@ -270,7 +272,7 @@ struct MacMainView: View {
                             .help("Återställ prototypen till utgångsläget (⌘R)")
                         }
                         .padding(.horizontal, 18)
-                        .padding(.vertical, 10)
+                        .frame(height: 42)
                         .background(SolTokens.paper50)
                         .overlay(
                             Rectangle()
@@ -280,29 +282,36 @@ struct MacMainView: View {
                         )
                         
                         // Framed View Content
-                        ZStack {
+                        ZStack(alignment: .topLeading) {
                             SolTokens.paper50.ignoresSafeArea()
                             
-                            if store.activeNav == "hub" {
-                                macActionHubView
-                            } else if store.activeNav == "agentLog" {
-                                AgentLogView()
-                            } else if store.activeNav == "ingest" {
-                                macIngestDropView
-                            } else if store.activeNav == "register" {
-                                macRegisterTableView
-                            } else if store.activeNav == "handbook" {
-                                macHandbookView
-                            } else if store.activeNav == "radar" {
-                                macRadarView
-                            } else if store.activeNav == "expert" {
-                                macExpertView
-                            } else if store.activeNav == "auditPack" {
-                                InspectionExportView()
-                            } else if store.activeNav == "settings" {
-                                macSettingsView
+                            Group {
+                                switch store.activeNav {
+                                case "hub":
+                                    macActionHubView
+                                case "agentLog":
+                                    AgentLogView()
+                                case "ingest":
+                                    macIngestDropView
+                                case "register":
+                                    macRegisterTableView
+                                case "handbook":
+                                    macHandbookView
+                                case "radar":
+                                    macRadarView
+                                case "expert":
+                                    macExpertView
+                                case "auditPack":
+                                    InspectionExportView()
+                                case "settings":
+                                    macSettingsView
+                                default:
+                                    macActionHubView
+                                }
                             }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
                     .background(SolTokens.paper50)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -313,9 +322,11 @@ struct MacMainView: View {
                     .padding(.trailing, 10)
                     .padding(.bottom, 10)
                     .padding(.top, 10)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .clipped()
                     .layoutPriority(1)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
         .overlay {
             if showSearchPalette {
@@ -534,7 +545,7 @@ struct MacMainView: View {
         let shieldColor = store.complianceSeverity.color
         
         return Button {
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+            withAnimation(.easeInOut(duration: 0.15)) {
                 store.activeNav = "hub"
             }
         } label: {
@@ -542,14 +553,22 @@ struct MacMainView: View {
                 Image(systemName: iconName)
                     .font(.system(size: 13, weight: .regular, design: .rounded))
                     .foregroundColor(shieldColor)
-                    .frame(width: 18, alignment: .center)
+                    .frame(width: 18, height: 18, alignment: .center)
+                    .layoutPriority(1)
                 
-                Text("Fjord Dynamics")
-                    .font(.inter(13, active ? .semibold : .medium))
-                    .foregroundColor(active ? Color.white : (isHoveredCompany ? SolTokens.ink900 : SolTokens.ink700))
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(store.language == .se ? "Handlingscenter" : (store.language == .no ? "Handlingssenter" : "Action Hub"))
+                        .font(.inter(12.5, active ? .semibold : .medium))
+                        .foregroundColor(active ? Color.white : (isHoveredCompany ? SolTokens.ink900 : SolTokens.ink700))
+                    
+                    Text("Fjord Dynamics")
+                        .font(.inter(10, .regular))
+                        .foregroundColor(active ? Color.white.opacity(0.7) : SolTokens.ink450)
+                }
+                .lineLimit(1)
+                .layoutPriority(0)
                 
-                Spacer()
+                Spacer(minLength: 4)
                 
                 if store.pendingActionCount > 0 {
                     Text("\(store.pendingActionCount)")
@@ -563,14 +582,18 @@ struct MacMainView: View {
                             RoundedRectangle(cornerRadius: 4)
                                 .stroke(SolTokens.amberBorder, lineWidth: 1)
                         )
+                        .layoutPriority(1)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 8)
             .padding(.vertical, 6.5)
+            .contentShape(Rectangle())
             .background(active ? SolTokens.sidebarActivePill : (isHoveredCompany ? SolTokens.paper200.opacity(0.6) : Color.clear))
             .cornerRadius(6)
         }
         .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 6)
         .padding(.top, 0)
         .padding(.bottom, 2)
@@ -2819,84 +2842,132 @@ struct MacMainView: View {
         // MARK: - Linear Radar View
     private var macRadarView: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(store.l10n.navRadar)
+                    Text(store.l10n.radarHeaderTitle)
                         .font(.inter(16, .bold))
                         .foregroundColor(SolTokens.ink900)
-                    Text(store.l10n.radarAutomatedWatchNotice)
+                    Text(store.l10n.radarHeaderSubtitle)
                         .font(.inter(12))
                         .foregroundColor(SolTokens.ink600)
                 }
-                .padding(.bottom, 4)
+                .padding(.bottom, 2)
                 
-                HStack(spacing: 14) {
-                    ZStack {
-                        Circle()
-                            .fill(SolTokens.lav400.opacity(0.14))
-                            .frame(width: 44, height: 44)
-                        Image(systemName: "speedometer")
-                            .font(.inter(22))
-                            .foregroundColor(SolTokens.lav400)
+                // Speedometer & Runway Hero Card
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle()
+                                .fill(SolTokens.lav400.opacity(0.14))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "speedometer")
+                                .font(.inter(22))
+                                .foregroundColor(SolTokens.lav400)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(store.l10n.radarHeadcountNotice(count: store.currentScenario.headcount))
+                                .font(.inter(14, .bold))
+                                .foregroundColor(SolTokens.ink900)
+                            Text(store.l10n.radarNextThresholdNotice(remainingCount: max(0, 10 - store.currentScenario.headcount)))
+                                .font(.inter(12))
+                                .foregroundColor(SolTokens.ink600)
+                        }
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(SolTokens.green800)
+                                .frame(width: 6, height: 6)
+                            Text(store.l10n.radarActiveStatus)
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                .foregroundColor(SolTokens.green800)
+                        }
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 4.5)
+                        .background(SolTokens.green800.opacity(0.12))
+                        .cornerRadius(5)
                     }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(store.l10n.radarHeadcountNotice(count: store.currentScenario.headcount))
-                            .font(.inter(14, .bold))
-                            .foregroundColor(SolTokens.ink900)
-                        Text(store.l10n.radarNextThresholdNotice(remainingCount: max(0, 10 - store.currentScenario.headcount)))
-                            .font(.inter(12))
-                            .foregroundColor(SolTokens.ink600)
-                    }
-                    Spacer()
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(SolTokens.green800)
-                            .frame(width: 6, height: 6)
-                        Text(store.l10n.radarActiveStatus)
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundColor(SolTokens.green800)
-                    }
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 4.5)
-                    .background(SolTokens.green800.opacity(0.12))
-                    .cornerRadius(5)
+                    
+                    // Visual Runway Milestone Track
+                    runwayMilestoneBar
                 }
                 .padding(16)
                 .background(SolTokens.paper100)
                 .cornerRadius(10)
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
                 
-                // MARK: - Bolagsresan Growth Timeline
-                bolagsresanTimelineView
+                // Section Title: LAGSTADGADE TILLVÄXTTRÖSKLAR
+                HStack(spacing: 8) {
+                    Text(store.l10n.runwaySectionTitle)
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundColor(SolTokens.ink600)
+                    
+                    Text(store.l10n.runwayThresholdCountBadge)
+                        .font(.system(size: 9.5, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(SolTokens.paper200)
+                        .foregroundColor(SolTokens.ink600)
+                        .cornerRadius(4)
+                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
+                }
+                .padding(.top, 4)
+                .padding(.bottom, 2)
                 
+                // Card 1: 5 anställda (Passerad)
                 RadarThresholdCard(
-                    threshold: store.l10n.radarCard5Threshold,
+                    threshold: store.l10n.runwayCard5Threshold,
                     statute: "AML § 6-1",
-                    title: store.l10n.radarCard5Title,
-                    statusText: store.l10n.radarCard5Status,
+                    title: store.l10n.runwayCard5Title,
+                    statusText: store.l10n.runwayCard5Status,
                     statusColor: SolTokens.green800,
-                    statusBg: SolTokens.green800.opacity(0.14),
-                    description: store.l10n.radarCard5Desc
+                    description: store.l10n.runwayCard5Desc,
+                    isActive: false,
+                    footerNotice: store.l10n.runwayCard5Footer,
+                    footerIcon: "checkmark.shield.fill"
                 )
                 
+                // Card 2: 8 anställda (Aktiv fas - Fjord Dynamics)
                 RadarThresholdCard(
-                    threshold: store.l10n.radarCard10Threshold,
+                    threshold: store.l10n.runwayCard8Threshold,
+                    statute: "AML § 14-6 & § 10-2",
+                    title: store.l10n.runwayCard8Title,
+                    statusText: store.l10n.runwayCard8Status,
+                    statusColor: SolTokens.amber400,
+                    description: store.l10n.runwayCard8Desc,
+                    isActive: true,
+                    actionTitle: store.l10n.runwayCard8Action,
+                    onAction: {
+                        withAnimation {
+                            store.activeNav = "hub"
+                        }
+                    }
+                )
+                
+                // Card 3: 10 anställda (Nästa tröskel)
+                RadarThresholdCard(
+                    threshold: store.l10n.runwayCard10Threshold,
                     statute: "AML § 7-1",
-                    title: store.l10n.radarCard10Title,
+                    title: store.l10n.runwayCard10Title,
                     statusText: store.l10n.radarCard10Status(remaining: max(0, 10 - store.currentScenario.headcount)),
                     statusColor: SolTokens.amber400,
-                    statusBg: SolTokens.amber400.opacity(0.14),
-                    description: store.l10n.radarCard10Desc
+                    description: store.l10n.runwayCard10Desc,
+                    isActive: false,
+                    footerNotice: store.l10n.runwayCard10Footer,
+                    footerIcon: "shield.lefthalf.filled"
                 )
                 
+                // Card 4: 50 anställda (Framtida tillväxtfas)
                 RadarThresholdCard(
-                    threshold: store.l10n.radarCard50Threshold,
+                    threshold: store.l10n.runwayCard50Threshold,
                     statute: "AML § 8-1 & Likestillingsloven § 26",
-                    title: store.l10n.radarCard50Title,
-                    statusText: store.l10n.radarCard50Status,
+                    title: store.l10n.runwayCard50Title,
+                    statusText: store.l10n.runwayCard50Status,
                     statusColor: SolTokens.ink600,
-                    statusBg: SolTokens.paper300,
-                    description: store.l10n.radarCard50Desc
+                    description: store.l10n.runwayCard50Desc,
+                    isActive: false,
+                    footerNotice: store.l10n.runwayCard50Footer,
+                    footerIcon: "cloud.fill"
                 )
             }
             .padding(.horizontal, 24)
@@ -3212,359 +3283,127 @@ struct MacMainView: View {
         }
     }
     
-    // MARK: - Bolagsresan Growth Timeline
-    private var bolagsresanTimelineView: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 8) {
-                    Text(store.l10n.timelineTrackHeader)
-                        .font(.inter(14.5, .bold))
-                        .foregroundColor(SolTokens.ink900)
-                    
-                    Text("5 TILLVÄXTSTEG")
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(SolTokens.paper200)
-                        .foregroundColor(SolTokens.ink600)
-                        .cornerRadius(4)
-                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
-                }
-                Text(store.l10n.timelineTrackSubheader)
-                    .font(.inter(12))
-                    .foregroundColor(SolTokens.ink600)
-            }
-            
-            // 5 Milestone Buttons Horizontal Rail
-            HStack(spacing: 8) {
-                timelineMilestoneTab(tier: 1, range: "1–4", label: "Grundtrygghet", isCurrent: false)
-                timelineMilestoneTab(tier: 2, range: "5–9", label: "Fjord Dynamics (8)", isCurrent: true)
-                timelineMilestoneTab(tier: 3, range: "10–29", label: "Krav på SAM", isCurrent: false)
-                timelineMilestoneTab(tier: 4, range: "30–49", label: "AMU & Lön", isCurrent: false)
-                timelineMilestoneTab(tier: 5, range: "50+", label: "Facklig samverkan", isCurrent: false)
-            }
-            
-            // Detailed breakdown for the selected tier
-            timelineTierDetailCard(tier: store.selectedTimelineTier)
-        }
-        .padding(16)
-        .background(SolTokens.paper100)
-        .cornerRadius(10)
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+    // MARK: - Compliance Runway Helpers
+    private enum RunwayNodeStatus {
+        case passed
+        case current
+        case upcoming
+        case future
     }
     
-    private func timelineMilestoneTab(tier: Int, range: String, label: String, isCurrent: Bool) -> some View {
-        let isSelected = store.selectedTimelineTier == tier
-        return Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                store.selectedTimelineTier = tier
-            }
-        } label: {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 5) {
-                    Text("STEG \(tier)")
-                        .font(.system(size: 9.5, weight: .bold, design: .monospaced))
-                        .foregroundColor(isSelected ? SolTokens.ink900 : (isCurrent ? SolTokens.green800 : SolTokens.ink450))
-                    
-                    if isCurrent {
-                        Circle()
-                            .fill(SolTokens.green800)
-                            .frame(width: 5, height: 5)
-                    }
-                    Spacer()
-                }
-                
-                Text(range + " anställda")
-                    .font(.inter(12, .bold))
-                    .foregroundColor(isSelected ? SolTokens.ink900 : SolTokens.ink700)
-                
-                Text(label)
-                    .font(.inter(10.5, .medium))
-                    .foregroundColor(isCurrent ? SolTokens.green800 : SolTokens.ink450)
-            }
-            .padding(10)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isSelected ? SolTokens.paper250 : SolTokens.paper200)
-            .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? SolTokens.linearIndigo : (isCurrent ? SolTokens.greenBorder : SolTokens.paper300), lineWidth: 1)
+    private var runwayMilestoneBar: some View {
+        HStack(spacing: 0) {
+            runwayNode(
+                step: "5",
+                label: store.l10n.runwayMilestonePassed,
+                status: .passed,
+                isCurrent: false
+            )
+            
+            // Connecting line: 5 -> 8 (solid green)
+            Rectangle()
+                .fill(SolTokens.green800.opacity(0.45))
+                .frame(height: 2)
+            
+            runwayNode(
+                step: "8",
+                label: store.l10n.runwayMilestoneCurrent,
+                status: .current,
+                isCurrent: true
+            )
+            
+            // Connecting line: 8 -> 10 (amber dashed)
+            dashedLine(color: SolTokens.amber400.opacity(0.65), dashCount: 7)
+            
+            runwayNode(
+                step: "10",
+                label: store.l10n.runwayMilestoneNext,
+                status: .upcoming,
+                isCurrent: false
+            )
+            
+            // Connecting line: 10 -> 50 (neutral dashed)
+            dashedLine(color: SolTokens.paper300, dashCount: 11)
+            
+            runwayNode(
+                step: "50+",
+                label: store.l10n.runwayMilestoneFuture,
+                status: .future,
+                isCurrent: false
             )
         }
-        .buttonStyle(.plain)
-    }
-    
-    @ViewBuilder
-    private func timelineTierDetailCard(tier: Int) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            // Tier Top Header
-            HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 8) {
-                        Text(tierTitle(tier))
-                            .font(.inter(14, .bold))
-                            .foregroundColor(SolTokens.ink900)
-                        
-                        if tier == 2 {
-                            HStack(spacing: 4) {
-                                Circle().fill(SolTokens.green800).frame(width: 5, height: 5)
-                                Text("Aktiv fas · Fjord Dynamics (8 anställda)")
-                                    .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
-                                    .foregroundColor(SolTokens.green800)
-                            }
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(SolTokens.paper200)
-                            .cornerRadius(4)
-                            .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
-                        } else if tier == 1 {
-                            Text("Passerad milstolpe")
-                                .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2.5)
-                                .background(SolTokens.paper250)
-                                .foregroundColor(SolTokens.ink600)
-                                .cornerRadius(4)
-                        } else {
-                            Text("Kommande tillväxtfas")
-                                .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2.5)
-                                .background(SolTokens.paper200)
-                                .foregroundColor(SolTokens.ink600)
-                                .cornerRadius(4)
-                                .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
-                        }
-                    }
-                    
-                    Text(tierSubtitle(tier))
-                        .font(.inter(12))
-                        .foregroundColor(SolTokens.ink600)
-                }
-                Spacer()
-            }
-            .padding(.bottom, 2)
-            
-            // Grid of 3 Columns: Statutory Law, Risk/Sanctions, Simployer Solution
-            HStack(alignment: .top, spacing: 14) {
-                // Column 1: Lagstadgade Skyldigheter
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "sparkle")
-                            .font(.system(size: 8.5))
-                            .foregroundColor(SolTokens.ink450)
-                        Text("LAGSTADGADE SKYLDIGHETER")
-                            .font(.system(size: 9.5, weight: .bold, design: .monospaced))
-                            .foregroundColor(SolTokens.ink450)
-                    }
-                    
-                    Text(tierStatutes(tier))
-                        .font(.inter(12))
-                        .foregroundColor(SolTokens.ink700)
-                        .lineSpacing(3)
-                }
-                .padding(14)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .background(SolTokens.paper200)
-                .cornerRadius(8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
-                
-                // Column 2: Empirisk Risk & Påföljd
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "sparkle")
-                            .font(.system(size: 8.5))
-                            .foregroundColor(SolTokens.ink450)
-                        Text("RISK & SANKTIONER")
-                            .font(.system(size: 9.5, weight: .bold, design: .monospaced))
-                            .foregroundColor(SolTokens.ink450)
-                    }
-                    
-                    Text(tierRisk(tier))
-                        .font(.inter(12))
-                        .foregroundColor(SolTokens.ink700)
-                        .lineSpacing(3)
-                }
-                .padding(14)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .background(SolTokens.paper200)
-                .cornerRadius(8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
-                
-                // Column 3: Simployer-lösning (Upsell)
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "sparkle")
-                            .font(.system(size: 8.5))
-                            .foregroundColor(SolTokens.ink450)
-                        Text("SIMPLOYER-LÖSNING")
-                            .font(.system(size: 9.5, weight: .bold, design: .monospaced))
-                            .foregroundColor(SolTokens.ink450)
-                    }
-                    
-                    Text(tierProductTitle(tier))
-                        .font(.inter(13, .bold))
-                        .foregroundColor(SolTokens.ink900)
-                    
-                    Text(tierProductDesc(tier))
-                        .font(.inter(11.5))
-                        .foregroundColor(SolTokens.ink600)
-                        .lineSpacing(2)
-                    
-                    Spacer()
-                    
-                    tierProductActionButton(tier: tier)
-                }
-                .padding(14)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .background(SolTokens.paper200)
-                .cornerRadius(8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.lav400.opacity(0.3), lineWidth: 1))
-            }
-        }
-        .padding(14)
-        .background(SolTokens.paper250)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(SolTokens.paper200)
         .cornerRadius(8)
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper250, lineWidth: 1))
     }
     
-    private func tierTitle(_ tier: Int) -> String {
-        switch tier {
-        case 1: return "Steg 1: Grundtrygghet (1–4 anställda)"
-        case 2: return "Steg 2: Skyddsombud & Ledarskap (5–9 anställda)"
-        case 3: return "Steg 3: Strukturerat SAM & Rutiner (10–29 anställda)"
-        case 4: return "Steg 4: Arbetsmiljökommitté & Lönekartläggning (30–49 anställda)"
-        default: return "Steg 5: Full MBL & Koncernsamverkan (50+ anställda)"
-        }
-    }
-    
-    private func tierSubtitle(_ tier: Int) -> String {
-        switch tier {
-        case 1: return "Etablering av lagstadgade anställningsvillkor och grundläggande försäkringsskydd."
-        case 2: return "Fokus på formellt medinflytande, skyddsombud och obligatorisk VD-kompetens."
-        case 3: return "Krav på skriftlig dokumentation, riskbedömningar och visselblåsarrutiner."
-        case 4: return "Formaliserad samverkanskommitté (AMU) samt årlig lagstadgad lönekartläggning."
-        default: return "Omfattande facklig förhandlingsskyldighet, formella uppsägningsprocesser och CSRD."
-        }
-    }
-    
-    private func tierStatutes(_ tier: Int) -> String {
-        switch tier {
-        case 1: return "• AML § 14-6 / LAS 6 c §: Skriftliga avtal inom 7 dagar.\n• Grundläggande arbetsmiljöansvar.\n• Obligatorisk tjänstepension & arbetsskadeförsäkring."
-        case 2: return "• AML § 6-1: Obligatoriskt skyddsombud från 5 anställda.\n• AML § 3-5: Dokumenterad HMS-utbildning för VD.\n• Krav på skriftlig förteckning över arbetstidsavvikelser."
-        case 3: return "• Internkontrollforskriften / SAM: Skriftliga rutiner och årlig riskinventering.\n• Visselblåsarlagen: Skriftlig intern rapporteringskanal.\n• Skyddsombud får skriftlig initiativ- och stopprätt."
-        case 4: return "• AML § 7-1: Obligatorisk Arbetsmiljökommitté (AMU).\n• Likestillingsloven § 26 / Diskrimineringslagen: Årlig lönekartläggning & ARP-redogörelse.\n• Redovisning i förvaltningsberättelsen."
-        default: return "• MBL § 11: Primär förhandlingsskyldighet vid verksamhetsändring.\n• Extern visselblåsarkanal med oberoende mottagning.\n• Formella turordningslistor vid neddragning."
-        }
-    }
-    
-    private func tierRisk(_ tier: Int) -> String {
-        switch tier {
-        case 1: return "• Skadestånd vid otydliga anställningsvillkor (50 000–100 000 kr).\n• Risk för retroaktiv lön och semesterersättning vid felaktig anställningsform."
-        case 2: return "• Föreläggande och vite från Arbeidstilsynet / Arbetsmiljöverket.\n• Personligt straffansvar för VD vid allvarlig arbetsplatsolycka utan HMS-kurs."
-        case 3: return "• Sanktionsavgift upp till 500 000 kr vid bristande SAM-dokumentation.\n• Tillsynsingripande och vite vid avsaknad av visselblåsarrutin."
-        case 4: return "• Diskrimineringsersättning upp till 250 000 kr vid osakliga löneskillnader.\n• Offentlig anmärkning från Jämställdhetsmyndigheten / LDO."
-        default: return "• Fackliga MBL-skadestånd (50 000–100 000 kr per tillfälle).\n• Ogiltigförklarade uppsägningar och skadestånd (median 396 000 kr i AD)."
-        }
-    }
-    
-    private func tierProductTitle(_ tier: Int) -> String {
-        switch tier {
-        case 1: return "Simployer Comply Core"
-        case 2: return "Simployer Learn (HMS-kurs)"
-        case 3: return "Simployer Handbooks"
-        case 4: return "Simployer Equal Pay"
-        default: return "Simployer One HRM + Expert"
-        }
-    }
-    
-    private func tierProductDesc(_ tier: Int) -> String {
-        switch tier {
-        case 1: return "Automatisk avtalsgranskning och lagradar. Bevakar anställningsavtal dygnet runt."
-        case 2: return "Certifierad webbkurs för VD. Uppfyller AML § 3-5 med juridiskt giltigt intyg."
-        case 3: return "Digital personalhandbok med färdiga SAM-mallar, policyer och visselblåsarrutin."
-        case 4: return "Automatisk lönekartläggning och ARP-rapport direkt från ert lönesystem."
-        default: return "Komplett HRM-system kombinerat med obegränsad juridisk rådgivning och ansvarsgaranti."
-        }
-    }
-    
-    @ViewBuilder
-    private func tierProductActionButton(tier: Int) -> some View {
-        switch tier {
-        case 1:
-            HStack(spacing: 5) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(SolTokens.green800)
-                Text("Aktiv i er plan")
-                    .font(.inter(11, .semibold))
-                    .foregroundColor(SolTokens.green800)
+    private func dashedLine(color: Color, dashCount: Int) -> some View {
+        HStack(spacing: 4) {
+            ForEach(0..<dashCount, id: \.self) { _ in
+                Rectangle()
+                    .fill(color)
+                    .frame(width: 4, height: 2)
             }
-            .padding(.vertical, 4)
-        case 2:
-            Button {
-                store.activeNav = "hub"
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "graduationcap.fill")
-                    Text("Boka VD-kurs (3 900 kr)")
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private func runwayNode(step: String, label: String, status: RunwayNodeStatus, isCurrent: Bool) -> some View {
+        VStack(spacing: 5) {
+            ZStack {
+                switch status {
+                case .passed:
+                    Circle()
+                        .fill(SolTokens.green800.opacity(0.14))
+                        .frame(width: 26, height: 26)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(SolTokens.green800)
+                case .current:
+                    Circle()
+                        .fill(SolTokens.lav400.opacity(0.18))
+                        .frame(width: 28, height: 28)
+                    Circle()
+                        .stroke(SolTokens.lav400, lineWidth: 2)
+                        .frame(width: 28, height: 28)
+                    Text(step)
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundColor(SolTokens.lav400)
+                case .upcoming:
+                    Circle()
+                        .fill(SolTokens.amber400.opacity(0.14))
+                        .frame(width: 26, height: 26)
+                    Circle()
+                        .stroke(SolTokens.amber400.opacity(0.5), lineWidth: 1)
+                        .frame(width: 26, height: 26)
+                    Text(step)
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundColor(SolTokens.amber400)
+                case .future:
+                    Circle()
+                        .fill(SolTokens.paper250)
+                        .frame(width: 24, height: 24)
+                    Text(step)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
                 }
-                .font(.inter(11, .semibold))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5.5)
-                .background(SolTokens.lav400.opacity(0.16))
-                .foregroundColor(SolTokens.lav400)
-                .cornerRadius(5)
             }
-            .buttonStyle(.plain)
-        case 3:
-            Button {
-                store.activeNav = "handbook"
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "book.closed.fill")
-                    Text("Öppna Handbok (1 490 kr/m)")
+            
+            HStack(spacing: 3) {
+                if isCurrent {
+                    Circle()
+                        .fill(SolTokens.lav400)
+                        .frame(width: 4, height: 4)
                 }
-                .font(.inter(11, .semibold))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5.5)
-                .background(SolTokens.paper300)
-                .foregroundColor(SolTokens.ink900)
-                .cornerRadius(5)
+                Text(label)
+                    .font(.system(size: 10, weight: isCurrent ? .bold : .medium))
+                    .foregroundColor(isCurrent ? SolTokens.ink900 : SolTokens.ink600)
             }
-            .buttonStyle(.plain)
-        case 4:
-            Button {
-                store.showUpsellModal = true
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "chart.bar.xaxis")
-                    Text("Begär Equal Pay Demo")
-                }
-                .font(.inter(11, .semibold))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5.5)
-                .background(SolTokens.paper300)
-                .foregroundColor(SolTokens.ink900)
-                .cornerRadius(5)
-            }
-            .buttonStyle(.plain)
-        default:
-            Button {
-                store.activeNav = "expert"
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "person.crop.circle.badge.checkmark")
-                    Text("Kontakta Simployer Expert")
-                }
-                .font(.inter(11, .semibold))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5.5)
-                .background(SolTokens.lav400.opacity(0.16))
-                .foregroundColor(SolTokens.lav400)
-                .cornerRadius(5)
-            }
-            .buttonStyle(.plain)
+            .lineLimit(1)
         }
+        .frame(minWidth: 70)
     }
     
     // MARK: - Linear Settings View
@@ -3580,7 +3419,6 @@ struct MacMainView: View {
                         .font(.inter(12.5))
                         .foregroundColor(SolTokens.ink600)
                 }
-                .padding(.top, 4)
                 
                 // SECTION 0: PROTOTYP & AUTOMATISKA UPPDATERINGAR (Sparkle 2)
                 VStack(alignment: .leading, spacing: 12) {
@@ -6287,11 +6125,6 @@ struct MacMainView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 24)
-        .onAppear {
-            if colRoleDeptWidth < 280 {
-                colRoleDeptWidth = 300.0
-            }
-        }
     }
 }
 
@@ -6372,23 +6205,34 @@ struct SidebarButton: View {
     @State private var isHovered = false
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                action()
+            }
+        } label: {
             let active = activeNav == id
             HStack(spacing: 9) {
                 Image(systemName: icon)
                     .font(.system(size: 13, weight: .regular, design: .rounded))
                     .foregroundColor(active ? Color.white : (isHovered ? SolTokens.ink900 : SolTokens.ink450))
-                    .frame(width: 18, alignment: .center)
+                    .frame(width: 18, height: 18, alignment: .center)
+                    .layoutPriority(1)
+                
                 Text(label)
                     .font(.inter(13, active ? .semibold : .medium))
                     .foregroundColor(active ? Color.white : (isHovered ? SolTokens.ink900 : SolTokens.ink700))
                     .lineLimit(1)
-                Spacer()
+                    .truncationMode(.tail)
+                    .layoutPriority(0)
+                
+                Spacer(minLength: 4)
+                
                 if badgeStyle == .dot {
                     Circle()
                         .fill(SolTokens.green800)
                         .frame(width: 5.5, height: 5.5)
                         .padding(.trailing, 2)
+                        .layoutPriority(1)
                 } else if let b = badge {
                     Text(b)
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
@@ -6401,14 +6245,18 @@ struct SidebarButton: View {
                             RoundedRectangle(cornerRadius: 4)
                                 .stroke(badgeStyle == .alert ? SolTokens.amberBorder : SolTokens.paper300, lineWidth: 1)
                         )
+                        .layoutPriority(1)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 8)
             .padding(.vertical, 6.5)
+            .contentShape(Rectangle())
             .background(active ? SolTokens.sidebarActivePill : (isHovered ? SolTokens.paper200.opacity(0.6) : Color.clear))
             .cornerRadius(6)
         }
         .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 6)
         .onHover { isHovered = $0 }
     }
@@ -6470,7 +6318,7 @@ struct SidebarResizeHandle: View {
                         updateCursor(active: true)
                     }
                     let newWidth = (dragInitialWidth ?? defaultWidth) + Double(gesture.translation.width)
-                    sidebarWidth = min(max(newWidth, minWidth), maxWidth)
+                    sidebarWidth = min(max(newWidth, minWidth), maxWidth).rounded()
                 }
                 .onEnded { _ in
                     dragInitialWidth = nil
@@ -9402,21 +9250,26 @@ struct RadarThresholdCard: View {
     let title: String
     let statusText: String
     let statusColor: Color
-    let statusBg: Color
+    var statusBg: Color? = nil
     let description: String
+    var isActive: Bool = false
+    var footerNotice: String? = nil
+    var footerIcon: String? = nil
+    var actionTitle: String? = nil
+    var onAction: (() -> Void)? = nil
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 11) {
             HStack {
                 HStack(spacing: 8) {
                     Text(threshold)
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2.5)
-                        .background(SolTokens.paper200)
-                        .foregroundColor(SolTokens.ink700)
+                        .background(isActive ? SolTokens.lav400.opacity(0.14) : SolTokens.paper200)
+                        .foregroundColor(isActive ? SolTokens.lav400 : SolTokens.ink700)
                         .cornerRadius(4)
-                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(isActive ? SolTokens.lav400.opacity(0.3) : SolTokens.paper300, lineWidth: 1))
                     Text(statute)
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundColor(SolTokens.ink450)
@@ -9427,18 +9280,53 @@ struct RadarThresholdCard: View {
                     dotColor: statusColor
                 )
             }
+            
             Text(title)
                 .font(.inter(14.5, .bold))
                 .foregroundColor(SolTokens.ink900)
+            
             Text(description)
                 .font(.inter(12.5))
                 .foregroundColor(SolTokens.ink700)
                 .lineSpacing(2.5)
+            
+            if let actionTitle = actionTitle, let onAction = onAction {
+                Button(action: onAction) {
+                    HStack(spacing: 6) {
+                        Text(actionTitle)
+                            .font(.inter(12, .semibold))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 10, weight: .semibold))
+                    }
+                    .foregroundColor(SolTokens.lav400)
+                    .padding(.horizontal, 11)
+                    .padding(.vertical, 6)
+                    .background(SolTokens.lav400.opacity(0.12))
+                    .cornerRadius(6)
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.lav400.opacity(0.28), lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 2)
+            }
+            
+            if let footerNotice = footerNotice {
+                HStack(spacing: 6) {
+                    if let footerIcon = footerIcon {
+                        Image(systemName: footerIcon)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(footerIcon.contains("checkmark") ? SolTokens.green800 : SolTokens.ink600)
+                    }
+                    Text(footerNotice)
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundColor(SolTokens.ink600)
+                }
+                .padding(.top, 2)
+            }
         }
         .padding(16)
-        .background(SolTokens.paper100)
+        .background(isActive ? SolTokens.paper200 : SolTokens.paper100)
         .cornerRadius(8)
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(isActive ? SolTokens.lav400.opacity(0.35) : SolTokens.paper300, lineWidth: 1))
     }
 }
 
@@ -9473,7 +9361,11 @@ struct SiaTabButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                action()
+            }
+        } label: {
             Text(title)
                 .font(.inter(11.5, isSelected ? .bold : .medium))
                 .padding(.horizontal, 9)
