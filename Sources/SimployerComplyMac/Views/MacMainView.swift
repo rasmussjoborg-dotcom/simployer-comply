@@ -27,6 +27,12 @@ struct MacMainView: View {
     @AppStorage("comply_col_employment_width") private var colEmploymentWidth: Double = 210.0
     @AppStorage("comply_col_status_width") private var colStatusWidth: Double = 240.0
     
+    // MARK: - Handbook State
+    @State private var activeHandbookVolume: HandbookVolume = .staff
+    @State private var expandedHandbookChapter: String? = nil
+    @State private var handbookSearchQuery: String = ""
+    @State private var handbookToastText: String? = nil
+    
     // MARK: - Compliance Horizon State (Linear-style Urgency & Temporal Grouping)
     enum ComplianceHorizonFilter: String, CaseIterable {
         case all = "alla"
@@ -400,24 +406,44 @@ struct MacMainView: View {
             }
         }
         .overlay(alignment: .bottomTrailing) {
-            if showResetToast {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(SolTokens.green800)
-                    Text(store.language == .se ? "Prototypen återställd till utgångsläge" : (store.language == .no ? "Prototypen tilbakestilt til startposisjon" : "Prototype reset to default state"))
-                        .font(.inter(12, .semibold))
-                        .foregroundColor(SolTokens.ink900)
+            VStack(alignment: .trailing, spacing: 10) {
+                if showResetToast {
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(SolTokens.green800)
+                        Text(store.language == .se ? "Prototypen återställd till utgångsläge" : (store.language == .no ? "Prototypen tilbakestilt til startposisjon" : "Prototype reset to default state"))
+                            .font(.inter(12, .semibold))
+                            .foregroundColor(SolTokens.ink900)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(SolTokens.paper100)
+                    .cornerRadius(8)
+                    .shadow(color: Color.black.opacity(0.18), radius: 12, y: 4)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.greenBorder, lineWidth: 1))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(SolTokens.paper100)
-                .cornerRadius(8)
-                .shadow(color: Color.black.opacity(0.18), radius: 12, y: 4)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.greenBorder, lineWidth: 1))
-                .padding(24)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                
+                if let toast = handbookToastText {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(SolTokens.green800)
+                        Text(toast)
+                            .font(.inter(12, .semibold))
+                            .foregroundColor(SolTokens.ink900)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(SolTokens.paper100)
+                    .cornerRadius(8)
+                    .shadow(color: Color.black.opacity(0.18), radius: 12, y: 4)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.greenBorder, lineWidth: 1))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
+            .padding(24)
         }
         .onChange(of: autoplay.currentStepIndex) { _ in
             if let step = autoplay.currentStep {
@@ -1038,14 +1064,8 @@ struct MacMainView: View {
         let ctaTitle: String = store.l10n.hubMacroResolveButton
         
         return HStack(alignment: .center, spacing: 32) {
-            // Column 1: Ambient Radial Glow & Enlarged 152pt Dial
+            // Column 1: Crisp 152pt Dial
             ZStack {
-                // Subtle Ambient Radial Aura Blur behind the ring
-                Circle()
-                    .fill(isCompliant ? SolTokens.green800.opacity(0.18) : SolTokens.indigo.opacity(0.22))
-                    .frame(width: 174, height: 174)
-                    .blur(radius: 30)
-                
                 // Background Track
                 Circle()
                     .stroke(SolTokens.paper300, lineWidth: 11)
@@ -1132,30 +1152,32 @@ struct MacMainView: View {
             // Column 3: Primary Action / CTA Column
             VStack(alignment: .trailing, spacing: 8) {
                 if !isCompliant {
-                    Button {
-                        withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
-                            store.resolveAllActionHubItems()
+                    VStack(alignment: .center, spacing: 8) {
+                        Button {
+                            withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
+                                store.resolveAllActionHubItems()
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.shield.fill")
+                                    .font(.system(size: 14, weight: .bold))
+                                Text(ctaTitle)
+                                    .font(.inter(14.5, .bold))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(SolTokens.linearIndigo)
+                            .foregroundColor(Color.white)
+                            .clipShape(Capsule())
+                            .contentShape(Capsule())
                         }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.shield.fill")
-                                .font(.system(size: 14, weight: .bold))
-                            Text(ctaTitle)
-                                .font(.inter(14.5, .bold))
-                        }
-                        .padding(.horizontal, 26)
-                        .padding(.vertical, 13)
-                        .background(SolTokens.linearIndigo)
-                        .foregroundColor(Color.white)
-                        .clipShape(Capsule())
-                        .contentShape(Capsule())
-                        .shadow(color: SolTokens.indigo.opacity(0.35), radius: 10, y: 4)
+                        .buttonStyle(.plain)
+                        
+                        Text(store.language == .se ? "Uppdaterar 7 avtal automatiskt" : (store.language == .no ? "Oppdaterer 7 avtaler automatisk" : "Updates 7 contracts automatically"))
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundColor(SolTokens.ink450)
                     }
-                    .buttonStyle(.plain)
-                    
-                    Text(store.language == .se ? "Uppdaterar 7 avtal automatiskt" : (store.language == .no ? "Oppdaterer 7 avtaler automatisk" : "Updates 7 contracts automatically"))
-                        .font(.system(size: 11, design: .monospaced))
-                        .foregroundColor(SolTokens.ink450)
+                    .fixedSize(horizontal: true, vertical: false)
                 } else {
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.seal.fill")
@@ -2364,96 +2386,437 @@ struct MacMainView: View {
         )
     }
     
-    // MARK: - Linear Handbook View
+    // MARK: - Linear Handbook View (Multi-Volume & Strict Color Quarantine)
     private var macHandbookView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(store.l10n.navHandbook)
-                        .font(.inter(16, .bold))
-                        .foregroundColor(SolTokens.ink900)
-                    Text(store.l10n.handbookAiUpdateNotice)
-                        .font(.inter(12))
-                        .foregroundColor(SolTokens.ink600)
-                }
-                .padding(.bottom, 4)
-                
-                HandbookChapterCard(
-                    chapterNumber: "1",
-                    title: store.l10n.handbookCh1Title,
-                    statute: store.l10n.handbookCh1Statute,
-                    statusText: store.l10n.handbookCh1Status,
-                    statusColor: SolTokens.green800,
-                    statusBg: SolTokens.green800.opacity(0.14),
-                    summary: store.l10n.handbookCh1Summary
-                )
-                
-                HandbookChapterCard(
-                    chapterNumber: "2",
-                    title: store.l10n.handbookCh2Title,
-                    statute: store.l10n.handbookCh2Statute,
-                    statusText: store.l10n.handbookCh2Status,
-                    statusColor: SolTokens.lav400,
-                    statusBg: SolTokens.lav400.opacity(0.14),
-                    summary: store.l10n.handbookCh2Summary
-                )
-                
-                HandbookChapterCard(
-                    chapterNumber: "3",
-                    title: store.l10n.handbookCh3Title,
-                    statute: store.l10n.handbookCh3Statute,
-                    statusText: store.l10n.handbookCh3Status,
-                    statusColor: SolTokens.green800,
-                    statusBg: SolTokens.green800.opacity(0.14),
-                    summary: store.l10n.handbookCh3Summary
-                )
-                
-                HandbookChapterCard(
-                    chapterNumber: "4",
-                    title: store.l10n.handbookCh4Title,
-                    statute: store.l10n.handbookCh4Statute,
-                    statusText: store.l10n.handbookCh4Status,
-                    statusColor: SolTokens.green800,
-                    statusBg: SolTokens.green800.opacity(0.14),
-                    summary: store.l10n.handbookCh4Summary
-                )
-                
-                // Chapter 5: Workplace AI Policy (Nov 8 Joint Agreement)
-                VStack(alignment: .leading, spacing: 10) {
-                    HandbookChapterCard(
-                        chapterNumber: "5",
-                        title: store.l10n.aiHandbookChapterTitle,
-                        statute: "AML § 4-1 · EU AI Act Art. 4",
-                        statusText: store.l10n.handbookCh5Status,
-                        statusColor: SolTokens.lav400,
-                        statusBg: SolTokens.lav400.opacity(0.14),
-                        summary: store.l10n.aiHandbookSummary
-                    )
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(store.l10n.handbookApprovedAiToolsHeader)
-                            .font(.system(size: 10.5, weight: .bold, design: .monospaced))
-                            .foregroundColor(SolTokens.ink450)
+        let chapters = getHandbookChapters(for: activeHandbookVolume, language: store.language, l10n: store.l10n)
+        let benefits = getCompanyBenefits(for: store.language)
+        let q = handbookSearchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        
+        let filteredChapters = q.isEmpty ? chapters : chapters.filter { ch in
+            ch.title.lowercased().contains(q) ||
+            ch.statute.lowercased().contains(q) ||
+            ch.summary.lowercased().contains(q) ||
+            ch.statutoryRule.lowercased().contains(q) ||
+            ch.companyPolicy.lowercased().contains(q) ||
+            ch.practicalGuideline.lowercased().contains(q)
+        }
+        let filteredBenefits = q.isEmpty ? benefits : benefits.filter { ben in
+            ben.title.lowercased().contains(q) ||
+            ben.description.lowercased().contains(q) ||
+            ben.highlight.lowercased().contains(q) ||
+            ben.tags.contains { $0.lowercased().contains(q) }
+        }
+        
+        return ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                // MARK: 1. Executive Cockpit Header
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack(spacing: 10) {
+                            Text(activeHandbookVolume.companyTitle(for: store.language))
+                                .font(.inter(18, .bold))
+                                .foregroundColor(SolTokens.ink900)
+                            
+                            Text(activeHandbookVolume.versionBadge(for: store.language))
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 2.5)
+                                .background(SolTokens.paper200)
+                                .foregroundColor(SolTokens.lav400)
+                                .cornerRadius(4)
+                                .overlay(RoundedRectangle(cornerRadius: 4).stroke(SolTokens.paper300, lineWidth: 1))
+                        }
                         
-                        HStack(spacing: 8) {
-                            AIToolChip(name: "ChatGPT Team", vendor: "OpenAI", status: store.l10n.aiChipTextStatus)
-                            AIToolChip(name: "Claude Enterprise", vendor: "Anthropic", status: store.l10n.aiChipDataStatus)
-                            AIToolChip(name: "GitHub Copilot", vendor: "Microsoft", status: store.l10n.aiChipCodeStatus)
+                        Text(activeHandbookVolume.subtitle(for: store.language))
+                            .font(.inter(12.5))
+                            .foregroundColor(SolTokens.ink600)
+                    }
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                handbookToastText = store.language == .se
+                                    ? "📄 \(activeHandbookVolume.title(for: .se)) \(activeHandbookVolume.versionBadge(for: .se)) exporterad som PDF. Sparad i Hämtade filer"
+                                    : (store.language == .no ? "📄 \(activeHandbookVolume.title(for: .no)) \(activeHandbookVolume.versionBadge(for: .no)) eksportert som PDF. Lagret i Nedlastinger" : "📄 \(activeHandbookVolume.title(for: .en)) \(activeHandbookVolume.versionBadge(for: .en)) exported as PDF. Saved to Downloads")
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                                withAnimation(.easeInOut(duration: 0.25)) {
+                                    handbookToastText = nil
+                                }
+                            }
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "arrow.down.doc.fill")
+                                    .font(.system(size: 11, weight: .semibold))
+                                Text(store.l10n.handbookDownloadPdf)
+                                    .font(.inter(12, .medium))
+                            }
+                            .padding(.horizontal, 11)
+                            .padding(.vertical, 6.5)
+                            .background(SolTokens.paper200)
+                            .foregroundColor(SolTokens.ink800)
+                            .cornerRadius(6)
+                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper400, lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Button(action: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString("https://comply.simployer.com/fjord-dynamics/\(activeHandbookVolume.rawValue)", forType: .string)
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                handbookToastText = store.language == .se
+                                    ? "🔗 Delningslänk för \(activeHandbookVolume.title(for: .se)) kopierad till urklipp."
+                                    : (store.language == .no ? "🔗 Delingslenke for \(activeHandbookVolume.title(for: .no)) kopiert til utklippstavle." : "🔗 Share link for \(activeHandbookVolume.title(for: .en)) copied to clipboard.")
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                                withAnimation(.easeInOut(duration: 0.25)) {
+                                    handbookToastText = nil
+                                }
+                            }
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "paperplane.fill")
+                                    .font(.system(size: 11, weight: .semibold))
+                                Text(activeHandbookVolume == .leadership ? (store.language == .se ? "Dela med ledning" : (store.language == .no ? "Del med ledere" : "Share with leaders")) : store.l10n.handbookShareWithStaff)
+                                    .font(.inter(12, .semibold))
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6.5)
+                            .background(SolTokens.plum900)
+                            .foregroundColor(SolTokens.lav50)
+                            .cornerRadius(6)
+                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.lav400.opacity(0.4), lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                
+                // MARK: 2. Volume Switcher Segmented Control
+                HStack(spacing: 10) {
+                    HStack(spacing: 4) {
+                        ForEach(HandbookVolume.allCases) { vol in
+                            Button(action: {
+                                withAnimation(.spring(response: 0.28, dampingFraction: 0.85)) {
+                                    activeHandbookVolume = vol
+                                    expandedHandbookChapter = nil
+                                }
+                            }) {
+                                HStack(spacing: 7) {
+                                    Image(systemName: vol.icon)
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundColor(activeHandbookVolume == vol ? SolTokens.lav400 : SolTokens.ink600)
+                                    
+                                    Text(vol.title(for: store.language))
+                                        .font(.inter(12.5, activeHandbookVolume == vol ? .bold : .medium))
+                                        .foregroundColor(activeHandbookVolume == vol ? SolTokens.ink900 : SolTokens.ink600)
+                                }
+                                .padding(.horizontal, 13)
+                                .padding(.vertical, 7)
+                                .background(activeHandbookVolume == vol ? SolTokens.paper200 : Color.clear)
+                                .contentShape(Rectangle())
+                                .cornerRadius(6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(activeHandbookVolume == vol ? SolTokens.lav400.opacity(0.6) : Color.clear, lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.bottom, 12)
+                    .padding(3)
+                    .background(SolTokens.paper100)
+                    .cornerRadius(8)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1).allowsHitTesting(false))
+                    
+                    Spacer()
+                    
+                    // Audience badge
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(activeHandbookVolume == .leadership ? SolTokens.lav400 : (activeHandbookVolume == .hms ? SolTokens.lav400 : SolTokens.ink450))
+                            .frame(width: 5, height: 5)
+                        Text(activeHandbookVolume.audienceBadge(for: store.language))
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            .foregroundColor(SolTokens.ink700)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(SolTokens.paper100)
+                    .cornerRadius(6)
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
                 }
+                .opacity(expandedHandbookChapter == nil ? 1.0 : 0.30)
+                .animation(.spring(response: 0.44, dampingFraction: 0.86), value: expandedHandbookChapter)
+                
+                // MARK: 3. Search Field
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(SolTokens.ink450)
+                    TextField(store.l10n.handbookSearchPlaceholder, text: $handbookSearchQuery)
+                        .textFieldStyle(.plain)
+                        .font(.inter(12.5))
+                        .foregroundColor(SolTokens.ink900)
+                    if !handbookSearchQuery.isEmpty {
+                        Button(action: { handbookSearchQuery = "" }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(SolTokens.ink450)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
                 .background(SolTokens.paper100)
-                .cornerRadius(8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                .cornerRadius(6)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper300, lineWidth: 1))
+                .frame(maxWidth: .infinity)
+                .opacity(expandedHandbookChapter == nil ? 1.0 : 0.25)
+                .animation(.spring(response: 0.44, dampingFraction: 0.86), value: expandedHandbookChapter)
+                
+                // MARK: 4. Chapters Grid (3 Columns)
+                if filteredChapters.isEmpty && (activeHandbookVolume != .staff || filteredBenefits.isEmpty) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(SolTokens.ink450)
+                        Text(store.language == .se ? "Inga kapitel matchade \"\(handbookSearchQuery)\"" : (store.language == .no ? "Ingen kapitler matchet \"\(handbookSearchQuery)\"" : "No chapters matched \"\(handbookSearchQuery)\""))
+                            .font(.inter(13))
+                            .foregroundColor(SolTokens.ink600)
+                        Button(action: { handbookSearchQuery = "" }) {
+                            Text(store.language == .se ? "Rensa sökning" : (store.language == .no ? "Nullstill søk" : "Clear search"))
+                                .font(.inter(12, .semibold))
+                                .foregroundColor(SolTokens.lav400)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.vertical, 24)
+                } else {
+                    let totalCount = filteredChapters.count
+                    let rowIndices = Array(stride(from: 0, to: totalCount, by: 3))
+                    
+                    VStack(alignment: .leading, spacing: 14) {
+                        let handbookCardHeight: CGFloat = 214
+                        
+                        ForEach(rowIndices, id: \.self) { index in
+                            let end = min(index + 3, totalCount)
+                            let rowChapters = Array(filteredChapters[index..<end])
+                            let activeChapterInRow = rowChapters.first(where: { $0.chapterNumber == expandedHandbookChapter })
+                            let activeColIndexInRow = rowChapters.firstIndex(where: { $0.chapterNumber == expandedHandbookChapter })
+                            
+                            VStack(alignment: .leading, spacing: 0) {
+                                HStack(alignment: .top, spacing: 14) {
+                                    ForEach(Array(rowChapters.enumerated()), id: \.element.id) { colIdx, chapter in
+                                        let isThisSelected = expandedHandbookChapter == chapter.chapterNumber
+                                        HandbookColumnCard(
+                                            chapter: chapter,
+                                            isSelected: isThisSelected,
+                                            cardHeight: handbookCardHeight,
+                                            onSelect: {
+                                                withAnimation(.spring(response: 0.44, dampingFraction: 0.86)) {
+                                                    if expandedHandbookChapter == chapter.chapterNumber {
+                                                        expandedHandbookChapter = nil
+                                                    } else {
+                                                        expandedHandbookChapter = chapter.chapterNumber
+                                                    }
+                                                }
+                                            }
+                                        )
+                                        .frame(height: handbookCardHeight)
+                                        .opacity(expandedHandbookChapter == nil ? 1.0 : (isThisSelected ? 1.0 : 0.25))
+                                        .animation(.spring(response: 0.44, dampingFraction: 0.86), value: expandedHandbookChapter)
+                                    }
+                                    if min(index + 3, filteredChapters.count) - index < 3 {
+                                        ForEach(0..<(3 - (min(index + 3, filteredChapters.count) - index)), id: \.self) { _ in
+                                            Color.clear
+                                                .frame(maxWidth: .infinity)
+                                        }
+                                    }
+                                }
+                                
+                                // Reveal detail box directly beneath this row, seamlessly connected with exact 14pt row margin
+                                if let activeChapter = activeChapterInRow, let activeCol = activeColIndexInRow {
+                                    Spacer().frame(height: 14)
+                                    
+                                    HandbookRowDetailBox(
+                                        chapter: activeChapter,
+                                        activeCol: activeCol,
+                                        onClose: {
+                                            withAnimation(.spring(response: 0.38, dampingFraction: 0.92)) {
+                                                expandedHandbookChapter = nil
+                                            }
+                                        }
+                                    )
+                                    .id(activeChapter.chapterNumber)
+                                    .transition(.asymmetric(
+                                        insertion: .opacity
+                                            .animation(.easeInOut(duration: 0.34).delay(0.05))
+                                            .combined(with: .scale(scale: 0.985, anchor: .top)),
+                                        removal: .opacity
+                                            .animation(.easeInOut(duration: 0.22))
+                                            .combined(with: .scale(scale: 0.985, anchor: .top))
+                                    ))
+                                }
+                            }
+                            .background(
+                                Group {
+                                    if let activeCol = activeColIndexInRow {
+                                        InwardFilletShape(
+                                            activeCol: activeCol,
+                                            totalCols: 3,
+                                            spacing: 14,
+                                            cardHeight: handbookCardHeight,
+                                            rowMargin: 14,
+                                            r: 10,
+                                            inwardR: 12
+                                        )
+                                        .fill(SolTokens.paper100)
+                                        .overlay(
+                                            InwardFilletShape(
+                                                activeCol: activeCol,
+                                                totalCols: 3,
+                                                spacing: 14,
+                                                cardHeight: handbookCardHeight,
+                                                rowMargin: 14,
+                                                r: 10,
+                                                inwardR: 12
+                                            )
+                                            .stroke(SolTokens.paper300, lineWidth: 1)
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    
+                    // MARK: 5. Dynamic Volume Footer
+                    Group {
+                        if activeHandbookVolume == .staff && !filteredBenefits.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(store.l10n.handbookBenefitsHeader)
+                                    .font(.inter(15, .bold))
+                                    .foregroundColor(SolTokens.ink900)
+                                Text(store.l10n.handbookBenefitsSub)
+                                    .font(.inter(12))
+                                    .foregroundColor(SolTokens.ink600)
+                            }
+                            .padding(.top, 10)
+                            
+                            HStack(alignment: .top, spacing: 14) {
+                                ForEach(filteredBenefits) { benefit in
+                                    CompanyBenefitCard(benefit: benefit)
+                                }
+                            }
+                        }
+                    } else if activeHandbookVolume == .leadership {
+                        // Leadership Callout: Procedural Legal Escort
+                        HStack(spacing: 16) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(SolTokens.paper200)
+                                    .frame(width: 44, height: 44)
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                                Image(systemName: "scale.3d")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(SolTokens.lav400)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(store.language == .se ? "Ledningsstöd: Processuella Riktlinjer & Simployer Jurist-avtal" : (store.language == .no ? "Lederstøtte: Prosessuelle Retningslinjer & Simployer Juristavtale" : "Leadership Support: Procedural Guidelines & Legal Escalation"))
+                                    .font(.inter(13.5, .bold))
+                                    .foregroundColor(SolTokens.ink900)
+                                Text(store.language == .se ? "Samtliga chefsrutiner hålls uppdaterade mot aktuell domstolspraxis i Arbetsdomstolen. Procedurfel vid uppsägning leder till skadestånd oavsett sakgrund." : (store.language == .no ? "Alle lederrutiner kvalitetssikres mot oppdatert rettspraksis i Arbeidsretten. Prosessuelle feil ved oppsigelse (§ 15-1) utløser automatisk erstatningskrav." : "All managerial procedures align with current labor court precedents. Procedural flaws in dismissals trigger damages regardless of substantive merit."))
+                                    .font(.inter(12))
+                                    .foregroundColor(SolTokens.ink600)
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                store.activeNav = "expert"
+                            }) {
+                                HStack(spacing: 6) {
+                                    Text(store.language == .se ? "Kontakta Simployer Jurist" : (store.language == .no ? "Kontakt Simployer Jurist" : "Contact Simployer Legal"))
+                                        .font(.inter(12, .semibold))
+                                    Image(systemName: "arrow.right")
+                                        .font(.system(size: 10, weight: .bold))
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(SolTokens.plum900)
+                                .foregroundColor(SolTokens.lav50)
+                                .cornerRadius(6)
+                                .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.lav400.opacity(0.4), lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(16)
+                        .background(SolTokens.paper100)
+                        .cornerRadius(10)
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+                        .padding(.top, 10)
+                    } else if activeHandbookVolume == .hms {
+                        // HMS Callout: Inspection Readiness
+                        HStack(spacing: 16) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(SolTokens.paper200)
+                                    .frame(width: 44, height: 44)
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                                Image(systemName: "checkmark.shield.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(SolTokens.lav400)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(store.language == .se ? "Tillsynsberedskap: Internkontroll & Årlig Handlingsplan" : (store.language == .no ? "Tilsynsberedskap: Internkontroll & Årlig Handlingsplan" : "Inspection Readiness: Statutory HSE Internal Control"))
+                                    .font(.inter(13.5, .bold))
+                                    .foregroundColor(SolTokens.ink900)
+                                Text(store.language == .se ? "Arbetsmiljöverket granskar skriftlig internkontroll, VD:s utbildningsbevis och skyddsombudets valprotokoll vid tillsynsbesök. Allt finns samlat i Comply." : (store.language == .no ? "Arbeidstilsynet etterspør skriftlig internkontroll (§ 3-5), opplæringsbevis og verneombudets valgprotokoll ved tilsyn. Alt er forankret her." : "Labor Inspection Authorities audit written internal control, CEO training certifications, and election minutes during unannounced audits."))
+                                    .font(.inter(12))
+                                    .foregroundColor(SolTokens.ink600)
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                store.activeNav = "auditPack"
+                            }) {
+                                HStack(spacing: 6) {
+                                    Text(store.language == .se ? "Exportera Tillsynspaket" : (store.language == .no ? "Eksporter Tilsynspakke" : "Export Inspection Bundle"))
+                                        .font(.inter(12, .semibold))
+                                    Image(systemName: "arrow.right")
+                                        .font(.system(size: 10, weight: .bold))
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(SolTokens.paper200)
+                                .foregroundColor(SolTokens.ink800)
+                                .cornerRadius(6)
+                                .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.paper400, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(16)
+                        .background(SolTokens.paper100)
+                        .cornerRadius(10)
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(SolTokens.paper300, lineWidth: 1))
+                        .padding(.top, 10)
+                    }
+                    }
+                    .opacity(expandedHandbookChapter == nil ? 1.0 : 0.25)
+                    .animation(.spring(response: 0.44, dampingFraction: 0.86), value: expandedHandbookChapter)
+                }
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 24)
         }
     }
-    
-    // MARK: - Linear Radar View
+
+        // MARK: - Linear Radar View
     private var macRadarView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -5560,7 +5923,6 @@ struct MacMainView: View {
                         .background(SolTokens.plum900)
                         .foregroundColor(Color.white)
                         .cornerRadius(6)
-                        .shadow(color: SolTokens.plum900.opacity(0.3), radius: 4, y: 2)
                     }
                     .buttonStyle(.plain)
                 }
@@ -5904,7 +6266,6 @@ struct MacMainView: View {
                         .background(SolTokens.plum900)
                         .foregroundColor(Color.white)
                         .cornerRadius(6)
-                        .shadow(color: SolTokens.plum900.opacity(0.25), radius: 3, y: 1)
                     }
                     .buttonStyle(.plain)
                 }
@@ -7347,59 +7708,1693 @@ struct DemoControlsPopover: View {
     }
 }
 
-// MARK: - Linear Craft Helper Cards
-struct HandbookChapterCard: View {
-    let chapterNumber: String
-    let title: String
-    let statute: String
-    let statusText: String
-    let statusColor: Color
-    let statusBg: Color
-    let summary: String
+// MARK: - Linear Craft Helper Cards & Multi-Handbook System
+
+public enum HandbookVolume: String, CaseIterable, Identifiable, Sendable {
+    case staff = "staff"
+    case leadership = "leadership"
+    case hms = "hms"
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                HStack(spacing: 8) {
-                    Text("\(ComplyStore.shared.l10n.chapterPrefix) \(chapterNumber)")
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2.5)
-                        .background(SolTokens.paper200)
-                        .foregroundColor(SolTokens.ink600)
-                        .cornerRadius(4)
+    public var id: String { rawValue }
+    
+    public func title(for lang: AppLanguage) -> String {
+        switch lang {
+        case .se:
+            switch self {
+            case .staff: return "Personalhandbok"
+            case .leadership: return "Ledarhandbok"
+            case .hms: return "HMS & Arbetsmiljö"
+            }
+        case .no:
+            switch self {
+            case .staff: return "Personalhåndbok"
+            case .leadership: return "Lederhåndbok"
+            case .hms: return "HMS & Sikkerhet"
+            }
+        case .en:
+            switch self {
+            case .staff: return "Employee Handbook"
+            case .leadership: return "Manager Handbook"
+            case .hms: return "HSE & Safety"
+            }
+        }
+    }
+    
+    public var icon: String {
+        switch self {
+        case .staff: return "book.closed.fill"
+        case .leadership: return "briefcase.fill"
+        case .hms: return "shield.checkered"
+        }
+    }
+    
+    public func companyTitle(for lang: AppLanguage) -> String {
+        switch lang {
+        case .se:
+            switch self {
+            case .staff: return "Fjord Dynamics Personalhandbok"
+            case .leadership: return "Fjord Dynamics Ledarhandbok"
+            case .hms: return "Fjord Dynamics HMS & Arbetsmiljöhandbok"
+            }
+        case .no:
+            switch self {
+            case .staff: return "Fjord Dynamics Personalhåndbok"
+            case .leadership: return "Fjord Dynamics Lederhåndbok"
+            case .hms: return "Fjord Dynamics HMS- & Sikkerhetshåndbok"
+            }
+        case .en:
+            switch self {
+            case .staff: return "Fjord Dynamics Employee Handbook"
+            case .leadership: return "Fjord Dynamics Manager Handbook"
+            case .hms: return "Fjord Dynamics HSE & Safety Handbook"
+            }
+        }
+    }
+    
+    public func versionBadge(for lang: AppLanguage) -> String {
+        switch self {
+        case .staff: return "v2024.2"
+        case .leadership: return "v2024.1"
+        case .hms: return "v2024.3"
+        }
+    }
+    
+    public func subtitle(for lang: AppLanguage) -> String {
+        switch lang {
+        case .se:
+            switch self {
+            case .staff: return "Gällande version 2024.2 · Alla 8 medarbetare har signerat med BankID · Uppdateras automatiskt mot arbetsrätt"
+            case .leadership: return "Konfidentiellt chefsstöd v2024.1 · 2 av 2 ledare har bekräftat · AML § 15-1 & MBL-rutiner"
+            case .hms: return "Lagstadgad internkontroll v2024.3 · Medsignerat av skyddsombud · Revideras årligen"
+            }
+        case .no:
+            switch self {
+            case .staff: return "Gjeldende versjon 2024.2 · Alle 8 ansatte har signert med BankID · Holdes automatisk oppdatert mot arbeidsmiljøloven"
+            case .leadership: return "Konfidensiell lederstøtte v2024.1 · 2 av 2 ledere har bekreftet · AML § 15-1 drøftelsesrutiner"
+            case .hms: return "Lovfestet internkontroll v2024.3 · Medsignert av verneombud · Revideres årlig"
+            }
+        case .en:
+            switch self {
+            case .staff: return "Active version 2024.2 · All 8 staff members confirmed via BankID · Kept continuously compliant with labor law"
+            case .leadership: return "Confidential leadership playbook v2024.1 · 2 of 2 leaders confirmed · WEA/AML dismissal protocols"
+            case .hms: return "Statutory HSE internal control v2024.3 · Co-signed with Safety Representative · Annual audit"
+            }
+        }
+    }
+    
+    public func audienceBadge(for lang: AppLanguage) -> String {
+        switch lang {
+        case .se:
+            switch self {
+            case .staff: return "Alla 8 anställda · BankID-signerat"
+            case .leadership: return "Endast ledning (2 behöriga · Jonas B, Silje O)"
+            case .hms: return "Lagkrav · Skyddsombud Kasper R medsignerad"
+            }
+        case .no:
+            switch self {
+            case .staff: return "Alle 8 ansatte · BankID-signert"
+            case .leadership: return "Kun ledere (2 med tilgang · Jonas B, Silje O)"
+            case .hms: return "Lovkrav · Verneombud Kasper R medsignert"
+            }
+        case .en:
+            switch self {
+            case .staff: return "All 8 employees · BankID signed"
+            case .leadership: return "Leadership only (2 authorized · Jonas B, Silje O)"
+            case .hms: return "Statutory requirement · Safety Rep Kasper R co-signed"
+            }
+        }
+    }
+}
+
+public struct HandbookChapterItem: Identifiable, Sendable {
+    public let id: String
+    public let chapterNumber: String
+    public let title: String
+    public let statute: String
+    public let icon: String
+    public var iconColor: Color = SolTokens.lav400
+    public var iconBg: Color = SolTokens.paper200
+    public let statusText: String
+    public var statusColor: Color = SolTokens.ink600
+    public var statusBg: Color = SolTokens.paper200
+    public let summary: String
+    public let statutoryRule: String
+    public let companyPolicy: String
+    public let practicalGuideline: String
+    public let revisionDate: String
+    public let confirmedCount: String
+    public var isAiChapter: Bool = false
+    public var isAuditLog: Bool = false
+    
+    public init(
+        id: String,
+        chapterNumber: String,
+        title: String,
+        statute: String,
+        icon: String,
+        iconColor: Color = SolTokens.lav400,
+        iconBg: Color = SolTokens.paper200,
+        statusText: String,
+        statusColor: Color = SolTokens.ink600,
+        statusBg: Color = SolTokens.paper200,
+        summary: String,
+        statutoryRule: String,
+        companyPolicy: String,
+        practicalGuideline: String,
+        revisionDate: String,
+        confirmedCount: String,
+        isAiChapter: Bool = false,
+        isAuditLog: Bool = false
+    ) {
+        self.id = id
+        self.chapterNumber = chapterNumber
+        self.title = title
+        self.statute = statute
+        self.icon = icon
+        self.iconColor = iconColor
+        self.iconBg = iconBg
+        self.statusText = statusText
+        self.statusColor = statusColor
+        self.statusBg = statusBg
+        self.summary = summary
+        self.statutoryRule = statutoryRule
+        self.companyPolicy = companyPolicy
+        self.practicalGuideline = practicalGuideline
+        self.revisionDate = revisionDate
+        self.confirmedCount = confirmedCount
+        self.isAiChapter = isAiChapter
+        self.isAuditLog = isAuditLog
+    }
+}
+
+public struct AuditRecordItem: Identifiable, Hashable, Sendable {
+    public let id: String
+    public let name: String
+    public let role: String
+    public let date: String
+    
+    public init(id: String, name: String, role: String, date: String) {
+        self.id = id
+        self.name = name
+        self.role = role
+        self.date = date
+    }
+}
+
+public let auditRecords: [AuditRecordItem] = [
+    AuditRecordItem(id: "1", name: "Jonas Berg", role: "VD & Grundare", date: "02.01.24 · BankID"),
+    AuditRecordItem(id: "2", name: "Silje Olsen", role: "Kontorschef", date: "04.01.24 · BankID"),
+    AuditRecordItem(id: "3", name: "Morten Dahl", role: "Seniorkonsult", date: "05.01.24 · BankID"),
+    AuditRecordItem(id: "4", name: "Kasper Rahman", role: "Skyddsombud", date: "08.01.24 · BankID"),
+    AuditRecordItem(id: "5", name: "Sofia Rossi", role: "UX Designer", date: "09.01.24 · BankID"),
+    AuditRecordItem(id: "6", name: "Henrik Myhre", role: "Backend Dev", date: "11.01.24 · BankID"),
+    AuditRecordItem(id: "7", name: "Freja Holm", role: "Frontend Dev", date: "12.01.24 · BankID"),
+    AuditRecordItem(id: "8", name: "Erlend Nakamura", role: "Head of Sales", date: "15.01.24 · BankID")
+]
+
+public struct CompanyBenefitItem: Identifiable, Sendable {
+    public let id: String
+    public let icon: String
+    public var iconColor: Color = SolTokens.lav400
+    public var iconBg: Color = SolTokens.paper200
+    public let title: String
+    public let highlight: String
+    public let description: String
+    public let tags: [String]
+    
+    public init(
+        id: String,
+        icon: String,
+        iconColor: Color = SolTokens.lav400,
+        iconBg: Color = SolTokens.paper200,
+        title: String,
+        highlight: String,
+        description: String,
+        tags: [String]
+    ) {
+        self.id = id
+        self.icon = icon
+        self.iconColor = iconColor
+        self.iconBg = iconBg
+        self.title = title
+        self.highlight = highlight
+        self.description = description
+        self.tags = tags
+    }
+}
+
+// MARK: - Multi-Handbook Chapter Provider
+public func getHandbookChapters(
+    for volume: HandbookVolume = .staff,
+    language: AppLanguage,
+    l10n: LocalizedStrings
+) -> [HandbookChapterItem] {
+    switch volume {
+    case .staff:
+        return getStaffHandbookChapters(language: language, l10n: l10n)
+    case .leadership:
+        return getLeadershipHandbookChapters(language: language, l10n: l10n)
+    case .hms:
+        return getHmsHandbookChapters(language: language, l10n: l10n)
+    }
+}
+
+// Backwards-compatible overload
+public func getHandbookChapters(for language: AppLanguage, l10n: LocalizedStrings) -> [HandbookChapterItem] {
+    getHandbookChapters(for: .staff, language: language, l10n: l10n)
+}
+
+// 1. Staff Chapters (All Employees)
+private func getStaffHandbookChapters(language: AppLanguage, l10n: LocalizedStrings) -> [HandbookChapterItem] {
+    switch language {
+    case .se:
+        return [
+            HandbookChapterItem(
+                id: "ch1",
+                chapterNumber: "1",
+                title: l10n.handbookCh1Title,
+                statute: l10n.handbookCh1Statute,
+                icon: "doc.text.fill",
+                statusText: "Reviderad 1 juli 2024",
+                summary: l10n.handbookCh1Summary,
+                statutoryRule: "Skriftligt anställningsavtal ska upprättas inom 7 dagar från första arbetsdagen. Avtalet måste specificera arbetstidsmått, lön, semestervillkor, uppsägningstider och rätt till kompetensutveckling (direktiv om tydliga arbetsvillkor).",
+                companyPolicy: "Samtliga medarbetare hos Fjord Dynamics signerar digitalt med BankID via Comply innan första arbetsdagen. Standardiserade mallar uppdateras automatiskt mot gällande lagstiftning. Generella klausuler om att övertid ingår i fast lön är otillåtna.",
+                practicalGuideline: "Vid förändrad tjänstegrad eller befordran upprättas ett tilläggsavtal inom 5 arbetsdagar. Provanställning utvärderas formellt senast månad 5.",
+                revisionDate: "1 juli 2024",
+                confirmedCount: "8 av 8 bekräftade"
+            ),
+            HandbookChapterItem(
+                id: "ch2",
+                chapterNumber: "2",
+                title: l10n.handbookCh2Title,
+                statute: l10n.handbookCh2Statute,
+                icon: "person.2.fill",
+                statusText: "Mandat 5+ anställda",
+                summary: l10n.handbookCh2Summary,
+                statutoryRule: "Från 1 januari 2024 är alla verksamheter med minst 5 medarbetare lagstadgade att ha ett utsett skyddsombud. Lagundantag för mindre verksamheter har avskaffats.",
+                companyPolicy: "Skyddsombud utses genom hemligt val bland medarbetarna vartannat år. Kasper Rahman är ordinarie skyddsombud för Fjord Dynamics för perioden 2024–2025.",
+                practicalGuideline: "Skyddsombudet har lagstadgad rätt till betald utbildning (genomförd via Simployer Learn) och deltar vid kvartalsvisa skyddsronder och riskanalyser.",
+                revisionDate: "1 januari 2024",
+                confirmedCount: "8 av 8 deltagit i valet"
+            ),
+            HandbookChapterItem(
+                id: "ch3",
+                chapterNumber: "3",
+                title: l10n.handbookCh3Title,
+                statute: l10n.handbookCh3Statute,
+                icon: "clock.fill",
+                statusText: "Gällande standard",
+                summary: l10n.handbookCh3Summary,
+                statutoryRule: "Ordinarie arbetstid får uppgå till högst 40 timmar per vecka i genomsnitt. Övertid måste beordras av arbetsgivaren och ersättas med minst 40 % tillägg per timme.",
+                companyPolicy: "Normal arbetstid är 08:30–17:00 (40 h/vecka). Kärnarbetstid gäller mellan 09:00 och 15:00 med flextid 07:30–18:30 för god balans mellan arbete och privatliv.",
+                practicalGuideline: "Övertid ska godkännas i förväg av VD/närmaste chef. Ersättning utgår antingen som kontant lönstillägg (140 %) eller kompensationsledighet (1,5 h per arbetad timme).",
+                revisionDate: "1 juli 2024",
+                confirmedCount: "8 av 8 kvitterat rutinen"
+            ),
+            HandbookChapterItem(
+                id: "ch4",
+                chapterNumber: "4",
+                title: l10n.handbookCh4Title,
+                statute: l10n.handbookCh4Statute,
+                icon: "shield.lefthalf.filled",
+                statusText: "Krypterad kanal",
+                summary: l10n.handbookCh4Summary,
+                statutoryRule: "Verksamheten ska erbjuda en oberoende och skyddad rapporteringskanal för visselblåsning. Arbetsgivaren har absolut förbud mot repressalier mot den som slår larm.",
+                companyPolicy: "Rapportering sker antingen anonymt via Simployer Complys krypterade kanal eller direkt till extern oberoende part. Ärenden bekräftas formellt inom 7 dagar.",
+                practicalGuideline: "Alla ärenden utreds objektivt inom 90 dagar. Medarbetaren garanteras fullt sekretesskydd och skydd mot omplacering eller disciplinära åtgärder.",
+                revisionDate: "15 februari 2024",
+                confirmedCount: "8 av 8 informerade"
+            ),
+            HandbookChapterItem(
+                id: "ch5",
+                chapterNumber: "5",
+                title: "Användning av Generativ AI i Arbetet",
+                statute: "AML § 4-1 · EU AI Act Art. 4",
+                icon: "sparkles",
+                statusText: "Aktiv policy",
+                summary: "Företagspolicy för medarbetarnas användning av generativa AI-verktyg (ChatGPT, Claude, Copilot). Skydd för företagshemligheter och GDPR.",
+                statutoryRule: "EU AI Act ställer krav på AI-kompetens (Art. 4) och transparens vid användning av maskininlärningsmodeller som hanterar personuppgifter eller företagshemligheter.",
+                companyPolicy: "Medarbetare uppmuntras att använda godkända företagslicenser (ChatGPT Team, Claude Enterprise, GitHub Copilot). Det är förbjudet att klistra in personuppgifter, kundkällkod eller känslig affärsdata i publika/omodellerade AI-verktyg.",
+                practicalGuideline: "All AI-genererad kod eller text ska granskas kritiskt av en människa innan den sätts i produktion eller skickas till kund. Företagskonton är centralt konfigurerade med opt-out från modellträning.",
+                revisionDate: "1 augusti 2024",
+                confirmedCount: "8 av 8 godkänt AI-policyn",
+                isAiChapter: true
+            ),
+            HandbookChapterItem(
+                id: "ch6",
+                chapterNumber: "6",
+                title: "BankID-kvittenser & Revisionslogg",
+                statute: "v2024.2 · BankID Verifierad",
+                icon: "checkmark.seal.fill",
+                statusText: "Juridiskt bevis",
+                summary: "Samtliga 8 medarbetare har signerat personalhandboken med BankID. Revisionscertifikat arkiverat för facklig tillsyn.",
+                statutoryRule: "Lagstadgad bevisbörda för att medarbetare tagit del av gällande ordningsregler, skyddsföreskrifter och anställningsvillkor vid tvist.",
+                companyPolicy: "Alla nyanställda kvitterar mottagande och genomgång av personalhandboken med BankID under introduktionsveckan. Loggen arkiveras med kryptografisk tidsstämpel.",
+                practicalGuideline: "Revisionsloggen uppdateras automatiskt i Comply och exporteras med ett klick vid intern revision eller facklig förhandling.",
+                revisionDate: "15 januari 2024",
+                confirmedCount: "8 av 8 signaturer verifierade",
+                isAuditLog: true
+            )
+        ]
+    case .no:
+        return [
+            HandbookChapterItem(
+                id: "ch1",
+                chapterNumber: "1",
+                title: l10n.handbookCh1Title,
+                statute: l10n.handbookCh1Statute,
+                icon: "doc.text.fill",
+                statusText: "Revidert 1. juli 2024",
+                summary: l10n.handbookCh1Summary,
+                statutoryRule: "Skriftlig arbeidsavtale skal foreligge snarest mulig og senest 7 dager etter at arbeidsforholdet startet. Avtalen må angi arbeidstid, lønn, ferie, oppsigelsesfrister og rett til kompetanseutvikling.",
+                companyPolicy: "Samtlige medarbeidere i Fjord Dynamics signerer digitalt med BankID via Comply før første arbeidsdag. Standardmaler oppdateres fortløpende mot gjeldende lovverk. Generelle klausuler om at overtid inngår i fastlønn er forbudt.",
+                practicalGuideline: "Ved endret stilling eller forfremmelse lages et tillegg til avtalen innen 5 virkedager. Prøvetid evalueres formelt innen måned 5.",
+                revisionDate: "1. juli 2024",
+                confirmedCount: "8 av 8 bekreftet"
+            ),
+            HandbookChapterItem(
+                id: "ch2",
+                chapterNumber: "2",
+                title: l10n.handbookCh2Title,
+                statute: l10n.handbookCh2Statute,
+                icon: "person.2.fill",
+                statusText: "Påbudt fra 5 ansatte",
+                summary: l10n.handbookCh2Summary,
+                statutoryRule: "Fra 1. januar 2024 er alle virksomheter med 5 eller flere ansatte lovpålagt å ha verneombud. Unntaket for virksomheter under 10 ansatte er opphevet.",
+                companyPolicy: "Verneombud velges ved hemmelig valg blant de ansatte for 2 år om gangen. Kasper Rahman er ordinært verneombud for Fjord Dynamics for 2024–2025.",
+                practicalGuideline: "Verneombudet har lovfestet rett til betalt opplæring (gjennomført via Simployer Learn) og deltar på kvartalsvise vernerunder og risikovurderinger.",
+                revisionDate: "1. januar 2024",
+                confirmedCount: "8 av 8 deltok i valget"
+            ),
+            HandbookChapterItem(
+                id: "ch3",
+                chapterNumber: "3",
+                title: l10n.handbookCh3Title,
+                statute: l10n.handbookCh3Statute,
+                icon: "clock.fill",
+                statusText: "Gjeldende standard",
+                summary: l10n.handbookCh3Summary,
+                statutoryRule: "Alminnelig arbeidstid må ikke overstige 40 timer per uke i snitt. Overtid må være pålagt og godtgjøres med et tillegg på minst 40 %.",
+                companyPolicy: "Normal arbeidstid er 08:30–17:00 (40 t/uke). Kjernetid er 09:00–15:00 med fleksitid mellom 07:30 og 18:30 for god balanse mellom jobb og fritid.",
+                practicalGuideline: "Overtid skal alltid forhåndsgodkjennes av daglig leder. Tillegg utbetales som enten 140 % lønn eller avspasering time-for-time med 40 % kontanttillegg.",
+                revisionDate: "1. juli 2024",
+                confirmedCount: "8 av 8 kvittert rutinen"
+            ),
+            HandbookChapterItem(
+                id: "ch4",
+                chapterNumber: "4",
+                title: l10n.handbookCh4Title,
+                statute: l10n.handbookCh4Statute,
+                icon: "shield.lefthalf.filled",
+                statusText: "Kryptert kanal",
+                summary: l10n.handbookCh4Summary,
+                statutoryRule: "Virksomheten skal ha skriftlige rutiner for varsling og en uavhengig varslingskanal. Gjengjeldelse mot arbeidstaker som varsler er strengt forbudt.",
+                companyPolicy: "Varsling kan sendes anonymt via Simployer Complys krypterte portal eller direkte til ekstern advokat. Varsler bekreftes mottatt innen 7 dager.",
+                practicalGuideline: "Alle varsler saksbehandles objektivt innen 90 dager. Varsleren er sikret fullt vern mot endring i arbeidsoppgaver eller andre sanksjoner.",
+                revisionDate: "15. februar 2024",
+                confirmedCount: "8 av 8 informert"
+            ),
+            HandbookChapterItem(
+                id: "ch5",
+                chapterNumber: "5",
+                title: "Användning av Generativ AI i Arbetet",
+                statute: "AML § 4-1 · EU AI Act Art. 4",
+                icon: "sparkles",
+                statusText: "Aktiv policy",
+                summary: "Företagspolicy för medarbetarnas användning av generativa AI-verktyg (ChatGPT, Claude, Copilot). Skydd för företagshemligheter och GDPR.",
+                statutoryRule: "EU AI Act krever AI-kompetanse (Art. 4) og åpenhet ved bruk av maskinlæring som behandler forretningshemmeligheter eller persondata.",
+                companyPolicy: "Ansatte oppfordres til å bruke godkjente bedriftslisenser (ChatGPT Team, Claude Enterprise, GitHub Copilot). Innliming av personopplysninger, kundedata eller sensitiv kode i offentlige AI-tjenester er forbudt.",
+                practicalGuideline: "All AI-generert kode og tekst skal kvalitetssikres av et menneske før produksjon. Bedriftskontoer har sentral opt-out fra modelltrening.",
+                revisionDate: "1. august 2024",
+                confirmedCount: "8 av 8 bekreftet AI-policyen",
+                isAiChapter: true
+            ),
+            HandbookChapterItem(
+                id: "ch6",
+                chapterNumber: "6",
+                title: "BankID-kvitteringer & Revisjonslogg",
+                statute: "v2024.2 · BankID Verifierad",
+                icon: "checkmark.seal.fill",
+                statusText: "Juridisk bevis",
+                summary: "Alle 8 ansatte har signert personalhåndboken med BankID. Revisjonssertifikat arkivert for Arbeidstilsynets kontroll.",
+                statutoryRule: "Arbeidsgiver har bevisbyrden for at arbeidstaker er gjort kjent med gjeldende instrukser og arbeidsvilkår ved en eventuell tvist.",
+                companyPolicy: "Alle nyansatte kvitterer for mottatt og lest personalhåndbok med BankID under opplæringsuken. Loggen lagres med tidsstempel.",
+                practicalGuideline: "Revisjonsloggen holdes automatisk oppdatert i Comply og kan eksporteres med ett klikk ved Arbeidstilsynets tilsyn.",
+                revisionDate: "15. januar 2024",
+                confirmedCount: "8 av 8 signaturer verifisert",
+                isAuditLog: true
+            )
+        ]
+    case .en:
+        return [
+            HandbookChapterItem(
+                id: "ch1",
+                chapterNumber: "1",
+                title: l10n.handbookCh1Title,
+                statute: l10n.handbookCh1Statute,
+                icon: "doc.text.fill",
+                statusText: "Revised July 1, 2024",
+                summary: l10n.handbookCh1Summary,
+                statutoryRule: "Written employment agreements must be finalized within 7 days of commencement. The contract must specify working hours, probation terms, training rights, and overtime entitlements.",
+                companyPolicy: "All Fjord Dynamics staff sign digitally via BankID in Comply prior to day one. Standard templates are automatically audited against Nordic labor statutes. Blanket overtime waivers are prohibited.",
+                practicalGuideline: "Role changes or salary reviews require an addendum within 5 business days. Probation is formally evaluated before month 5.",
+                revisionDate: "July 1, 2024",
+                confirmedCount: "8 of 8 confirmed"
+            ),
+            HandbookChapterItem(
+                id: "ch2",
+                chapterNumber: "2",
+                title: l10n.handbookCh2Title,
+                statute: l10n.handbookCh2Statute,
+                icon: "person.2.fill",
+                statusText: "Mandatory from 5 staff",
+                summary: l10n.handbookCh2Summary,
+                statutoryRule: "As of January 1, 2024, all enterprises with 5 or more employees are legally required to establish an elected safety representative. The exemption for under 10 staff was repealed.",
+                companyPolicy: "Safety representatives are elected by secret ballot among employees for 2-year terms. Kasper Rahman is Fjord Dynamics' elected safety representative for 2024–2025.",
+                practicalGuideline: "The safety rep has a statutory right to paid training (completed via Simployer Learn) and participates in quarterly safety inspections.",
+                revisionDate: "January 1, 2024",
+                confirmedCount: "8 of 8 participated in election"
+            ),
+            HandbookChapterItem(
+                id: "ch3",
+                chapterNumber: "3",
+                title: l10n.handbookCh3Title,
+                statute: l10n.handbookCh3Statute,
+                icon: "clock.fill",
+                statusText: "Active standard",
+                summary: l10n.handbookCh3Summary,
+                statutoryRule: "Standard working hours cannot exceed 40 hours per week on average. Overtime must be ordered or approved by management and compensated with minimum 40% premium.",
+                companyPolicy: "Normal hours are 08:30–17:00 (40h/week). Core working hours are 09:00–15:00 with flexible bands from 07:30 to 18:30.",
+                practicalGuideline: "Overtime must be pre-approved by the CEO/manager. Compensated either as cash premium (140%) or 1:1 time off in lieu plus a 40% cash differential.",
+                revisionDate: "July 1, 2024",
+                confirmedCount: "8 of 8 routine confirmed"
+            ),
+            HandbookChapterItem(
+                id: "ch4",
+                chapterNumber: "4",
+                title: l10n.handbookCh4Title,
+                statute: l10n.handbookCh4Statute,
+                icon: "shield.lefthalf.filled",
+                statusText: "Encrypted channel",
+                summary: l10n.handbookCh4Summary,
+                statutoryRule: "Enterprises must maintain an independent whistleblowing channel. Employers are under an absolute statutory prohibition against retaliation against reporters.",
+                companyPolicy: "Reporting is available anonymously via Simployer Comply's encrypted channel or directly to external legal counsel. Submissions are acknowledged within 7 days.",
+                practicalGuideline: "All inquiries are investigated objectively within 90 days. The whistleblower is legally protected against role changes or disciplinary actions.",
+                revisionDate: "February 15, 2024",
+                confirmedCount: "8 of 8 informed"
+            ),
+            HandbookChapterItem(
+                id: "ch5",
+                chapterNumber: "5",
+                title: "Workplace Use of Artificial Intelligence (AI)",
+                statute: "AML § 4-1 · EU AI Act Art. 4",
+                icon: "sparkles",
+                statusText: "Active policy",
+                summary: "Internal policy for employee use of generative AI tools (ChatGPT, Claude, Copilot). Safeguarding trade secrets and GDPR.",
+                statutoryRule: "EU AI Act Art. 4 mandates AI literacy and organizational transparency when deploying machine learning models processing business data or intellectual property.",
+                companyPolicy: "Employees are encouraged to utilize approved corporate workspaces (ChatGPT Team, Claude Enterprise, GitHub Copilot). Pasting personal data, customer code, or confidential files into public tools is forbidden.",
+                practicalGuideline: "All AI-assisted outputs must undergo human-in-the-loop review before production deployment. Corporate seats are centrally configured to opt-out of model training.",
+                revisionDate: "August 1, 2024",
+                confirmedCount: "8 of 8 confirmed AI policy",
+                isAiChapter: true
+            ),
+            HandbookChapterItem(
+                id: "ch6",
+                chapterNumber: "6",
+                title: "BankID Signatures & Audit Trail",
+                statute: "v2024.2 · BankID Verified",
+                icon: "checkmark.seal.fill",
+                statusText: "Audit proof",
+                summary: "All 8 staff members have signed the employee handbook via BankID. Digital audit certificate archived for labor inspections.",
+                statutoryRule: "Statutory burden of proof rests on the employer to demonstrate that staff were duly notified of binding internal policies and working conditions.",
+                companyPolicy: "All new hires acknowledge receipt of the employee handbook via BankID during onboarding week. Audit log entries are permanently archived with digital signatures.",
+                practicalGuideline: "The audit trail is maintained automatically in Comply and can be exported with 1-click for labor inspection or board reviews.",
+                revisionDate: "January 15, 2024",
+                confirmedCount: "8 of 8 signatures verified",
+                isAuditLog: true
+            )
+        ]
+    }
+}
+
+// 2. Leadership Chapters (Managers & HR Only)
+private func getLeadershipHandbookChapters(language: AppLanguage, l10n: LocalizedStrings) -> [HandbookChapterItem] {
+    switch language {
+    case .se:
+        return [
+            HandbookChapterItem(
+                id: "lead1",
+                chapterNumber: "1",
+                title: "Anställning, Kravprofil & Provanställning",
+                statute: "AML § 15-6 & LAS § 6",
+                icon: "person.badge.plus",
+                statusText: "Chefsrutin",
+                summary: "Strukturerad uppföljning under provanställningsperioden. Obligatorisk formell avstämning senast månad 5 för att förhindra automatisk fast anställning.",
+                statutoryRule: "Provanställning kan sägas upp vid bristande lämplighet, men kräver saklig dokumentation och skriftligt besked minst 14 dagar i förväg.",
+                companyPolicy: "Närmaste chef genomför strukturerade avstämningar månad 1, 3 och 5. Comply skickar automatiska notiser med färdiga utvärderingsmallar.",
+                practicalGuideline: "Dokumentera alltid konkreta avvikelser i personalakten. Om avslut övervägs ska Simployer Jurist kontaktas minst 10 dagar innan tidsfristen.",
+                revisionDate: "1 mars 2024",
+                confirmedCount: "2 av 2 chefer kvitterat"
+            ),
+            HandbookChapterItem(
+                id: "lead2",
+                chapterNumber: "2",
+                title: "Sjukfrånvaro, Rehab & Myndighetsfrister",
+                statute: "Folketrygdloven § 8-4 / SFB",
+                icon: "cross.case.fill",
+                statusText: "Lagstadgade tidslinjer",
+                summary: "Chefens lagstadgade aktivitetsplikt vid kort- och långtidssjukskrivning. Tidslinjer för dialogmöten, uppföljningsplan och rehabiliteringsåtgärder.",
+                statutoryRule: "Uppföljningsplan ska upprättas inom 4 veckor vid 100 % sjukfrånvaro. Dialogmöte 1 senast vecka 7, Dialogmöte 2 senast vecka 26.",
+                companyPolicy: "Fjord Dynamics tillämpar tidig omtanke. Närmaste chef tar telefonkontakt dag 3 för att höra hur medarbetaren mår och erbjuda stöd.",
+                practicalGuideline: "Comply förbereder automatiskt den lagstadgade uppföljningsplanen med ifyllda anställningsdata, redo för digital signering med BankID.",
+                revisionDate: "15 januari 2024",
+                confirmedCount: "2 av 2 chefer kvitterat"
+            ),
+            HandbookChapterItem(
+                id: "lead3",
+                chapterNumber: "3",
+                title: "Varningar, Drøftelsesmøte (§ 15-1) & Uppsägning",
+                statute: "AML § 15-1 & LAS § 7",
+                icon: "exclamationmark.shield.fill",
+                statusText: "Kräver juristgranskning",
+                summary: "Processuella krav före beslut om uppsägning. Procedurfel utlöser skadestånd och ogiltigförklaring oavsett sakskäl (snittskadestånd 396 000 kr).",
+                statutoryRule: "Arbetsgivaren är lagstadgad att hålla ett formellt drøftelsesmøte (§ 15-1) innan beslut om uppsägning fattas. Medarbetaren har rätt till fackligt eller juridiskt biträde.",
+                companyPolicy: "Inget uppsägningsbeslut får meddelas muntligt eller utan skriftlig kallelse och protokollfört möte. Kallelse genereras via Comply.",
+                practicalGuideline: "Klicka på 'Koppla till Simployer Jurist' vid minsta tveksamhet. Våra arbetsrättsjurister granskar kallelsen och protokollet inom 2 timmar.",
+                revisionDate: "1 juli 2024",
+                confirmedCount: "2 av 2 chefer kvitterat"
+            ),
+            HandbookChapterItem(
+                id: "lead4",
+                chapterNumber: "4",
+                title: "Lönerevision, Bonus & Lönekartläggning",
+                statute: "Likestillingsloven § 26 / Diskrimineringslagen",
+                icon: "chart.line.uptrend.xyaxis",
+                statusText: "Årlig revision",
+                summary: "Principer för objektiv lönesättning, årlig lönerevision och lagstadgad kartläggning av osakliga löneskillnader mellan könen.",
+                statutoryRule: "Verksamheter ska regelbundet kartlägga löneförhållanden och säkerställa att likvärdiga roller ersätts utan könsdiskriminering.",
+                companyPolicy: "Fjord Dynamics tillämpar transparenta lönenivåer baserade på rollmatris och marknadsdata från Simployer Lönestatistik.",
+                practicalGuideline: "Vid nyanställning kontrollerar Comply automatiskt att den överenskomna lönen inte skapar en otillåten löneklyfta inom avdelningen.",
+                revisionDate: "1 februari 2024",
+                confirmedCount: "2 av 2 chefer kvitterat"
+            ),
+            HandbookChapterItem(
+                id: "lead5",
+                chapterNumber: "5",
+                title: "Konflikthantering & Kränkande Särbehandling",
+                statute: "AML § 4-3 & Arbetsmiljölagen 2 kap.",
+                icon: "person.3.sequence.fill",
+                statusText: "Aktivitetsplikt",
+                summary: "Chefens utredningsplikt vid klagomål, trakasserier eller psykosociala samarbetssvårigheter i teamet.",
+                statutoryRule: "Arbetsgivaren har absolut lagstadgad skyldighet att omgående undersöka påståenden om trakasserier eller repressalier och vidta nödvändiga åtgärder.",
+                companyPolicy: "Chefen ska hålla enskilda samtal med berörda parter inom 48 timmar från mottagen signal och upprätta en skriftlig incidentrapport i Comply.",
+                practicalGuideline: "Om konflikten involverar chefen själv eskaleras ärendet automatiskt till styrelseordförande eller extern jurist via Complys krypterade kanal.",
+                revisionDate: "15 mars 2024",
+                confirmedCount: "2 av 2 chefer kvitterat"
+            ),
+            HandbookChapterItem(
+                id: "lead6",
+                chapterNumber: "6",
+                title: "Ledarskapets Behörigheter & BankID-Arkiv",
+                statute: "GDPR Art. 9 & AML § 15",
+                icon: "lock.badge.clock.fill",
+                statusText: "BankID-arkiv",
+                summary: "Formella delegationsordningar, godkända chefssignaturer och kryptografisk revisionslogg för ledningsbeslut.",
+                statutoryRule: "Behandling av personakter, disciplinära åtgärder och rehabiliteringsdata kräver strikt rollbaserad behörighetskontroll.",
+                companyPolicy: "Endast Jonas Berg (VD) och Silje Olsen (Kontorschef) har administrativ chefsbehörighet. Revisionsloggen granskas årligen i januari.",
+                practicalGuideline: "Samtliga ledningsbeslut (avtal, varningar, uppföljningsplaner) signeras digitalt med BankID och tidsstämplas.",
+                revisionDate: "1 januari 2024",
+                confirmedCount: "2 av 2 chefer signerat",
+                isAuditLog: true
+            )
+        ]
+    case .no:
+        return [
+            HandbookChapterItem(
+                id: "lead1",
+                chapterNumber: "1",
+                title: "Ansettelse, Stillingsinstruks & Prøvetid",
+                statute: "AML § 15-6 & § 14-6",
+                icon: "person.badge.plus",
+                statusText: "Lederrutine",
+                summary: "Strukturert oppfølging i prøvetiden. Obligatorisk formell evaluering innen måned 5 for å unngå automatisk fast ansettelse ved manglende egnethet.",
+                statutoryRule: "Oppsigelse i prøvetid krever saklig begrunnelse i arbeidstakers tilpasning eller pålitelighet, samt skriftlig varsel med 14 dagers frist.",
+                companyPolicy: "Nærmeste leder gjennomfører formelle samtaler i måned 1, 3 og 5. Comply varsler automatisk med ferdige evalueringsmaler.",
+                practicalGuideline: "Dokumenter konkrete avvik skriftlig i personalmappen. Kontakt Simployer-jurist minst 10 dager før fristen dersom oppsigelse vurderes.",
+                revisionDate: "1. mars 2024",
+                confirmedCount: "2 av 2 ledere kvittert"
+            ),
+            HandbookChapterItem(
+                id: "lead2",
+                chapterNumber: "2",
+                title: "Sykefraværsoppfølging & NAV-tidslinjer",
+                statute: "Folketrygdloven § 8-4 & AML § 4-6",
+                icon: "cross.case.fill",
+                statusText: "Lovpålagte frister",
+                summary: "Lederens lovfestede oppfølgingsplikt ved sykefravær. Tidslinjer for dialogmøter, oppfølgingsplan og rapportering til NAV.",
+                statutoryRule: "Oppfølgingsplan skal lages i samarbeid med den ansatte innen 4 uker. Dialogmøte 1 innen uke 7, Dialogmøte 2 innen uke 26.",
+                companyPolicy: "Fjord Dynamics praktiserer tidlig omsorg. Nærmeste leder ringer dag 3 for å høre hvordan det går og avklare eventuell tilrettelegging.",
+                practicalGuideline: "Comply klargjør den lovpålagte oppfølgingsplanen med ferdig utfylte personaldata, klar for BankID-signering.",
+                revisionDate: "15. januar 2024",
+                confirmedCount: "2 av 2 ledere kvittert"
+            ),
+            HandbookChapterItem(
+                id: "lead3",
+                chapterNumber: "3",
+                title: "Advarsler, Drøftelsesmøte (§ 15-1) & Oppsigelse",
+                statute: "AML § 15-1 & § 15-7",
+                icon: "exclamationmark.shield.fill",
+                statusText: "Krever juristbistand",
+                summary: "Prosessuelle krav før beslutning om oppsigelse. Saksbehandlingsfeil utløser erstatning uavhengig av saklig grunn (snittkrav 396 000 kr).",
+                statutoryRule: "Arbeidsgiver plikter å gjennomføre formelt drøftelsesmøte (§ 15-1) før oppsigelse besluttes. Den ansatte har rett til rådgiver/tillitsvalgt.",
+                companyPolicy: "Ingen oppsigelse kan gis muntlig eller uten skriftlig innkalling og protokollført drøftelsesmøte. Innkalling lages i Comply.",
+                practicalGuideline: "Bruk 'Koble til Simployer Jurist' ved minste tvil. Våre arbeidsrettsadvokater kvalitetssikrer innkalling og protokoll innen 2 timer.",
+                revisionDate: "1. juli 2024",
+                confirmedCount: "2 av 2 ledere kvittert"
+            ),
+            HandbookChapterItem(
+                id: "lead4",
+                chapterNumber: "4",
+                title: "Lønnsforhandlinger & Likestillingsredegjørelse",
+                statute: "Likestillingsloven § 26",
+                icon: "chart.line.uptrend.xyaxis",
+                statusText: "Årlig revisjon",
+                summary: "Retningslinjer for objektiv lønnsfastsettelse, årlig lønnssamtale og lovpålagt kartlegging av ufrivillige lønnsforskjeller mellom kjønn.",
+                statutoryRule: "Virksomheter skal kartlegge lønnsforhold etter kjønn og sikre at arbeid av lik verdi lønnes likt uten usaklig forskjellsbehandling.",
+                companyPolicy: "Fjord Dynamics har transparente lønnsbånd basert på stillingsmatrise og markedsstatistikk fra Simployer.",
+                practicalGuideline: "Comply varsler dersom en nyansettelse eller lønnsjustering skaper en ubegrunnet lønnsforskjell innad i avdelingen.",
+                revisionDate: "1. februar 2024",
+                confirmedCount: "2 av 2 ledere kvittert"
+            ),
+            HandbookChapterItem(
+                id: "lead5",
+                chapterNumber: "5",
+                title: "Konflikthåndtering & Psykososialt Arbeidsmiljø",
+                statute: "AML § 4-3",
+                icon: "person.3.sequence.fill",
+                statusText: "Aktivitetsplikt",
+                summary: "Lederens undersøkelsesplikt ved klager, mobbing eller samarbeidskonflikter i teamet.",
+                statutoryRule: "Arbeidsgiver har ubetinget plikt til å undersøke påstander om trakassering eller utilbørlig opptreden og iverksette tiltak.",
+                companyPolicy: "Leder skal gjennomføre fortrolige enkeltsamtaler innen 48 timer etter mottatt bekymring og loggføre saken i Comply.",
+                practicalGuideline: "Hvis konflikten gjelder lederen selv, eskalerer Comply saken automatisk til styreleder eller ekstern advokat via kryptert kanal.",
+                revisionDate: "15. mars 2024",
+                confirmedCount: "2 av 2 ledere kvittert"
+            ),
+            HandbookChapterItem(
+                id: "lead6",
+                chapterNumber: "6",
+                title: "Ledelsens Tilganger & BankID-Arkiv",
+                statute: "GDPR Art. 9 & AML § 15",
+                icon: "lock.badge.clock.fill",
+                statusText: "BankID-arkiv",
+                summary: "Formelle fullmaktsmatriser, godkjente ledersignaturer og kryptografisk revisjonslogg for personalvedtak.",
+                statutoryRule: "Håndtering av helseopplysninger og disiplinærsaker krever streng rollebasert tilgangskontroll.",
+                companyPolicy: "Kun Jonas Berg (daglig leder) og Silje Olsen (kontorleder) har lederadgang. Tilgangsloggen revideres årlig.",
+                practicalGuideline: "Alle ledelsesvedtak (kontrakter, advarsler, oppfølgingsplaner) signeres digitalt med BankID og arkiveres sikkert.",
+                revisionDate: "1. januar 2024",
+                confirmedCount: "2 av 2 ledere signert",
+                isAuditLog: true
+            )
+        ]
+    case .en:
+        return [
+            HandbookChapterItem(
+                id: "lead1",
+                chapterNumber: "1",
+                title: "Hiring, Role Profiles & Probation Reviews",
+                statute: "AML § 15-6 & § 14-6",
+                icon: "person.badge.plus",
+                statusText: "Management routine",
+                summary: "Structured probation management. Mandatory formal reviews by month 5 to prevent automatic conversion into permanent tenure if suitability is lacking.",
+                statutoryRule: "Dismissal during probation requires objective grounds related to role adaptation or reliability, and a written notice with 14 days' statutory notice.",
+                companyPolicy: "Managers conduct formal 1-on-1 reviews at months 1, 3, and 5. Comply dispatches automated alerts with pre-filled evaluation templates.",
+                practicalGuideline: "Document specific performance gaps in writing. Consult Simployer Legal counsel at least 10 business days prior to deadline if termination is considered.",
+                revisionDate: "March 1, 2024",
+                confirmedCount: "2 of 2 managers confirmed"
+            ),
+            HandbookChapterItem(
+                id: "lead2",
+                chapterNumber: "2",
+                title: "Sick Leave Follow-up & Statutory Deadlines",
+                statute: "National Insurance Act § 8-4",
+                icon: "cross.case.fill",
+                statusText: "Statutory deadlines",
+                summary: "Managerial duty of care during sickness absence. Strict statutory timelines for follow-up plans, NAV dialogue meetings, and workplace adjustments.",
+                statutoryRule: "An agreed follow-up plan must be registered within 4 weeks. Dialogue meeting 1 by week 7; Dialogue meeting 2 by week 26.",
+                companyPolicy: "Fjord Dynamics practices proactive outreach. Managers check in on day 3 to offer support and plan potential ergonomic accommodations.",
+                practicalGuideline: "Comply auto-populates the official follow-up plan with employee records, ready for bilateral BankID signing.",
+                revisionDate: "January 15, 2024",
+                confirmedCount: "2 of 2 managers confirmed"
+            ),
+            HandbookChapterItem(
+                id: "lead3",
+                chapterNumber: "3",
+                title: "Warnings, Consultation (§ 15-1) & Dismissals",
+                statute: "AML § 15-1 & § 15-7",
+                icon: "exclamationmark.shield.fill",
+                statusText: "Legal review mandatory",
+                summary: "Procedural requirements prior to dismissals. Formal errors trigger statutory damages regardless of substantive grounds (average claim: NOK 396,000).",
+                statutoryRule: "Employers are legally mandated to conduct a pre-dismissal consultation meeting (§ 15-1). The employee has the right to union/legal counsel.",
+                companyPolicy: "No termination may be communicated orally or without prior written summons and filed minutes. Notices are generated directly in Comply.",
+                practicalGuideline: "Trigger 'Connect Simployer Attorney' immediately. Our labor attorneys review summonses and minutes within 2 business hours.",
+                revisionDate: "July 1, 2024",
+                confirmedCount: "2 of 2 managers confirmed"
+            ),
+            HandbookChapterItem(
+                id: "lead4",
+                chapterNumber: "4",
+                title: "Salary Reviews & Equal Pay Audits",
+                statute: "Equality & Anti-Discrimination Act § 26",
+                icon: "chart.line.uptrend.xyaxis",
+                statusText: "Annual audit",
+                summary: "Objective compensation principles, annual reviews, and statutory audits to eliminate unjustified gender wage disparities.",
+                statutoryRule: "Enterprises must audit pay structures biennially to ensure work of equal value receives equal pay without direct or indirect discrimination.",
+                companyPolicy: "Fjord Dynamics maintains transparent pay bands referenced against Simployer Nordic market salary benchmark datasets.",
+                practicalGuideline: "Comply alerts leadership if a planned hire or increment creates an unjustified wage differential within the department.",
+                revisionDate: "February 1, 2024",
+                confirmedCount: "2 of 2 managers confirmed"
+            ),
+            HandbookChapterItem(
+                id: "lead5",
+                chapterNumber: "5",
+                title: "Conflict Resolution & Psychosocial Climate",
+                statute: "AML § 4-3",
+                icon: "person.3.sequence.fill",
+                statusText: "Duty to act",
+                summary: "Mandatory investigation procedures for employee grievances, workplace harassment, or toxic team dynamics.",
+                statutoryRule: "Employers possess an absolute statutory duty to promptly investigate allegations of harassment or retaliation and enforce corrective measures.",
+                companyPolicy: "Managers hold confidential 1-on-1 interviews within 48 hours of notification and file a structured incident record in Comply.",
+                practicalGuideline: "If a complaint implicates the manager, Comply automatically reroutes the case to the Board Chair or external legal counsel.",
+                revisionDate: "March 15, 2024",
+                confirmedCount: "2 of 2 managers confirmed"
+            ),
+            HandbookChapterItem(
+                id: "lead6",
+                chapterNumber: "6",
+                title: "Leadership Access & BankID Audit Vault",
+                statute: "GDPR Art. 9 & AML § 15",
+                icon: "lock.badge.clock.fill",
+                statusText: "BankID archive",
+                summary: "Delegation matrices, approved manager signatures, and cryptographic audit logging for confidential personnel actions.",
+                statutoryRule: "Handling employee health records and disciplinary measures requires strict role-based access control and tamper-proof logs.",
+                companyPolicy: "Only Jonas Berg (CEO) and Silje Olsen (Office Manager) hold leadership credentials. Access permissions are audited annually in January.",
+                practicalGuideline: "All leadership actions (contracts, warnings, follow-up plans) are digitally countersigned via BankID and timestamped.",
+                revisionDate: "January 1, 2024",
+                confirmedCount: "2 of 2 managers signed",
+                isAuditLog: true
+            )
+        ]
+    }
+}
+
+// 3. HMS & Safety Chapters (Occupational Health & Statutory Inspection)
+private func getHmsHandbookChapters(language: AppLanguage, l10n: LocalizedStrings) -> [HandbookChapterItem] {
+    switch language {
+    case .se:
+        return [
+            HandbookChapterItem(
+                id: "hms1",
+                chapterNumber: "1",
+                title: "Arbetsmiljöansvar, Mål & SAM-Certifiering",
+                statute: "AML kap. 3 & § 3-5",
+                icon: "building.columns.fill",
+                statusText: "SAM-certifierad",
+                summary: "VD:s lagstadgade ansvar för det systematiska arbetsmiljöarbetet (SAM) samt krav på dokumenterad arbetsmiljöutbildning för chefer.",
+                statutoryRule: "Arbetsgivaren har huvudansvaret för att arbetsmiljön är fullt försvarlig och att chefer genomgått föreskriven SAM-utbildning.",
+                companyPolicy: "Fjord Dynamics har som mål noll arbetsskador och en trygg psykosocial arbetsplats. Jonas Berg har godkänd SAM-kurs via Simployer Learn.",
+                practicalGuideline: "Kursintyg och delegationsbeslut för arbetsmiljöuppgifter finns arkiverade i Complys revisionspaket för uppvisande vid tillsyn.",
+                revisionDate: "1 januari 2024",
+                confirmedCount: "VD & Skyddsombud godkänt"
+            ),
+            HandbookChapterItem(
+                id: "hms2",
+                chapterNumber: "2",
+                title: "Riskbedömning & Årlig Skyddsrond",
+                statute: "Internkontroll § 5 / AFS 2001:1",
+                icon: "checklist.checked",
+                statusText: "Genomförd 2024",
+                summary: "Årlig kartläggning och skriftlig riskbedömning av fysiska, ergonomiska och psykosociala risker i samarbete med skyddsombudet.",
+                statutoryRule: "Verksamheten ska regelbundet undersöka arbetsförhållandena, bedöma risker för ohälsa och upprätta en tidsatt handlingsplan.",
+                companyPolicy: "Skyddsrond genomförs årligen varje november av VD, skyddsombud och kontorschef. Handlingsplanen följs upp kvartalsvis.",
+                practicalGuideline: "Digital skyddsrondsmall i Comply genererar automatiskt åtgärdspunkter med tilldelad ansvarig person och deadline.",
+                revisionDate: "15 november 2024",
+                confirmedCount: "Skyddsrondsprotokoll signerat"
+            ),
+            HandbookChapterItem(
+                id: "hms3",
+                chapterNumber: "3",
+                title: "Tillbud, Olycksfall & Myndighetsanmälan",
+                statute: "AML § 5-1 & § 5-2",
+                icon: "bell.badge.fill",
+                statusText: "Akutrutin",
+                summary: "Skyldighet att utreda tillbud och omedelbart anmäla allvarliga arbetsolyckor till Arbetsmiljöverket/Arbeidstilsynet och polisen.",
+                statutoryRule: "Vid allvarlig personskada eller dödsfall ska arbetsgivaren anmäla händelsen omedelbart via telefon och webb till tillsynsmyndigheten.",
+                companyPolicy: "Alla tillbud (nestenulykker) ska anmälas inom 24 timmar via Comply. Skyddsombudet får automatiskt en kopia.",
+                practicalGuideline: "Comply har ett integrerat 1-klicksformulär för anmälan till Arbetsmiljöverket med förhandsifyllda företagsdata.",
+                revisionDate: "1 februari 2024",
+                confirmedCount: "Akutrutin aktiv"
+            ),
+            HandbookChapterItem(
+                id: "hms4",
+                chapterNumber: "4",
+                title: "Brandskydd (SBA), Utrymning & Första Hjälpen",
+                statute: "LSO kap. 2 / Internkontroll",
+                icon: "flame.fill",
+                statusText: "Övad årligen",
+                summary: "Systematiskt brandskyddsarbete (SBA), kvartalsvis kontroll av släckutrustning samt årlig praktisk utrymningsövning.",
+                statutoryRule: "Lokaler ska hålla fria utrymningsvägar, fungerande nödbelysning och brandsläckare. Personal ska instrueras om utrymning.",
+                companyPolicy: "Silje Olsen är utsedd brandskyddskontrollant. Första hjälpen-station finns i pentryt och vid konferensrummet.",
+                practicalGuideline: "Samlingsplats vid utrymning är Kajen 4 (östra parkeringen). Utrymningsplan finns anslagen vid samtliga nödutgångar.",
+                revisionDate: "15 april 2024",
+                confirmedCount: "SBA-protokoll arkiverat"
+            ),
+            HandbookChapterItem(
+                id: "hms5",
+                chapterNumber: "5",
+                title: "Skärmergonomi & Bildskärmsglasögon",
+                statute: "AFS 1998:5 / Forskrift om dataskjerm",
+                icon: "eyeglasses",
+                statusText: "Fri synundersökning",
+                summary: "Lagstadgad rätt till arbetsgivarbetald synundersökning och specialanpassade terminalglasögon vid regelbundet datorarbete.",
+                statutoryRule: "Arbetstagare som arbetar vid bildskärm mer än 1 timme per dag har lagstadgad rätt till synundersökning bekostad av arbetsgivaren.",
+                companyPolicy: "Fjord Dynamics bekostar full undersökning och båge/glas via Synsam upp till 4 500 kr vartannat år.",
+                practicalGuideline: "Medarbetaren bokar tid hos Synsam och anger Fjord Dynamics företagsavtal. Fakturan attesteras direkt i Comply.",
+                revisionDate: "1 januari 2024",
+                confirmedCount: "Avtal aktivt hos optiker"
+            ),
+            HandbookChapterItem(
+                id: "hms6",
+                chapterNumber: "6",
+                title: "Skyddsombudets Mandat & Valprotokoll",
+                statute: "AML § 6-1 & § 6-2",
+                icon: "person.badge.shield.checkmark.fill",
+                statusText: "Valprotokoll arkiverat",
+                summary: "Det formella valprotokollet för skyddsombudet Kasper Rahman samt skyddsombudets lagstadgade befogenheter och stoppningsrätt.",
+                statutoryRule: "Skyddsombudet har lagstadgad rätt till betald ledighet för uppdraget, rätt till utbildning och rätt att avbryta farligt arbete.",
+                companyPolicy: "Kasper Rahman deltar i samtliga ledningsmöten som rör arbetsmiljön och har oinskränkt tillgång till skyddsronder i Comply.",
+                practicalGuideline: "Valprotokollet är signerat med BankID av samtliga anställda och finns permanent tillgängligt för Arbetsmiljöverket vid tillsyn.",
+                revisionDate: "12 januari 2024",
+                confirmedCount: "8 av 8 BankID-röster verifierade",
+                isAuditLog: true
+            )
+        ]
+    case .no:
+        return [
+            HandbookChapterItem(
+                id: "hms1",
+                chapterNumber: "1",
+                title: "HMS-ansvar, Mål & Lederkurs (§ 3-5)",
+                statute: "AML kap. 3 & § 3-5",
+                icon: "building.columns.fill",
+                statusText: "HMS-sertifisert",
+                summary: "Daglig leders lovfestede plikt til å gjennomgå HMS-opplæring og sikre systematisk helse-, miljø- og sikkerhetsarbeid i virksomheten.",
+                statutoryRule: "Arbeidsgiver plikter å gjennomgå opplæring i helse-, miljø- og sikkerhetsarbeid (§ 3-5) og dokumentere internkontrollen skriftlig.",
+                companyPolicy: "Fjord Dynamics har som mål et fullt forsvarlig arbeidsmiljø med null skader. Jonas Berg har fullført godkjent lederkurs via Simployer Learn.",
+                practicalGuideline: "Kursbevis og skriftlig HMS-målsetting er arkivert i Comply for umiddelbar fremvisning ved Arbeidstilsynets tilsyn.",
+                revisionDate: "1. januar 2024",
+                confirmedCount: "Lederkurs § 3-5 verifisert"
+            ),
+            HandbookChapterItem(
+                id: "hms2",
+                chapterNumber: "2",
+                title: "Risikovurdering & Årlig Vernerunde",
+                statute: "Internkontrollforskriften § 5",
+                icon: "checklist.checked",
+                statusText: "Gjennomført 2024",
+                summary: "Årlig kartlegging og skriftlig risikovurdering av fysiske, ergonomiske og psykososiale risikofaktorer sammen med verneombudet.",
+                statutoryRule: "Virksomheten skal regelmessig kartlegge farer og problemer, vurdere risiko og utarbeide en handlingsplan med tidsfrister.",
+                companyPolicy: "Vernerunde gjennomføres årlig hver november av daglig leder, verneombud og kontorleder. Handlingsplanen følges opp kvartalsvis.",
+                practicalGuideline: "Complys digitale vernerundeskjema genererer automatisk tiltakspunkter med tildelt ansvarlig og frist for utbedring.",
+                revisionDate: "15. november 2024",
+                confirmedCount: "Vernerundeprotokoll signert"
+            ),
+            HandbookChapterItem(
+                id: "hms3",
+                chapterNumber: "3",
+                title: "Ulykker, Avvik & Meldeplikt til Arbeidstilsynet",
+                statute: "AML § 5-1 & § 5-2",
+                icon: "bell.badge.fill",
+                statusText: "Akuttrutine",
+                summary: "Plikt til å registrere avvik og ulykker, samt varsle Arbeidstilsynet og nærmeste politimyndighet straks ved alvorlig skade.",
+                statutoryRule: "Ved alvorlig eller livstruende skade skal arbeidsgiver varsle Arbeidstilsynet og politi umiddelbart via telefon og digital melding.",
+                companyPolicy: "Alle avvik og nestenulykker meldes inn innen 24 timer via Comply. Verneombudet mottar automatisk varsel på e-post.",
+                practicalGuideline: "Comply har et 1-klikks integrert meldeskjema til Arbeidstilsynet med forhåndsutfylte virksomhetsdata.",
+                revisionDate: "1. februar 2024",
+                confirmedCount: "Melderutine aktiv"
+            ),
+            HandbookChapterItem(
+                id: "hms4",
+                chapterNumber: "4",
+                title: "Brannvern (SBA), Rømningsveier & Førstehjelp",
+                statute: "Brannvernforskriften / Internkontroll",
+                icon: "flame.fill",
+                statusText: "Øvd årlig",
+                summary: "Systematisk brannforebyggende arbeid, halvårlig kontroll av slokkeutstyr og årlig praktisk evakueringsøvelse for alle ansatte.",
+                statutoryRule: "Lokalene skal ha frie rømningsveier, nødlys og godkjente slokkemidler. Alle ansatte skal kjenne samlingsplassen.",
+                companyPolicy: "Silje Olsen er brannvernleder. Førstehjelpsutstyr og hjertestarter er plassert i kjøkkenområdet og kontrolleres kvartalsvis.",
+                practicalGuideline: "Samlingsplass ved evakuering er Bryggen 4 (østre parkeringsplass). Rømningsplan er hengt opp ved alle nødutganger.",
+                revisionDate: "15. april 2024",
+                confirmedCount: "Brannvernlogg godkjent"
+            ),
+            HandbookChapterItem(
+                id: "hms5",
+                chapterNumber: "5",
+                title: "Skjermergonomi & Synsundersøkelse",
+                statute: "Forskrift om arbeid ved dataskjerm § 14",
+                icon: "eyeglasses",
+                statusText: "Fri synsundersøkelse",
+                summary: "Lovfestet rett til arbeidsgiverbetalt synsundersøkelse og databriller ved regelmessig arbeid foran dataskjerm.",
+                statutoryRule: "Arbeidstakere som jevnlig arbeider ved dataskjerm har rett til synsprøve betalt av arbeidsgiver og spesialtilpassede databriller.",
+                companyPolicy: "Fjord Dynamics dekker full undersøkelse og innfatning/glass hos optiker opptil 4 500 kr annethvert år.",
+                practicalGuideline: "Den ansatte bestiller time hos Synsam eller Brilleland og oppgir Fjord Dynamics bedriftsavtale.",
+                revisionDate: "1. januar 2024",
+                confirmedCount: "Optikeravtale aktiv"
+            ),
+            HandbookChapterItem(
+                id: "hms6",
+                chapterNumber: "6",
+                title: "Verneombudets Mandat & Valgprotokoll",
+                statute: "AML § 6-1 & § 6-2",
+                icon: "person.badge.shield.checkmark.fill",
+                statusText: "Valgprotokoll arkivert",
+                summary: "Formelt valgprotokoll for verneombud Kasper Rahman for 2024–2025, samt verneombudets lovfestede stansingsrett ved fare.",
+                statutoryRule: "Verneombudet har lovfestet rett til betalt fri for vervet, rett til opplæring og rett til å stanse farlig arbeid (§ 6-3).",
+                companyPolicy: "Kasper Rahman har fri tilgang til alle HMS-saker i Comply og deltar i alle planleggingsmøter som berører arbeidsmiljøet.",
+                practicalGuideline: "Valgprotokollen er signert med BankID av samtlige 8 ansatte og oppbevares permanent i Complys tilsynsarkiv.",
+                revisionDate: "12. januar 2024",
+                confirmedCount: "8 av 8 BankID-stemmer arkivert",
+                isAuditLog: true
+            )
+        ]
+    case .en:
+        return [
+            HandbookChapterItem(
+                id: "hms1",
+                chapterNumber: "1",
+                title: "HSE Liability, Goals & Management Course (§ 3-5)",
+                statute: "AML ch. 3 & § 3-5",
+                icon: "building.columns.fill",
+                statusText: "HSE certified",
+                summary: "CEO's statutory duty to complete formal HSE training and maintain written internal control documentation for the enterprise.",
+                statutoryRule: "The employer must complete certified HSE training (§ 3-5) and maintain structured internal control records under law.",
+                companyPolicy: "Fjord Dynamics targets zero workplace injuries and an empowering psychological environment. Jonas Berg completed the CEO HSE curriculum via Simployer Learn.",
+                practicalGuideline: "Course certificates and executive delegation records are permanently archived in Comply for instant inspector presentation.",
+                revisionDate: "January 1, 2024",
+                confirmedCount: "HSE § 3-5 certified"
+            ),
+            HandbookChapterItem(
+                id: "hms2",
+                chapterNumber: "2",
+                title: "Risk Assessments & Annual Safety Inspection",
+                statute: "Internal Control Regulations § 5",
+                icon: "checklist.checked",
+                statusText: "Completed 2024",
+                summary: "Annual mapping and written risk assessment of ergonomic, physical, and psychosocial factors in collaboration with the safety representative.",
+                statutoryRule: "Enterprises must systematically examine risks, evaluate likelihood/severity, and maintain a dated remediation action plan.",
+                companyPolicy: "Safety walkthroughs are conducted annually every November by the CEO, Safety Rep, and Office Manager. Plans are tracked quarterly.",
+                practicalGuideline: "Comply's digital inspection templates generate action points with assigned owners and hard compliance completion dates.",
+                revisionDate: "November 15, 2024",
+                confirmedCount: "Inspection protocol signed"
+            ),
+            HandbookChapterItem(
+                id: "hms3",
+                chapterNumber: "3",
+                title: "Incidents, Near-Misses & Inspection Reporting",
+                statute: "AML § 5-1 & § 5-2",
+                icon: "bell.badge.fill",
+                statusText: "Emergency routine",
+                summary: "Statutory duty to log near-misses and immediately notify the Labor Inspection Authority and Police in the event of serious injury.",
+                statutoryRule: "Severe or life-threatening injuries must be reported immediately by phone and digital submission to the inspectorate.",
+                companyPolicy: "All incidents and near-misses must be filed within 24 hours in Comply. The Safety Representative receives instant notification.",
+                practicalGuideline: "Comply features a 1-click official notification dispatch workflow with pre-filled company registration metadata.",
+                revisionDate: "February 1, 2024",
+                confirmedCount: "Emergency workflow active"
+            ),
+            HandbookChapterItem(
+                id: "hms4",
+                chapterNumber: "4",
+                title: "Fire Safety, Evacuation & First Aid",
+                statute: "Fire Protection Regulations / Internal Control",
+                icon: "flame.fill",
+                statusText: "Practiced annually",
+                summary: "Systematic fire prevention routines, bi-annual inspection of extinguishing gear, and mandatory annual drill for all staff.",
+                statutoryRule: "Premises must provide unobstructed emergency exits, illuminated signage, and certified extinguishers. All staff must know muster points.",
+                companyPolicy: "Silje Olsen is designated Fire Marshal. Defibrillator and first-aid kits are centrally located in the kitchenette area.",
+                practicalGuideline: "Evacuation muster point is Dock 4 (East parking perimeter). Escape plans are posted adjacent to every emergency door.",
+                revisionDate: "April 15, 2024",
+                confirmedCount: "Fire audit log verified"
+            ),
+            HandbookChapterItem(
+                id: "hms5",
+                chapterNumber: "5",
+                title: "VDU Ergonomics & Computer Eyewear",
+                statute: "VDU Regulations § 14",
+                icon: "eyeglasses",
+                statusText: "Free eye exam",
+                summary: "Statutory employee entitlement to employer-funded eye examinations and specialized computer glasses for regular screen workers.",
+                statutoryRule: "Staff working with display screen equipment for more than 1 hour daily are legally entitled to employer-covered eye examinations and glasses.",
+                companyPolicy: "Fjord Dynamics covers comprehensive eye exams and frames/lenses at partner opticians up to NOK 4,500 biennially.",
+                practicalGuideline: "Employees book appointments directly with Synsam or partner opticians referencing Fjord Dynamics corporate billing account.",
+                revisionDate: "January 1, 2024",
+                confirmedCount: "Optician corporate contract active"
+            ),
+            HandbookChapterItem(
+                id: "hms6",
+                chapterNumber: "6",
+                title: "Safety Representative Mandate & Minutes",
+                statute: "AML § 6-1 & § 6-2",
+                icon: "person.badge.shield.checkmark.fill",
+                statusText: "Minutes archived",
+                summary: "Official election protocol for Safety Representative Kasper Rahman (2024–2025) and statutory work stoppage authority during imminent danger.",
+                statutoryRule: "The safety rep has a statutory right to paid release time, formal training, and the legal power to halt dangerous work (§ 6-3).",
+                companyPolicy: "Kasper Rahman possesses unrestricted visibility into all HSE incidents in Comply and participates in quarterly planning sessions.",
+                practicalGuideline: "The election minutes are signed via BankID by all 8 employees and permanently retained in Comply's inspection directory.",
+                revisionDate: "January 12, 2024",
+                confirmedCount: "8 of 8 BankID ballots archived",
+                isAuditLog: true
+            )
+        ]
+    }
+}
+
+// MARK: - Company Benefits Provider
+public func getCompanyBenefits(for language: AppLanguage) -> [CompanyBenefitItem] {
+    switch language {
+    case .se:
+        return [
+            CompanyBenefitItem(
+                id: "benefit_wellness",
+                icon: "figure.run",
+                title: "Friskvård & Hälsa",
+                highlight: "5 000 kr / år",
+                description: "Skattefritt friskvårdsbidrag för gym, simning, padel eller massage. Kvitto registreras enkelt via lönemodulen. Dessutom gemensam fredagsträning kl 15:00 samt privat sjukvårdsförsäkring via Euro Accident.",
+                tags: ["Skattefritt", "Euro Accident", "Fredagsträning"]
+            ),
+            CompanyBenefitItem(
+                id: "benefit_hybrid",
+                icon: "laptopcomputer.and.iphone",
+                title: "Hybrid & Hemarbete",
+                highlight: "Upp till 2 dgr / v",
+                description: "Frihet under ansvar med flexibla arbetstider. Kärnarbetstid 09:00–15:00. Fjord Dynamics bekostar ett komplett ergonomiskt hemmakontor (skärm, höj-/sänkbart bord, stol) upp till 10 000 kr.",
+                tags: ["Frihet under ansvar", "10 000 kr hemutrustning", "Kärntid 09-15"]
+            ),
+            CompanyBenefitItem(
+                id: "benefit_it",
+                icon: "desktopcomputer",
+                title: "IT, Hårdvara & Mobil",
+                highlight: "Valfri Mac / PC",
+                description: "Valfri MacBook Pro (M3/M4) eller ThinkPad vid start. Mobilabonnemang med obegränsad surf och fria samtal inom EU/EES. 1Password och FileVault obligatoriskt på samtliga enheter.",
+                tags: ["Apple Silicon / PC", "Fri surf EU/EES", "1Password Enterprise"]
+            )
+        ]
+    case .no:
+        return [
+            CompanyBenefitItem(
+                id: "benefit_wellness",
+                icon: "figure.run",
+                title: "Trening & Helse",
+                highlight: "5 000 kr / år",
+                description: "Skattefritt treningsbidrag til treningssenter, svømming eller massasje. Kvittering registreres via Tripletex. Felles fredagstrening kl 15:00 samt privat helseforsikring via Euro Accident.",
+                tags: ["Skattefritt", "Euro Accident", "Fredagstrening"]
+            ),
+            CompanyBenefitItem(
+                id: "benefit_hybrid",
+                icon: "laptopcomputer.and.iphone",
+                title: "Hybrid & Hjemmekontor",
+                highlight: "Opptil 2 dager / uke",
+                description: "Frihet under ansvar med fleksibel arbeidstid. Kjernetid 09:00–15:00. Fjord Dynamics dekker komplett ergonomisk hjemmekontor (skjerm, hev/senk-pult, stol) opptil 10 000 kr.",
+                tags: ["Frihet under ansvar", "10 000 kr hjemmekontor", "Kjernetid 09-15"]
+            ),
+            CompanyBenefitItem(
+                id: "benefit_it",
+                icon: "desktopcomputer",
+                title: "IT, Maskinvare & Mobil",
+                highlight: "Valgfri Mac / PC",
+                description: "Valgfri MacBook Pro (M3/M4) eller ThinkPad ved oppstart. Fri mobil med ubegrenset data i EU/EØS. 1Password og FileVault aktivert på samtlige enheter.",
+                tags: ["Apple Silicon / PC", "Fri data EU/EØS", "1Password Enterprise"]
+            )
+        ]
+    case .en:
+        return [
+            CompanyBenefitItem(
+                id: "benefit_wellness",
+                icon: "figure.run",
+                title: "Wellness & Health",
+                highlight: "€500 / year",
+                description: "Tax-free wellness subsidy for gym memberships, swimming, padel, or massage. Receipts filed directly in payroll. Joint Friday workout at 15:00 plus comprehensive private healthcare.",
+                tags: ["Tax-Free", "Private Healthcare", "Friday Workout"]
+            ),
+            CompanyBenefitItem(
+                id: "benefit_hybrid",
+                icon: "laptopcomputer.and.iphone",
+                title: "Hybrid & Remote Work",
+                highlight: "Up to 2 days / wk",
+                description: "Freedom with responsibility and flexible hours. Core hours 09:00–15:00. Fjord Dynamics subsidizes an ergonomic home office setup (monitor, standing desk, chair) up to €1,000.",
+                tags: ["Flexible Hours", "€1,000 Home Setup", "Core 09-15"]
+            ),
+            CompanyBenefitItem(
+                id: "benefit_it",
+                icon: "desktopcomputer",
+                title: "IT, Hardware & Mobile",
+                highlight: "Choice of Mac / PC",
+                description: "Choice of MacBook Pro (M3/M4) or ThinkPad on day one. Unlimited corporate mobile plan with 5G data across EU/EEA. 1Password and FileVault enforced on all endpoints.",
+                tags: ["Apple Silicon / PC", "Unlimited EU Data", "1Password Enterprise"]
+            )
+        ]
+    }
+}
+
+public struct AuditRowView: View {
+    public let rec: AuditRecordItem
+    
+    public init(rec: AuditRecordItem) {
+        self.rec = rec
+    }
+    
+    public var body: some View {
+        HStack {
+            Circle()
+                .fill(SolTokens.lav400)
+                .frame(width: 5, height: 5)
+            Text(rec.name)
+                .font(.inter(11, .medium))
+                .foregroundColor(SolTokens.ink900)
+            Text("(\(rec.role))")
+                .font(.inter(10))
+                .foregroundColor(SolTokens.ink450)
+            Spacer()
+            Text(rec.date)
+                .font(.system(size: 9.5, design: .monospaced))
+                .foregroundColor(SolTokens.ink600)
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+public struct AuditRecordsListView: View {
+    public let records: [AuditRecordItem]
+    
+    public init(records: [AuditRecordItem]) {
+        self.records = records
+    }
+    
+    public var body: some View {
+        VStack(spacing: 6) {
+            ForEach(records) { rec in
+                AuditRowView(rec: rec)
+            }
+        }
+        .padding(10)
+        .background(SolTokens.paper200)
+        .cornerRadius(6)
+    }
+}
+
+// MARK: - Calm, Apple-Grade Card Views (Unified Inward Fillet Geometry)
+
+public struct InwardFilletShape: Shape {
+    public let activeCol: Int
+    public var totalCols: Int = 3
+    public var spacing: CGFloat = 14
+    public var cardHeight: CGFloat = 214
+    public var rowMargin: CGFloat = 14
+    public var r: CGFloat = 10
+    public var inwardR: CGFloat = 12
+    
+    public init(activeCol: Int, totalCols: Int = 3, spacing: CGFloat = 14, cardHeight: CGFloat = 214, rowMargin: CGFloat = 14, r: CGFloat = 10, inwardR: CGFloat = 12) {
+        self.activeCol = activeCol
+        self.totalCols = totalCols
+        self.spacing = spacing
+        self.cardHeight = cardHeight
+        self.rowMargin = rowMargin
+        self.r = r
+        self.inwardR = inwardR
+    }
+    
+    public func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let totalW = rect.width
+        let colW = (totalW - CGFloat(totalCols - 1) * spacing) / CGFloat(totalCols)
+        let cardX = CGFloat(activeCol) * (colW + spacing)
+        let cardRight = cardX + colW
+        let drawerTop = cardHeight + rowMargin
+        let bottom = rect.height
+        
+        path.move(to: CGPoint(x: r, y: bottom))
+        path.addLine(to: CGPoint(x: totalW - r, y: bottom))
+        path.addArc(center: CGPoint(x: totalW - r, y: bottom - r), radius: r, startAngle: .degrees(90), endAngle: .degrees(0), clockwise: true)
+        
+        if activeCol == 2 {
+            path.addLine(to: CGPoint(x: totalW, y: r))
+            path.addArc(center: CGPoint(x: totalW - r, y: r), radius: r, startAngle: .degrees(0), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: cardX + r, y: 0))
+            path.addArc(center: CGPoint(x: cardX + r, y: r), radius: r, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+            path.addLine(to: CGPoint(x: cardX, y: drawerTop - inwardR))
+            path.addArc(center: CGPoint(x: cardX - inwardR, y: drawerTop - inwardR), radius: inwardR, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+            path.addLine(to: CGPoint(x: r, y: drawerTop))
+            path.addArc(center: CGPoint(x: r, y: drawerTop + r), radius: r, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+            path.addLine(to: CGPoint(x: 0, y: bottom - r))
+            path.addArc(center: CGPoint(x: r, y: bottom - r), radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: true)
+        } else if activeCol == 0 {
+            path.addLine(to: CGPoint(x: totalW, y: drawerTop + r))
+            path.addArc(center: CGPoint(x: totalW - r, y: drawerTop + r), radius: r, startAngle: .degrees(0), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: cardRight + inwardR, y: drawerTop))
+            path.addArc(center: CGPoint(x: cardRight + inwardR, y: drawerTop - inwardR), radius: inwardR, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
+            path.addLine(to: CGPoint(x: cardRight, y: r))
+            path.addArc(center: CGPoint(x: cardRight - r, y: r), radius: r, startAngle: .degrees(0), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: r, y: 0))
+            path.addArc(center: CGPoint(x: r, y: r), radius: r, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+            path.addLine(to: CGPoint(x: 0, y: bottom - r))
+            path.addArc(center: CGPoint(x: r, y: bottom - r), radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: true)
+        } else {
+            path.addLine(to: CGPoint(x: totalW, y: drawerTop + r))
+            path.addArc(center: CGPoint(x: totalW - r, y: drawerTop + r), radius: r, startAngle: .degrees(0), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: cardRight + inwardR, y: drawerTop))
+            path.addArc(center: CGPoint(x: cardRight + inwardR, y: drawerTop - inwardR), radius: inwardR, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
+            path.addLine(to: CGPoint(x: cardRight, y: r))
+            path.addArc(center: CGPoint(x: cardRight - r, y: r), radius: r, startAngle: .degrees(0), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: cardX + r, y: 0))
+            path.addArc(center: CGPoint(x: cardX + r, y: r), radius: r, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+            path.addLine(to: CGPoint(x: cardX, y: drawerTop - inwardR))
+            path.addArc(center: CGPoint(x: cardX - inwardR, y: drawerTop - inwardR), radius: inwardR, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+            path.addLine(to: CGPoint(x: r, y: drawerTop))
+            path.addArc(center: CGPoint(x: r, y: drawerTop + r), radius: r, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+            path.addLine(to: CGPoint(x: 0, y: bottom - r))
+            path.addArc(center: CGPoint(x: r, y: bottom - r), radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: true)
+        }
+        
+        path.closeSubpath()
+        return path
+    }
+}
+
+public struct HandbookColumnCard: View {
+    public let chapter: HandbookChapterItem
+    public let isSelected: Bool
+    public var cardHeight: CGFloat = 214
+    public let onSelect: () -> Void
+    @State private var isHovered: Bool = false
+    
+    public init(chapter: HandbookChapterItem, isSelected: Bool, cardHeight: CGFloat = 214, onSelect: @escaping () -> Void) {
+        self.chapter = chapter
+        self.isSelected = isSelected
+        self.cardHeight = cardHeight
+        self.onSelect = onSelect
+    }
+    
+    private var sectionTag: String {
+        if chapter.isAuditLog {
+            switch ComplyStore.shared.language {
+            case .se: return "JURIDISKT BEVIS"
+            case .no: return "JURIDISK BEVIS"
+            case .en: return "LEGAL AUDIT PROOF"
+            }
+        } else {
+            return "\(ComplyStore.shared.l10n.chapterPrefix.uppercased()) \(chapter.chapterNumber)"
+        }
+    }
+    
+    private var actionLinkLabel: String {
+        if chapter.isAuditLog {
+            switch ComplyStore.shared.language {
+            case .se: return "Visa certifikat & signaturer"
+            case .no: return "Vis sertifikater & signaturer"
+            case .en: return "View certificates & signatures"
+            }
+        } else {
+            switch ComplyStore.shared.language {
+            case .se: return "Se regler & policy"
+            case .no: return "Se retningslinjer & praksis"
+            case .en: return "View policy & guidelines"
+            }
+        }
+    }
+    
+    public var body: some View {
+        Button(action: onSelect) {
+            VStack(alignment: .leading, spacing: 10) {
+                // Top: 36x36 Calm Sol Badge + Quiet Neutral Revision Pill + Chevron
+                HStack(alignment: .center) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(SolTokens.paper200)
+                            .frame(width: 36, height: 36)
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                        Image(systemName: chapter.icon)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(SolTokens.lav400)
+                    }
                     
-                    Text(statute)
-                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    Spacer()
+                    
+                    // Quiet, low-contrast neutral pill (ZERO false alarm colors)
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(isSelected ? SolTokens.lav400 : SolTokens.ink450)
+                            .frame(width: 4, height: 4)
+                        Text(chapter.statusText)
+                            .font(.inter(11, .medium))
+                            .foregroundColor(isSelected ? Color.white : SolTokens.ink600)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 7.5)
+                    .padding(.vertical, 3.5)
+                    .background(isSelected ? SolTokens.paper300 : SolTokens.paper200)
+                    .cornerRadius(5)
+                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(isSelected ? SolTokens.paper400 : SolTokens.paper300, lineWidth: 1))
+                    
+                    Image(systemName: isSelected ? "chevron.up" : "chevron.right")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(isSelected ? Color.white : SolTokens.ink450)
+                        .padding(.leading, 4)
+                }
+                
+                // Title & Statute
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Text(sectionTag)
+                            .font(.system(size: 9.5, weight: .bold, design: .monospaced))
+                            .foregroundColor(isSelected ? SolTokens.ink600 : SolTokens.ink450)
+                            .tracking(0.4)
+                        
+                        Text("•")
+                            .font(.system(size: 8))
+                            .foregroundColor(isSelected ? SolTokens.ink600 : SolTokens.ink450)
+                        
+                        Text(chapter.statute)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(isSelected ? SolTokens.lav400 : SolTokens.ink450)
+                    }
+                    
+                    Text(chapter.title)
+                        .font(.inter(14, .bold))
+                        .foregroundColor(Color.white)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                
+                // Summary description
+                Text(chapter.summary)
+                    .font(.inter(12))
+                    .foregroundColor(isSelected ? Color.white.opacity(0.92) : SolTokens.ink700)
+                    .lineSpacing(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                Spacer(minLength: 8)
+                
+                if !isSelected {
+                    HStack(spacing: 4) {
+                        Text(actionLinkLabel)
+                            .font(.inter(11, .semibold))
+                            .foregroundColor(chapter.isAuditLog ? SolTokens.lav400 : SolTokens.ink600)
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(chapter.isAuditLog ? SolTokens.lav400 : SolTokens.ink600)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(16)
+            .frame(maxWidth: .infinity, minHeight: cardHeight, maxHeight: cardHeight)
+            .background(
+                Group {
+                    if isSelected {
+                        Color.clear
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(isHovered ? SolTokens.paper200 : SolTokens.paper100)
+                    }
+                }
+            )
+            .overlay(
+                Group {
+                    if isSelected {
+                        Color.clear
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(isHovered ? SolTokens.paper400 : SolTokens.paper300, lineWidth: 1)
+                    }
+                }
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hover in
+            isHovered = hover
+        }
+    }
+}
+
+public struct HandbookRowDetailBox: View {
+    public let chapter: HandbookChapterItem
+    public let activeCol: Int
+    public let onClose: () -> Void
+    @State private var isHoveredClose: Bool = false
+    
+    public init(chapter: HandbookChapterItem, activeCol: Int = 0, onClose: @escaping () -> Void) {
+        self.chapter = chapter
+        self.activeCol = activeCol
+        self.onClose = onClose
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            // Header: Streamlined Section Heading & Close Button
+            HStack(spacing: 12) {
+                HStack(spacing: 6) {
+                    Image(systemName: "text.alignleft")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(SolTokens.lav400)
+                    Text(ComplyStore.shared.language == .se 
+                         ? "LAGSTADGADE KRAV VS. FÖRETAGSPOLICY" 
+                         : (ComplyStore.shared.language == .no 
+                            ? "LOVPÅLAGTE KRAV VS. BEDRIFTSRETNINGSLINJER" 
+                            : "STATUTORY REQUIREMENTS VS. COMPANY POLICY"))
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .foregroundColor(SolTokens.ink450)
                 }
                 
                 Spacer()
                 
-                LinearStatusPill(
-                    text: statusText,
-                    dotColor: statusColor,
-                    bgColor: statusBg,
-                    borderColor: statusColor.opacity(0.3),
-                    textColor: statusColor
-                )
+                Button(action: onClose) {
+                    HStack(spacing: 5) {
+                        Text(ComplyStore.shared.language == .se ? "Stäng" : (ComplyStore.shared.language == .no ? "Lukk" : "Close"))
+                            .font(.inter(11, .medium))
+                            .foregroundColor(isHoveredClose ? SolTokens.ink900 : SolTokens.ink600)
+                        Image(systemName: "xmark")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(isHoveredClose ? SolTokens.ink900 : SolTokens.ink600)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(isHoveredClose ? SolTokens.paper300 : SolTokens.paper200)
+                    .cornerRadius(5)
+                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper400, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .onHover { hover in
+                    isHoveredClose = hover
+                }
             }
             
-            Text(title)
-                .font(.inter(14.5, .bold))
-                .foregroundColor(SolTokens.ink900)
+            Divider()
+                .background(SolTokens.paper300)
             
-            Text(summary)
-                .font(.inter(12.5))
-                .foregroundColor(SolTokens.ink700)
-                .lineSpacing(2.5)
+            // Middle: If Audit Log, show signatures. Otherwise show 3-column statutory breakdown
+            if chapter.isAuditLog {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(ComplyStore.shared.language == .se ? "DIGITALA BANKID-KVITTERINGAR (8 AV 8 MEDARBETARE)" : (ComplyStore.shared.language == .no ? "DIGITALE BANKID-KVITTERINGER (8 AV 8 MEDARBEIDERE)" : "DIGITAL BANKID ACKNOWLEDGEMENTS (8 OF 8 EMPLOYEES)"))
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundColor(SolTokens.ink450)
+                    
+                    HStack(alignment: .top, spacing: 14) {
+                        AuditRecordsListView(records: Array(auditRecords.prefix(4)))
+                            .frame(maxWidth: .infinity)
+                        AuditRecordsListView(records: Array(auditRecords.suffix(4)))
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+            } else {
+                // 3 Column Grid for Content
+                HStack(alignment: .top, spacing: 16) {
+                    // Column 1: Statutory Law
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "scale.3d")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(SolTokens.indigo)
+                            Text(ComplyStore.shared.language == .se ? "LAGKRAV (\(chapter.statute))" : (ComplyStore.shared.language == .no ? "LOVKRAV (\(chapter.statute))" : "STATUTORY LAW (\(chapter.statute))"))
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .foregroundColor(SolTokens.ink450)
+                        }
+                        Text(chapter.statutoryRule)
+                            .font(.inter(12))
+                            .foregroundColor(Color.white.opacity(0.92))
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(12)
+                    .background(SolTokens.paper200.opacity(0.6))
+                    .cornerRadius(8)
+                    
+                    // Column 2: Company Policy
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "building.2.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(SolTokens.lav400)
+                            Text(ComplyStore.shared.language == .se ? "FÖRETAGETS POLICY" : (ComplyStore.shared.language == .no ? "BEDRIFTENS RETNINGSLINJER" : "COMPANY POLICY"))
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .foregroundColor(SolTokens.ink450)
+                        }
+                        Text(chapter.companyPolicy)
+                            .font(.inter(12))
+                            .foregroundColor(Color.white.opacity(0.92))
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(12)
+                    .background(SolTokens.paper200.opacity(0.6))
+                    .cornerRadius(8)
+                    
+                    // Column 3: Day-to-Day Guidelines
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "person.crop.circle.badge.checkmark")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(SolTokens.ink600)
+                            Text(ComplyStore.shared.language == .se ? "I VARDAGEN" : (ComplyStore.shared.language == .no ? "I HVERDAGEN" : "DAY-TO-DAY"))
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .foregroundColor(SolTokens.ink450)
+                        }
+                        Text(chapter.practicalGuideline)
+                            .font(.inter(12))
+                            .foregroundColor(Color.white.opacity(0.92))
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(12)
+                    .background(SolTokens.paper200.opacity(0.6))
+                    .cornerRadius(8)
+                }
+                
+                if chapter.isAiChapter {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(ComplyStore.shared.l10n.handbookApprovedAiToolsHeader)
+                            .font(.system(size: 9.5, weight: .bold, design: .monospaced))
+                            .foregroundColor(SolTokens.ink450)
+                            .padding(.top, 4)
+                        
+                        HStack(spacing: 10) {
+                            AIToolChip(name: "ChatGPT Team", vendor: "OpenAI", status: ComplyStore.shared.l10n.aiChipTextStatus)
+                            AIToolChip(name: "Claude Enterprise", vendor: "Anthropic", status: ComplyStore.shared.l10n.aiChipDataStatus)
+                            AIToolChip(name: "GitHub Copilot", vendor: "Microsoft", status: ComplyStore.shared.l10n.aiChipCodeStatus)
+                        }
+                    }
+                }
+            }
+            
+            // Footer: Verification & Date
+            HStack(spacing: 12) {
+                HStack(spacing: 5) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 11))
+                        .foregroundColor(SolTokens.lav400)
+                    Text(chapter.confirmedCount)
+                        .font(.system(size: 10.5, weight: .medium, design: .monospaced))
+                        .foregroundColor(SolTokens.ink600)
+                }
+                
+                Spacer()
+                
+                Text(chapter.revisionDate)
+                    .font(.system(size: 10.5, design: .monospaced))
+                    .foregroundColor(SolTokens.ink450)
+            }
+            .padding(.top, 2)
         }
-        .padding(16)
-        .background(SolTokens.paper100)
-        .cornerRadius(8)
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+        .padding(18)
+        .background(Color.clear)
     }
 }
+
+public struct CompanyBenefitCard: View {
+    public let benefit: CompanyBenefitItem
+    @State private var isHovered: Bool = false
+    
+    public init(benefit: CompanyBenefitItem) {
+        self.benefit = benefit
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(SolTokens.paper200)
+                        .frame(width: 36, height: 36)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(SolTokens.paper300, lineWidth: 1))
+                    Image(systemName: benefit.icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(SolTokens.lav400)
+                }
+                
+                Spacer()
+                
+                // Calm, neutral highlight badge (ZERO compliance green)
+                Text(benefit.highlight)
+                    .font(.system(size: 10.5, weight: .semibold, design: .monospaced))
+                    .padding(.horizontal, 7.5)
+                    .padding(.vertical, 3.5)
+                    .background(SolTokens.paper200)
+                    .foregroundColor(SolTokens.lav400)
+                    .cornerRadius(5)
+                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.paper300, lineWidth: 1))
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(benefit.title)
+                    .font(.inter(14, .bold))
+                    .foregroundColor(SolTokens.ink900)
+            }
+            
+            Text(benefit.description)
+                .font(.inter(12))
+                .foregroundColor(SolTokens.ink700)
+                .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            Spacer(minLength: 0)
+            
+            HStack(spacing: 6) {
+                ForEach(benefit.tags, id: \.self) { tag in
+                    Text(tag)
+                        .font(.system(size: 9.5, weight: .medium, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(SolTokens.paper200)
+                        .foregroundColor(SolTokens.ink600)
+                        .cornerRadius(3)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(isHovered ? SolTokens.paper200 : SolTokens.paper100)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isHovered ? SolTokens.paper400 : SolTokens.paper300, lineWidth: 1)
+        )
+        .onHover { hover in
+            isHovered = hover
+        }
+    }
+}
+
 
 struct RadarThresholdCard: View {
     let threshold: String

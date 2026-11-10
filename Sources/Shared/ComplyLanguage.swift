@@ -342,6 +342,13 @@ public struct LocalizedStrings: Sendable {
     public let hubCardProbationResolved: String
     
     // Handbook & Radar & Expert Details
+    public let handbookCompanyTitle: String
+    public let handbookVersionBadge: String
+    public let handbookDownloadPdf: String
+    public let handbookShareWithStaff: String
+    public let handbookSearchPlaceholder: String
+    public let handbookBenefitsHeader: String
+    public let handbookBenefitsSub: String
     public let handbookAiUpdateNotice: String
     public let handbookApprovedAiToolsHeader: String
     public let radarAutomatedWatchNotice: String
@@ -948,7 +955,7 @@ public struct LocalizedStrings: Sendable {
     public var hubHmsModule1: String {
         switch languageCode {
         case "se": return "Modul 1: Arbetsmiljöansvar & regelverk (AML § 3-5, AFS)"
-        case "en": return "Module 1: Statutory EHS liability & frameworks (WEA § 3-5)"
+        case "en": return "Module 1: Statutory EHS liability & frameworks (AML § 3-5)"
         default: return "Modul 1: Arbeidsmiljøansvar & lovkrav (AML § 3-5)"
         }
     }
@@ -1012,7 +1019,7 @@ public struct LocalizedStrings: Sendable {
     public var hubGuardrail1Statute: String {
         switch languageCode {
         case "se": return "AML kap. 10"
-        case "en": return "WEA ch. 10"
+        case "en": return "AML ch. 10"
         default: return "AML kap. 10"
         }
     }
@@ -1070,7 +1077,7 @@ public struct LocalizedStrings: Sendable {
     public var hubGuardrail3Statute: String {
         switch languageCode {
         case "se": return "AML kap. 2 A"
-        case "en": return "WEA ch. 2 A"
+        case "en": return "AML ch. 2 A"
         default: return "AML kap. 2 A"
         }
     }
@@ -1504,7 +1511,14 @@ public enum L10n {
                 hubCardProbationDesc: "Evaluering og oppfølgingssamtale må gjennomføres innen 6 måneder for å opprettholde lovlig ansettelsesvern.",
                 hubCardProbationAction: "Bekreft evaluering",
                 hubCardProbationResolved: "Prøvetidsevalueringer registrert fullført. Fast ansettelse bekreftet.",
-                handbookAiUpdateNotice: "Automatisert oppdatering iht. endringer i AML 2024 & EU AI Act · Simployer Fagredaksjon",
+                handbookCompanyTitle: "Fjord Dynamics Personalhåndbok",
+                handbookVersionBadge: "v2024.2",
+                handbookDownloadPdf: "Last ned PDF",
+                handbookShareWithStaff: "Del med ansatte",
+                handbookSearchPlaceholder: "Søk i håndboken (arbeidstid, ferie, AI, goder)...",
+                handbookBenefitsHeader: "Fjord Dynamics Goder & Lokale Vilkår",
+                handbookBenefitsSub: "Selskapets egne tilleggsavtaler, personalgoder og ordninger for 2024",
+                handbookAiUpdateNotice: "Publisert versjon 2024.2 · 8 av 8 medarbeidere har bekreftet · Holdes automatisk oppdatert mot AML",
                 handbookApprovedAiToolsHeader: "GODKJENTE GENERATIVE AI-VERKTØY I VIRKSOMHETEN",
                 radarAutomatedWatchNotice: "Automatisert overvåking av juridiske terskler basert på selskapets vekst",
                 expertPrecisionNotice: "Automatisert presisjonsberegning basert på gjeldende norsk lov og tariff",
@@ -1525,21 +1539,21 @@ public enum L10n {
                 diffCompliantNotice: "Alle ansettelsesvilkår og klausuler er i henhold til gjeldende lovverk.",
                 handbookCh1Title: "Arbeidsavtaler & Midlertidige Ansettelser",
                 handbookCh1Statute: "AML § 14-6 & § 14-9",
-                handbookCh1Status: "Lovrevidert 1. juli 2024",
+                handbookCh1Status: "● 8/8 bekreftet · Lovrevidert 1. juli 2024",
                 handbookCh1Summary: "Krav til skriftlige avtaler innen 7 dager, presisering av arbeidstid, og forbud mot generelle overtidsklausuler.",
                 handbookCh2Title: "Verneombud & HMS-organisering",
                 handbookCh2Statute: "AML § 6-1",
-                handbookCh2Status: "Påbudt fra 5 ansatte (1. jan 2024)",
+                handbookCh2Status: "● 8/8 bekreftet · Påbudt fra 5 ansatte",
                 handbookCh2Summary: "Obligatorisk hemmelig valg av verneombud for alle virksomheter med 5 eller flere ansatte. Valgprotokoll arkiveres i HMS-permen.",
                 handbookCh3Title: "Arbeidstid, Overtid & Kompensasjon",
                 handbookCh3Statute: "AML § 10-6",
-                handbookCh3Status: "Minimum 40 % overtidstillegg",
+                handbookCh3Status: "● 8/8 bekreftet · Min. 40 % overtidstillegg",
                 handbookCh3Summary: "Lovfestet rett til overtidsbetaling. Kompensasjon kan ikke bakes inn i fast månedslønn for ordinære stillinger.",
                 handbookCh4Title: "Varsling & Psykososialt Arbeidsmiljø",
                 handbookCh4Statute: "AML § 2 A-1 til § 2 A-3",
-                handbookCh4Status: "Varslingskanal etablert",
+                handbookCh4Status: "● 8/8 bekreftet · Varslingskanal aktiv",
                 handbookCh4Summary: "Lovfestet varslingsrutine for kritikkverdige forhold, objektiv undersøkelsesplikt og forbud mot gjengjeldelse.",
-                handbookCh5Status: "Aktiv retningslinje · 8/8 bekreftet",
+                handbookCh5Status: "● 8/8 bekreftet · Aktiv retningslinje",
                 aiChipTextStatus: "Godkjent tekstutkast",
                 aiChipDataStatus: "Godkjent dataanalyse",
                 aiChipCodeStatus: "Godkjent kildekode",
@@ -1907,7 +1921,14 @@ public enum L10n {
                 hubCardProbationDesc: "Utvärdering och uppföljningssamtal måste genomföras inom 6 månader för att upprätthålla lagligt anställningsskydd.",
                 hubCardProbationAction: "Bekräfta utvärdering",
                 hubCardProbationResolved: "Provanställningsutvärderingar slutförda. Tillsvidareanställning bekräftad.",
-                handbookAiUpdateNotice: "Automatiserad uppdatering enl. ändringar i AML 2024 & EU AI Act · Simployer Redaktion",
+                handbookCompanyTitle: "Fjord Dynamics Personalhandbok",
+                handbookVersionBadge: "v2024.2",
+                handbookDownloadPdf: "Ladda ner PDF",
+                handbookShareWithStaff: "Dela med personalen",
+                handbookSearchPlaceholder: "Sök i handboken (arbetstid, semester, AI, förmåner)...",
+                handbookBenefitsHeader: "Fjord Dynamics Förmåner & Lokala Villkor",
+                handbookBenefitsSub: "Företagets egna tilläggsavtal, förmåner och personalordningar för 2024",
+                handbookAiUpdateNotice: "Publicerad version 2024.2 · 8 av 8 medarbetare har bekräftat · Hålls automatiskt uppdaterad mot AML",
                 handbookApprovedAiToolsHeader: "GODKÄNDA GENERATIVA AI-VERKTYG I VERKSAMHETEN",
                 radarAutomatedWatchNotice: "Automatiserad övervakning av lagstadgade trösklar baserat på bolagets tillväxt",
                 expertPrecisionNotice: "Automatiserad precisionsberäkning baserad på gällande lag och kollektivavtal",
@@ -1928,21 +1949,21 @@ public enum L10n {
                 diffCompliantNotice: "Alla anställningsvillkor och klausuler uppfyller gällande lagstiftning.",
                 handbookCh1Title: "Anställningsavtal & Tidsbegränsade Anställningar",
                 handbookCh1Statute: "AML § 14-6 & § 14-9 / LAS",
-                handbookCh1Status: "Lagreviderad 1 juli 2024",
+                handbookCh1Status: "● 8/8 bekräftade · Lagreviderad 1 juli 2024",
                 handbookCh1Summary: "Krav på skriftliga avtal inom 7 dagar, precisering av arbetstid och förbud mot generella övertidsklausuler.",
                 handbookCh2Title: "Skyddsombud & Arbetsmiljöorganisation",
                 handbookCh2Statute: "AML § 6-1 / AML kap 6",
-                handbookCh2Status: "Obligatoriskt från 5 anställda (1 jan 2024)",
+                handbookCh2Status: "● 8/8 bekräftade · Påbjudet från 5 anställda",
                 handbookCh2Summary: "Obligatoriskt val av skyddsombud för alla verksamheter med 5 eller fler anställda. Valprotokoll arkiveras i arbetsmiljöakten.",
                 handbookCh3Title: "Arbetstid, Övertid & Kompensation",
                 handbookCh3Statute: "AML § 10-6 / Arbetstidslagen",
-                handbookCh3Status: "Minst 40 % övertidstillägg",
+                handbookCh3Status: "● 8/8 bekräftade · Minst 40 % övertidstillägg",
                 handbookCh3Summary: "Lagstadgad rätt till övertidsersättning. Kompensation kan inte inkluderas i fast månadslön för ordinarie tjänster.",
                 handbookCh4Title: "Visselblåsning & Psykosocial Arbetsmiljö",
                 handbookCh4Statute: "AML § 2 A-1 till § 2 A-3 / Visselblåsarlagen",
-                handbookCh4Status: "Visselblåsarkanal etablerad",
+                handbookCh4Status: "● 8/8 bekräftade · Visselblåsarkanal aktiv",
                 handbookCh4Summary: "Lagstadgad rutin för missförhållanden, objektiv utredningsplikt och förbud mot repressalier.",
-                handbookCh5Status: "Aktiv policy · 8/8 bekräftade",
+                handbookCh5Status: "● 8/8 bekräftade · Aktiv AI-policy",
                 aiChipTextStatus: "Godkänt textutkast",
                 aiChipDataStatus: "Godkänd dataanalys",
                 aiChipCodeStatus: "Godkänd källkod",
@@ -2310,7 +2331,14 @@ public enum L10n {
                 hubCardProbationDesc: "Evaluation and formal review must be completed within 6 months to maintain statutory employment protections.",
                 hubCardProbationAction: "Confirm evaluation",
                 hubCardProbationResolved: "Probation evaluations registered complete. Permanent tenure confirmed.",
-                handbookAiUpdateNotice: "Automated update reflecting AML 2024 & EU AI Act · Simployer Legal Editorial",
+                handbookCompanyTitle: "Fjord Dynamics Employee Handbook",
+                handbookVersionBadge: "v2024.2",
+                handbookDownloadPdf: "Download PDF",
+                handbookShareWithStaff: "Share with Staff",
+                handbookSearchPlaceholder: "Search handbook (working hours, leave, AI, benefits)...",
+                handbookBenefitsHeader: "Fjord Dynamics Benefits & Company Policies",
+                handbookBenefitsSub: "Company-specific supplementary agreements, perks, and guidelines for 2024",
+                handbookAiUpdateNotice: "Published version 2024.2 · 8 of 8 employees have confirmed · Kept continuously updated with AML",
                 handbookApprovedAiToolsHeader: "APPROVED GENERATIVE AI TOOLS IN COMPANY WORKSPACE",
                 radarAutomatedWatchNotice: "Automated statutory threshold monitoring based on company headcount trajectory",
                 expertPrecisionNotice: "Automated precision calculation grounded in active statutory law and collective frameworks",
@@ -2323,29 +2351,29 @@ public enum L10n {
                 expertLegalCounselDesc: "Simployer employment attorneys assist with formal dismissal hearings, terminations, and restructurings",
                 diffGapHeader: "Agreement missing terms from July 2024 rules",
                 diffGapSubline: "Terms for overtime compensation and training rights must be specified in writing.",
-                diffStatuteBadge: "WEA § 14-6",
+                diffStatuteBadge: "AML § 14-6",
                 diffCompliantHeader: "Agreement meets all legal requirements",
                 diffSickHeader: "Sick Leave Day 14: Mandatory follow-up plan",
                 diffDismissalHeader: "Employment protection & dismissal justification",
-                diffDismissalNotice: "WEA § 15-1 procedural consultation rules must be observed prior to meeting.",
+                diffDismissalNotice: "AML § 15-1 procedural consultation rules must be observed prior to meeting.",
                 diffCompliantNotice: "All employment terms and clauses comply with current labor statutes.",
                 handbookCh1Title: "Employment Contracts & Temporary Hires",
-                handbookCh1Statute: "WEA § 14-6 & § 14-9",
-                handbookCh1Status: "Amended July 1, 2024",
+                handbookCh1Statute: "AML § 14-6 & § 14-9",
+                handbookCh1Status: "● 8/8 confirmed · Statutory revision July 1, 2024",
                 handbookCh1Summary: "Requirement for written contracts within 7 days, explicit working hour definitions, and prohibition of blanket overtime waivers.",
                 handbookCh2Title: "Safety Representatives & HSE Organization",
-                handbookCh2Statute: "WEA § 6-1",
-                handbookCh2Status: "Mandatory from 5 employees (Jan 1, 2024)",
+                handbookCh2Statute: "AML § 6-1",
+                handbookCh2Status: "● 8/8 confirmed · Mandatory from 5 employees",
                 handbookCh2Summary: "Mandatory secret election of safety representative for all companies with 5+ employees. Protocol filed in HSE archive.",
                 handbookCh3Title: "Working Hours, Overtime & Compensation",
-                handbookCh3Statute: "WEA § 10-6",
-                handbookCh3Status: "Minimum 40% overtime premium",
+                handbookCh3Statute: "AML § 10-6",
+                handbookCh3Status: "● 8/8 confirmed · Min. 40% overtime premium",
                 handbookCh3Summary: "Statutory entitlement to overtime pay. Overtime compensation cannot be bundled into fixed base salary for ordinary roles.",
                 handbookCh4Title: "Whistleblowing & Psychosocial Workplace",
-                handbookCh4Statute: "WEA § 2 A-1 to § 2 A-3",
-                handbookCh4Status: "Whistleblowing channel live",
+                handbookCh4Statute: "AML § 2 A-1 to § 2 A-3",
+                handbookCh4Status: "● 8/8 confirmed · Whistleblowing channel live",
                 handbookCh4Summary: "Mandatory reporting procedures for misconduct, objective duty to investigate, and strict prohibition of retaliation.",
-                handbookCh5Status: "Active policy · 8/8 confirmed",
+                handbookCh5Status: "● 8/8 confirmed · Active policy",
                 aiChipTextStatus: "Approved text drafting",
                 aiChipDataStatus: "Approved data analysis",
                 aiChipCodeStatus: "Approved source code",
@@ -2383,7 +2411,7 @@ public enum L10n {
                 expertSelfCertStatute: "National Insurance Act § 8-24 · Qualifying period: 2 months",
                 expertSelfCertAllApprovedBadge: "All 8 employees eligible",
                 expertInquirySent: "Inquiry submitted",
-                expertPastCaseTitle: "Case #JUR-2024-89 · WEA § 14-6 Contract Audit",
+                expertPastCaseTitle: "Case #JUR-2024-89 · AML § 14-6 Contract Audit",
                 expertPastCaseDesc: "Verified addendum for 7 employees. BankID signature anchored in legal audit trail.",
                 expertPastCaseClosed: "Closed & Archived",
                 paletteSectionNav: "NAVIGATION",
@@ -2396,11 +2424,11 @@ public enum L10n {
                         body: "Fjord Dynamics keeps contracts in Mac folders. Comply cleans up the mess in 30 seconds via drag-and-drop."
                     ),
                     LocalizedNarrationStep(
-                        title: "Automated Non-Compliance Audit (WEA § 14-6)",
+                        title: "Automated Non-Compliance Audit (AML § 14-6)",
                         body: "Comply detects that 7 of 8 contracts contain unlawful overtime clauses under new legislation effective July 1, 2024."
                     ),
                     LocalizedNarrationStep(
-                        title: "Mandatory Safety Representative (WEA § 6-1)",
+                        title: "Mandatory Safety Representative (AML § 6-1)",
                         body: "The threshold was lowered to 5 employees. Comply runs a neutral digital election and files the statutory minutes."
                     ),
                     LocalizedNarrationStep(
@@ -2413,7 +2441,7 @@ public enum L10n {
                     ),
                     LocalizedNarrationStep(
                         title: "Chapter 3: Established Company (2027 · 124 employees)",
-                        body: "Eliminates 396k procedural risks in dismissals (WEA § 15-1). 1-click encrypted handoff to Simployer Expert attorneys."
+                        body: "Eliminates 396k procedural risks in dismissals (AML § 15-1). 1-click encrypted handoff to Simployer Expert attorneys."
                     ),
                     LocalizedNarrationStep(
                         title: "Simployer Comply: Always legally compliant. Without reading the law.",
@@ -2426,7 +2454,7 @@ public enum L10n {
                         tagline: "8 employees · Google Drive chaos · CEO handles everything",
                         primaryRisk: "Missing safety representative (threshold lowered to 5) + 8 non-compliant contracts (§ 14-6)",
                         triggerTitle: "Statutory Safety Representative Missing",
-                        triggerStatute: "WEA § 6-1 (Requirement from Jan 1, 2024)",
+                        triggerStatute: "AML § 6-1 (Requirement from Jan 1, 2024)",
                         triggerDescription: "Safety representative requirement was lowered from 10 to 5 employees. Fjord Dynamics has 8 staff and no safety rep.",
                         triggerConsequence: "Labor Inspection Authority issues remediation order or daily coercive fines.",
                         triggerActionLabel: "Start digital safety representative election",
