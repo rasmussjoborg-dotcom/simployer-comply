@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		02F227AF3FF784BD2AF8ACA0 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 25B69A2B7915AA033E9718F3 /* Inter-Bold.ttf */; };
+		15E808ED0C1FC254D6AFD19D /* AppIcon-Dark-1024.png in Resources */ = {isa = PBXBuildFile; fileRef = EEA51A9FAB03A783EC0EEA81 /* AppIcon-Dark-1024.png */; };
 		18F4B404531701D3BEE633A5 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */; };
 		2F055EE34DA2CA31F27C36B4 /* MacModals.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A97EEDF3533D4764DB779D /* MacModals.swift */; };
 		2FBEE437682762A7D14A218D /* ComplyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */; };
@@ -32,6 +33,7 @@
 		BF13DDEFB755025DED3321A7 /* AgentLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EE46CD65502760928434FD /* AgentLogView.swift */; };
 		CC6F00287CA96F9EF2CDB01D /* ComplyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61593BB04D44D762C627BF2B /* ComplyModels.swift */; };
 		CD59EE7D2E9410E7DBA2EC4D /* InspectionExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4982118DFCC8873F8B954 /* InspectionExportView.swift */; };
+		D6B17CDDE7D4B1944DF86A20 /* camilla_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 777B2FE0E0869660613B5E78 /* camilla_avatar.png */; };
 		DEF18F434CB7C0E79E53D98C /* AppIcon-1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BEC2BAD6B4B0E69D5DA4ED9 /* AppIcon-1024.png */; };
 		E2BE5E5E1845C75F8C1D466A /* MacMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */; };
 		E8AFEBFCF6F6E727BDB8C013 /* SolTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8A3D8DDD3802F31F33539E /* SolTokens.swift */; };
@@ -56,6 +58,7 @@
 		61593BB04D44D762C627BF2B /* ComplyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyModels.swift; sourceTree = "<group>"; };
 		6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimployerComplyMacApp.swift; sourceTree = "<group>"; };
 		75EE46CD65502760928434FD /* AgentLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentLogView.swift; sourceTree = "<group>"; };
+		777B2FE0E0869660613B5E78 /* camilla_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camilla_avatar.png; sourceTree = "<group>"; };
 		7BEC2BAD6B4B0E69D5DA4ED9 /* AppIcon-1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon-1024.png"; sourceTree = "<group>"; };
 		8B8A3D8DDD3802F31F33539E /* SolTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolTokens.swift; sourceTree = "<group>"; };
 		B55A96C437A5DEE5F48D1B56 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -66,6 +69,7 @@
 		DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
 		ED98779A166ED77F3D90FB13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EEA51A9FAB03A783EC0EEA81 /* AppIcon-Dark-1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon-Dark-1024.png"; sourceTree = "<group>"; };
 		F3A97EEDF3533D4764DB779D /* MacModals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacModals.swift; sourceTree = "<group>"; };
 		FF4169989091163FAEE67302 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -161,7 +165,9 @@
 			isa = PBXGroup;
 			children = (
 				7BEC2BAD6B4B0E69D5DA4ED9 /* AppIcon-1024.png */,
+				EEA51A9FAB03A783EC0EEA81 /* AppIcon-Dark-1024.png */,
 				B55A96C437A5DEE5F48D1B56 /* AppIcon.icns */,
+				777B2FE0E0869660613B5E78 /* camilla_avatar.png */,
 				2C7C1DCF64768338E7EE833B /* Fonts */,
 			);
 			path = Resources;
@@ -306,12 +312,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				DEF18F434CB7C0E79E53D98C /* AppIcon-1024.png in Resources */,
+				15E808ED0C1FC254D6AFD19D /* AppIcon-Dark-1024.png in Resources */,
 				BA5CDBB99A2C9ED2AC48B354 /* AppIcon.icns in Resources */,
 				A7CDDDB2DDA3643437200C2C /* Assets.xcassets in Resources */,
 				02F227AF3FF784BD2AF8ACA0 /* Inter-Bold.ttf in Resources */,
 				6AE2B0EC7489F57CDEC0DDA1 /* Inter-Medium.ttf in Resources */,
 				461EF115F5E7A04D1B88BE59 /* Inter-Regular.ttf in Resources */,
 				EF87D479E2EF82022645842B /* Inter-SemiBold.ttf in Resources */,
+				D6B17CDDE7D4B1944DF86A20 /* camilla_avatar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

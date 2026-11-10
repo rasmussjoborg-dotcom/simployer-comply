@@ -6,6 +6,32 @@
       "platform" : "ios",
       "scale" : "1x",
       "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "icon_1024x1024_dark.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "1x",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "tinted"
+        }
+      ],
+      "filename" : "icon_1024x1024_tinted.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "1x",
+      "size" : "1024x1024"
     }
   ],
   "info" : {

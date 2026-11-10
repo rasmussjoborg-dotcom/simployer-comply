@@ -47,6 +47,34 @@ public class ComplyStore: ObservableObject {
     @Published public var emailMonthlySummary: Bool = true
     @Published public var slackTestToast: String? = nil
     
+    // MARK: - Team Alignment (Nov 10: Niclas, Rasmus, Per)
+    @Published public var isResolving: Bool = false
+    @Published public var resolvingStepMessage: String? = nil
+    @Published public var complianceDialOverride: Double? = nil
+    private var resolveTimer: Timer? = nil
+    @Published public var dataCoverageScore: Double = 0.65 // 65% visibility (missing payroll/time)
+    @Published public var handbookSignaturesCount: Int = 4 // 4 of 8 signed
+    @Published public var showPresenterHUD: Bool = true // Dedicated presenter capsule
+    @Published public var demoHeadcountMode: Int = 8 // 8 (baseline), 10 (AMU threshold), 20 (scaleup)
+    @Published public var juristEscalationPending: Bool = true // Complex non-compete clause with Camilla
+
+    public var currentComplianceRatio: Double {
+        if let override = complianceDialOverride {
+            return override
+        }
+        let total = 10.0
+        let secured = Double(max(0, 10 - pendingActionCount))
+        return secured / total
+    }
+
+    public var currentCompliancePercent: Int {
+        Int(round(currentComplianceRatio * 100.0))
+    }
+
+    public var currentSecuredCount: Int {
+        Int(round(currentComplianceRatio * 10.0))
+    }
+    
     // MARK: - Bolagsresan Growth Timeline
     @Published public var selectedTimelineTier: Int = 2 // 1: 1-4, 2: 5-9, 3: 10-29, 4: 30-49, 5: 50+
     
@@ -197,7 +225,7 @@ public class ComplyStore: ObservableObject {
             year: base.year,
             stageName: locContent?.stageName ?? base.stageName,
             tagline: locContent?.tagline ?? base.tagline,
-            headcount: base.headcount,
+            headcount: currentYear == .y2024 ? demoHeadcountMode : base.headcount,
             revenue: base.revenue,
             hrOwner: base.hrOwner,
             systemOfRecord: base.systemOfRecord,
@@ -324,8 +352,8 @@ public class ComplyStore: ObservableObject {
         case .y2024:
             let hasUnapproved = currentScenario.employees.contains { $0.status == .aml14Gap }
             if hasUnapproved { count += 1 }
-            if !verneombudElectionActive { count += 1 }
-            if !hmsTrainingEnrolled { count += 1 }
+            if !verneombudElectionActive || !hmsTrainingEnrolled { count += 1 }
+            if handbookSignaturesCount < demoHeadcountMode { count += 1 }
         case .y2025:
             if !equalPayReportGenerated { count += 1 }
             if !sickLeavePlanDispatched { count += 1 }
@@ -338,31 +366,87 @@ public class ComplyStore: ObservableObject {
     }
     
     public func approveAllContracts() {
-        guard var scenario = scenarios[currentYear] else { return }
-        for i in 0..<scenario.employees.count {
-            if scenario.employees[i].status == .aml14Gap {
-                scenario.employees[i].status = .ok
-                scenario.employees[i].statusLabel = "Lovlig (AML § 14-6 BankID signert)"
+        withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+            guard var scenario = scenarios[currentYear] else { return }
+            for i in 0..<scenario.employees.count {
+                if scenario.employees[i].status == .aml14Gap {
+                    scenario.employees[i].status = .ok
+                    scenario.employees[i].statusLabel = "Lovlig (AML § 14-6 BankID signert)"
+                }
             }
+            scenarios[currentYear] = scenario
+            
+            // Log BankID Signature Event in Agentlogg (CON-04 / CON-05)
+            let event = AgentEvent(
+                timestampString: "Idag kl. \(currentTimeFormatted())",
+                category: .signature,
+                title: "BankID-signering commit: 7 anställningsavtal åtgärdade",
+                description: "Lagstadgade klausuler för arbetstid och övertid godkända av VD. Digitalt signaturcertifikat distribuerat till personal.",
+                statute: "AML § 14-6",
+                affectedEntity: "7 anställda",
+                statusBadge: "Signerat (BankID)",
+                auditHash: "SHA-256: 4f8a9e2b1c7d3f0a",
+                isAutonomous: false
+            )
+            agentEvents.insert(event, at: 0)
+            
+            lastSyncTimestamp = Date()
+            broadcastSync()
         }
-        scenarios[currentYear] = scenario
-        
-        // Log BankID Signature Event in Agentlogg (CON-04 / CON-05)
-        let event = AgentEvent(
-            timestampString: "Idag kl. \(currentTimeFormatted())",
-            category: .signature,
-            title: "BankID-signering commit: 7 anställningsavtal åtgärdade",
-            description: "Lagstadgade klausuler för arbetstid och övertid godkända av VD. Digitalt signaturcertifikat distribuerat till personal.",
-            statute: "AML § 14-6",
-            affectedEntity: "7 anställda",
-            statusBadge: "Signerat (BankID)",
-            auditHash: "SHA-256: 4f8a9e2b1c7d3f0a",
-            isAutonomous: false
-        )
-        agentEvents.insert(event, at: 0)
-        
-        lastSyncTimestamp = Date()
-        broadcastSync()
+    }
+    
+    public func approveSafetyRepElection() {
+        withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+            self.verneombudElectionActive = true
+            self.electionVotesCast = self.demoHeadcountMode
+            self.hmsTrainingEnrolled = true
+            if var scenario = scenarios[.y2024] {
+                for i in 0..<scenario.employees.count {
+                    if scenario.employees[i].id == "01" {
+                        scenario.employees[i].statusLabel = "I orden (HMS godkjent)"
+                    }
+                }
+                scenarios[.y2024] = scenario
+            }
+            
+            let event = AgentEvent(
+                timestampString: "Idag kl. \(currentTimeFormatted())",
+                category: .guardrail,
+                title: "Digitalt val av skyddsombud slutfört",
+                description: "\(demoHeadcountMode) av \(demoHeadcountMode) medarbetare röstade. Skyddsombud utsett. Valprotokoll arkiverat i Altinn.",
+                statute: "AML § 6-1",
+                affectedEntity: "Skyddsombud",
+                statusBadge: "Valt (Altinn)",
+                auditHash: "SHA-256: 7d2e9f1a4b8c3d0e",
+                isAutonomous: false
+            )
+            agentEvents.insert(event, at: 0)
+            
+            lastSyncTimestamp = Date()
+            broadcastSync()
+        }
+    }
+    
+    public func completeAllHandbookSignatures() {
+        withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+            self.handbookSignaturesCount = self.demoHeadcountMode
+            
+            let event = AgentEvent(
+                timestampString: "Idag kl. \(currentTimeFormatted())",
+                category: .signature,
+                title: "Personalhandbok & varslingsrutiner 100% signerade",
+                description: "Samtliga \(demoHeadcountMode) medarbetare har kvitterat varslingsrutin och personalhandbok via BankID.",
+                statute: "AML § 3-2",
+                affectedEntity: "\(demoHeadcountMode) anställda",
+                statusBadge: "Signerat (BankID)",
+                auditHash: "SHA-256: 3c9b1e8f2a7d4e5a",
+                isAutonomous: false
+            )
+            agentEvents.insert(event, at: 0)
+            
+            lastSyncTimestamp = Date()
+            broadcastSync()
+        }
     }
     
     private func currentTimeFormatted() -> String {
@@ -378,6 +462,7 @@ public class ComplyStore: ObservableObject {
             self.verneombudElectionActive = true
             self.electionVotesCast = 8
             self.hmsTrainingEnrolled = true
+            self.handbookSignaturesCount = self.demoHeadcountMode
             if var scenario = scenarios[.y2024] {
                 for i in 0..<scenario.employees.count {
                     if scenario.employees[i].id == "01" {
@@ -415,7 +500,90 @@ public class ComplyStore: ObservableObject {
         broadcastSync()
     }
     
+    public func resolveWithLiveSpin() {
+        guard !isResolving else { return }
+        isResolving = true
+        
+        let startRatio = currentComplianceRatio
+        let targetRatio = 1.0
+        let rampDuration: TimeInterval = 1.9
+        let startTime = Date()
+        
+        resolvingStepMessage = language == .se ? "Comply Legal Cloud synkroniserar lagklausuler…" : (language == .no ? "Comply Legal Cloud synkroniserer lovklausuler…" : "Comply Legal Cloud synchronizing statutory clauses…")
+        
+        resolveTimer?.invalidate()
+        let timer = Timer(timeInterval: 0.035, repeats: true) { [weak self] t in
+            guard let self = self else {
+                t.invalidate()
+                return
+            }
+            let elapsed = Date().timeIntervalSince(startTime)
+            let progress = min(1.0, elapsed / rampDuration)
+            // Smooth easeOutCubic curve: 1 - (1 - progress)^3
+            let ease = 1.0 - pow(1.0 - progress, 3)
+            let newRatio = startRatio + (targetRatio - startRatio) * ease
+            
+            self.complianceDialOverride = newRatio
+            
+            if progress >= 1.0 {
+                t.invalidate()
+                self.resolveTimer = nil
+                self.complianceDialOverride = 1.0
+            }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        self.resolveTimer = timer
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            guard let self = self, self.isResolving else { return }
+            self.resolvingStepMessage = self.language == .se ? "Applicerar AML § 14-6 standardavtal på 7 akter…" : (self.language == .no ? "Bruker AML § 14-6 standardavtaler på 7 mapper…" : "Applying AML § 14-6 standard terms to 7 files…")
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) { [weak self] in
+            guard let self = self, self.isResolving else { return }
+            self.resolvingStepMessage = self.language == .se ? "Klargör revisionsprotokoll och BankID-kvittenser…" : (self.language == .no ? "Klargjør revisjonsprotokoll og BankID-kvitteringer…" : "Preparing audit log and BankID receipts…")
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) { [weak self] in
+            guard let self = self, self.isResolving else { return }
+            self.resolveAllActionHubItems()
+            self.complianceDialOverride = nil
+            self.isResolving = false
+            self.resolvingStepMessage = nil
+            NSSound(named: "Glass")?.play()
+        }
+    }
+    
+    public func setDemoHeadcount(_ count: Int) {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) {
+            self.demoHeadcountMode = count
+            self.broadcastSync()
+        }
+    }
+    
+    public func simulateHiringTwoEmployees() {
+        setDemoHeadcount(10)
+    }
+    
+    public func resetDemoToMorningBaseline() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+            self.resolveTimer?.invalidate()
+            self.resolveTimer = nil
+            self.complianceDialOverride = nil
+            self.resetDemoState()
+            self.demoHeadcountMode = 8
+            self.handbookSignaturesCount = 4
+            self.juristEscalationPending = true
+            self.isResolving = false
+            self.resolvingStepMessage = nil
+            self.broadcastSync()
+        }
+    }
+    
     public func resetDemoState() {
+        self.resolveTimer?.invalidate()
+        self.resolveTimer = nil
+        self.complianceDialOverride = nil
         self.scenarios = Self.loadDefaultScenarios()
         self.verneombudElectionActive = false
         self.electionVotesCast = 0

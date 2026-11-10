@@ -98,7 +98,7 @@ public struct YearScenarioData: Sendable {
     public let year: CompanyYear
     public let stageName: String
     public let tagline: String
-    public let headcount: Int
+    public var headcount: Int
     public let revenue: String
     public let hrOwner: String
     public let systemOfRecord: String

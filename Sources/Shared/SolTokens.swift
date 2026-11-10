@@ -67,6 +67,27 @@ public struct SolTokens {
     public static let linearGlow = Color(hex: 0x5E6AD2).opacity(0.20)
     public static let hairline = Color.white.opacity(0.08)
     public static let glassChrome = Color(hex: 0x0E0F14).opacity(0.92)
+    
+#if os(macOS)
+    public static let camillaDiskFilePath = "/Users/rasmussjoborg/Documents/antigravity/Simployer Comply/Sources/SimployerComplyMac/Resources/camilla_avatar.png"
+    
+    public static let camillaAvatar: NSImage? = {
+        if let img = NSImage(named: "CamillaAvatar") {
+            return img
+        }
+        let fallbackPaths: [String?] = [
+            Bundle.main.path(forResource: "camilla_avatar", ofType: "png"),
+            camillaDiskFilePath,
+            "/Users/rasmussjoborg/Documents/antigravity/SImployer Comply/Sources/SimployerComplyMac/Resources/camilla_avatar.png"
+        ]
+        for path in fallbackPaths {
+            if let p = path, FileManager.default.fileExists(atPath: p), let img = NSImage(contentsOfFile: p) {
+                return img
+            }
+        }
+        return nil
+    }()
+#endif
 }
 
 // MARK: - Linear Typography Engine (Inter Font Integration)
@@ -220,13 +241,7 @@ public struct SimployerLogoAsset {
 """
 
 #if os(macOS)
-    public static let diskFilePath = "/Users/rasmussjoborg/Documents/antigravity/Simployer Comply/simployer-logo.svg"
-    
     nonisolated(unsafe) public static let sourceImage: NSImage? = {
-        if FileManager.default.fileExists(atPath: diskFilePath),
-           let img = NSImage(contentsOfFile: diskFilePath) {
-            return img
-        }
         if let data = svgString.data(using: .utf8), let img = NSImage(data: data) {
             return img
         }
@@ -243,6 +258,75 @@ public struct SimployerLogoAsset {
         img.isTemplate = true
         return img
     }()
+    
+    nonisolated(unsafe) public static let plumBadgeIcon: NSImage? = {
+        guard let source = sourceImage else { return nil }
+        let size = NSSize(width: 20, height: 20)
+        let img = NSImage(size: size, flipped: false) { rect in
+            let path = NSBezierPath(roundedRect: rect, xRadius: 4.5, yRadius: 4.5)
+            // Simployer plum color: #2D0C69
+            NSColor(red: 0x2D/255.0, green: 0x0C/255.0, blue: 0x69/255.0, alpha: 1.0).setFill()
+            path.fill()
+            let iconRect = rect.insetBy(dx: 2.5, dy: 2.5)
+            source.draw(in: iconRect, from: NSRect(origin: .zero, size: source.size), operation: .sourceOver, fraction: 1.0)
+            return true
+        }
+        return img
+    }()
+    
+    nonisolated(unsafe) private static var _cachedStatusIcons: [ComplyStore.ComplianceSeverity: NSImage] = [:]
+    
+    public static func menuBarStatusIcon(severity: ComplyStore.ComplianceSeverity) -> NSImage? {
+        if let cached = _cachedStatusIcons[severity] {
+            return cached
+        }
+        guard let source = sourceImage else { return nil }
+        let targetSize = NSSize(width: 18, height: 18)
+        let img = NSImage(size: targetSize, flipped: false) { rect in
+            let isDark = NSAppearance.currentDrawing().bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+            let swirlColor = isDark ? NSColor.white : NSColor(white: 0.15, alpha: 1.0)
+            
+            // Draw swirl
+            if let cg = source.cgImage(forProposedRect: nil, context: nil, hints: nil),
+               let ctx = NSGraphicsContext.current?.cgContext {
+                ctx.saveGState()
+                ctx.clip(to: rect, mask: cg)
+                swirlColor.setFill()
+                rect.fill()
+                ctx.restoreGState()
+            } else {
+                source.draw(in: rect, from: NSRect(origin: .zero, size: source.size), operation: .sourceOver, fraction: 1.0)
+            }
+            
+            // Cutout for status dot in bottom right
+            let dotRect = NSRect(x: 10.5, y: 1.0, width: 6.5, height: 6.5)
+            let borderRect = dotRect.insetBy(dx: -1.0, dy: -1.0)
+            
+            let ctx = NSGraphicsContext.current?.cgContext
+            ctx?.saveGState()
+            ctx?.setBlendMode(.clear)
+            ctx?.fillEllipse(in: borderRect)
+            ctx?.restoreGState()
+            
+            // Teams-style semantic status dot
+            let dotColor: NSColor
+            switch severity {
+            case .compliant:
+                dotColor = NSColor(red: 0.13, green: 0.77, blue: 0.36, alpha: 1.0) // #22C55E Green
+            case .warning:
+                dotColor = NSColor(red: 0.96, green: 0.62, blue: 0.04, alpha: 1.0) // #F59E0B Amber
+            case .behind:
+                dotColor = NSColor(red: 0.94, green: 0.27, blue: 0.27, alpha: 1.0) // #EF4444 Red
+            }
+            dotColor.setFill()
+            let dotPath = NSBezierPath(ovalIn: dotRect)
+            dotPath.fill()
+            
+            return true
+        }
+        _cachedStatusIcons[severity] = img
+        return img
+    }
 #endif
 }
 

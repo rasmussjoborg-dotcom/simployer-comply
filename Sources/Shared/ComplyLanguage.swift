@@ -854,6 +854,298 @@ public struct LocalizedStrings: Sendable {
         }
     }
 
+    // MARK: - Action Hub Dual Metrics & Grouped Pillars (Nov 10)
+    public var hubMetricComplianceTitle: String {
+        switch languageCode {
+        case "se": return "Efterlevnad"
+        case "en": return "Compliance"
+        default: return "Etterlevelse"
+        }
+    }
+    
+    public var hubMetricVisibilityTitle: String {
+        switch languageCode {
+        case "se": return "Systeminsyn"
+        case "en": return "Visibility"
+        default: return "Systeminnsyn"
+        }
+    }
+    
+    public var hubVisibilityMissingNudge: String {
+        switch languageCode {
+        case "se": return "Anslut lönesystem (Tripletex) för 100% insyn i arbetstid och lönekrav"
+        case "en": return "Connect payroll (Tripletex) for 100% visibility into hours and statutory terms"
+        default: return "Koble til lønnssystem (Tripletex) for 100% innsyn i arbeidstid og lovkrav"
+        }
+    }
+    
+    public var hubConnectSourcePill: String {
+        switch languageCode {
+        case "se": return "Anslut källa"
+        case "en": return "Connect source"
+        default: return "Koble til kilde"
+        }
+    }
+    
+    public var hubPillarContractsTitle: String {
+        switch languageCode {
+        case "se": return "Avtal & Villkor"
+        case "en": return "Contracts & Terms"
+        default: return "Avtaler & Vilkår"
+        }
+    }
+    
+    public var hubPillarSafetyTitle: String {
+        switch languageCode {
+        case "se": return "Skyddsombud & HMS"
+        case "en": return "Safety Rep & HSE"
+        default: return "Verneombud & HMS"
+        }
+    }
+    
+    public var hubPillarHoursTitle: String {
+        switch languageCode {
+        case "se": return "Arbetstid & Vila"
+        case "en": return "Hours & Rest"
+        default: return "Arbeidstid & Hvile"
+        }
+    }
+    
+    public var hubPillarHandbookTitle: String {
+        switch languageCode {
+        case "se": return "Personalhandbok & Rutiner"
+        case "en": return "Handbook & Policies"
+        default: return "Personalhåndbok & Rutiner"
+        }
+    }
+    
+    public var hubJuristProductTag: String {
+        "SIMPLOYER EXPERT"
+    }
+    
+    public var hubJuristTicketId: String {
+        "#2841"
+    }
+    
+    public var hubJuristEscalationTag: String {
+        switch languageCode {
+        case "se": return "SIMPLOYER EXPERT · AKTIVT ÄRENDE #2841"
+        case "en": return "SIMPLOYER EXPERT · ACTIVE TICKET #2841"
+        default: return "SIMPLOYER EXPERT · AKTIV SAK #2841"
+        }
+    }
+    
+    public var hubJuristEscalationTitle: String {
+        switch languageCode {
+        case "se": return "Konkurrensklausul i ledaravtal (Jonas Berg)"
+        case "en": return "Non-compete clause in executive contract (Jonas Berg)"
+        default: return "Konkurranseklausul i lederavtale (Jonas Berg)"
+        }
+    }
+    
+    public var hubJuristEscalationDesc: String {
+        switch languageCode {
+        case "se": return "Du har ställt en rådgivningsfråga om giltigheten av konkurrensbegränsning och karantänsersättning vid omstrukturering. Camilla Schie-Veslum granskar avtalet och återkommer med skriftligt utlåtande senast kl 14:00."
+        case "en": return "You submitted an advisory inquiry regarding non-compete validity and mandatory compensation during restructuring. Camilla Schie-Veslum is reviewing the contract and will reply with written guidance before 14:00."
+        default: return "Du har sendt inn et rådgivningsspørsmål om gyldigheten av konkurranseklausul og karanteneerstatning ved omstrukturering. Camilla Schie-Veslum vurderer avtalen og svarer med skriftlig uttalelse før kl. 14:00."
+        }
+    }
+    
+    public var hubJuristEscalationStatus: String {
+        switch languageCode {
+        case "se": return "Väntar på juristsvar · Est. idag 14:00"
+        case "en": return "Awaiting legal reply · Est. today 14:00"
+        default: return "Venter på juristsvar · Estimert i dag 14:00"
+        }
+    }
+    
+    public var hubJuristEscalationAction: String {
+        switch languageCode {
+        case "se": return "Visa ärende & dialog"
+        case "en": return "View ticket & dialog"
+        default: return "Se sak & dialog"
+        }
+    }
+
+    public var hubJuristAssignedTo: String {
+        switch languageCode {
+        case "se": return "Handläggare: Camilla Schie-Veslum"
+        case "en": return "Assigned to: Camilla Schie-Veslum"
+        default: return "Saksbehandler: Camilla Schie-Veslum"
+        }
+    }
+    
+    public var hubJuristAdvisorRole: String {
+        switch languageCode {
+        case "se": return "Senior Arbetsrättsjurist · Simployer"
+        case "en": return "Senior Legal Counsel · Simployer"
+        default: return "Senior Arbeidsrettsjurist · Simployer"
+        }
+    }
+    
+    // MARK: - Presenter HUD & Simulation Controls
+    public var hudTitle: String { "Presenter HUD" }
+    
+    public var hudToggleOpen: String {
+        "Demo HUD (⌘D)"
+    }
+    
+    public var hudToggleClose: String {
+        switch languageCode {
+        case "se": return "Dölj HUD (⌘D)"
+        case "en": return "Hide HUD (⌘D)"
+        default: return "Skjul HUD (⌘D)"
+        }
+    }
+    
+    public var hudToggleHelp: String {
+        switch languageCode {
+        case "se": return "Öppna/dölj Presenter HUD (⌘D)"
+        case "en": return "Open/hide Presenter HUD (⌘D)"
+        default: return "Åpne/skjul Presenter HUD (⌘D)"
+        }
+    }
+    
+    public var hudHeadcountSection: String {
+        switch languageCode {
+        case "se": return "SIMULERA PERSONALSTYRKA"
+        case "en": return "SIMULATE HEADCOUNT"
+        default: return "SIMULER PERSONALSTYRKE"
+        }
+    }
+    
+    public var hudHeadcountBase: String {
+        switch languageCode {
+        case "se": return "8 (Bas)"
+        case "en": return "8 (Base)"
+        default: return "8 (Basis)"
+        }
+    }
+    
+    public var hudHeadcountAmu: String {
+        "10 (AMU)"
+    }
+    
+    public var hudHeadcountScale: String {
+        switch languageCode {
+        case "se": return "20 (Skala)"
+        case "en": return "20 (Scale)"
+        default: return "20 (Skala)"
+        }
+    }
+    
+    public var hudQuickActionsSection: String {
+        switch languageCode {
+        case "se": return "SNABBÅTGÄRDER"
+        case "en": return "QUICK ACTIONS"
+        default: return "HURTIGHANDLINGER"
+        }
+    }
+    
+    public var hudAddTwoHires: String {
+        switch languageCode {
+        case "se": return "+2 Anställda"
+        case "en": return "+2 Hires"
+        default: return "+2 Ansatte"
+        }
+    }
+    
+    public var hudResolveAction: String {
+        switch languageCode {
+        case "se": return "Lös (⌘⏎)"
+        case "en": return "Resolve (⌘⏎)"
+        default: return "Løs (⌘⏎)"
+        }
+    }
+    
+    public var hudResetAction: String {
+        switch languageCode {
+        case "se": return "Återställ (⌘R)"
+        case "en": return "Reset (⌘R)"
+        default: return "Tilbakestill (⌘R)"
+        }
+    }
+    
+    public var hudLanguageLabel: String {
+        switch languageCode {
+        case "se": return "Språk:"
+        case "en": return "Language:"
+        default: return "Språk:"
+        }
+    }
+    
+    public var hudHideJurist: String {
+        switch languageCode {
+        case "se": return "Dölj jurist"
+        case "en": return "Hide jurist"
+        default: return "Skjul jurist"
+        }
+    }
+    
+    public var hudShowJurist: String {
+        switch languageCode {
+        case "se": return "Visa jurist"
+        case "en": return "Show jurist"
+        default: return "Vis jurist"
+        }
+    }
+    
+    public var hubThresholdPuffTag: String {
+        switch languageCode {
+        case "se": return "TILLVÄXT- & TRÖSKELVARNING (AML § 7-1)"
+        case "en": return "GROWTH & THRESHOLD RADAR (AML § 7-1)"
+        default: return "VEKST- OG TERSKELVARSEL (AML § 7-1)"
+        }
+    }
+    
+    public var hubThresholdPuffTitlePending: String {
+        switch languageCode {
+        case "se": return "2 anställningar kvar till nästa lagtröskel (10 anställda: AMU)"
+        case "en": return "2 hires away from next statutory threshold (10 staff: AMU)"
+        default: return "2 ansettelser gjenstår til neste lovterskel (10 ansatte: AMU)"
+        }
+    }
+    
+    public var hubThresholdPuffDescPending: String {
+        switch languageCode {
+        case "se": return "Vid 10 anställda inträder krav på partsammansatt Arbetsmiljöutskott (AMU) eller skriftligt undantagsavtal. Comply har förberett undantagsavtalet så ni slipper administration när ni anställer."
+        case "en": return "Crossing 10 employees mandates establishing a joint Working Environment Committee (AMU) or exemption agreement. Comply has pre-drafted the exemption agreement."
+        default: return "Ved 10 ansatte inntrer plikt til Arbeidsmiljøutvalg (AMU) eller skriftlig unntaksavtale. Comply har forhåndsklargjort unntaksavtalen."
+        }
+    }
+    
+    public var hubThresholdPuffTitleTriggered: String {
+        switch languageCode {
+        case "se": return "Tröskel utlöst: Fjord Dynamics har passerat 10 anställda"
+        case "en": return "Threshold triggered: Fjord Dynamics crossed 10 employees"
+        default: return "Terskel utløst: Fjord Dynamics har passert 10 ansatte"
+        }
+    }
+    
+    public var hubThresholdPuffDescTriggered: String {
+        switch languageCode {
+        case "se": return "Arbetsmiljöutskott (AMU) krävs om endera part begär det. Signera undantagsavtalet med BankID för att behålla förenklad ordning."
+        case "en": return "Working Environment Committee (AMU) mandated if requested. Sign exemption agreement via BankID to retain simplified arrangement."
+        default: return "Arbeidsmiljøutvalg (AMU) kreves dersom en part ber om det. Signer unntaksavtalen med BankID for å beholde forenklet ordning."
+        }
+    }
+    
+    public var hubThresholdPuffAction: String {
+        switch languageCode {
+        case "se": return "Signera undantagsavtal (BankID) →"
+        case "en": return "Sign exemption agreement (BankID) →"
+        default: return "Signer unntaksavtale (BankID) →"
+        }
+    }
+    
+    public var hubThresholdPuffPreviewAction: String {
+        switch languageCode {
+        case "se": return "Förhandsgranska avtal"
+        case "en": return "Preview agreement"
+        default: return "Forhåndsvis avtale"
+        }
+    }
+    
     // MARK: - Bolagsresan / Growth Timeline & Compliance Runway
     public var radarHeaderTitle: String {
         switch languageCode {
