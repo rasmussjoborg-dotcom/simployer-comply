@@ -236,9 +236,9 @@ EOF
 # Copy appcast.xml to project root
 cp -f releases/sparkle_archives/appcast.xml ./appcast.xml
 
-# 8. Commit and Push appcast.xml & project.yml
+# 8. Commit and Push appcast.xml, project.yml & project.pbxproj
 echo "📤 Committing and pushing appcast.xml to GitHub..."
-git add appcast.xml project.yml
+git add appcast.xml project.yml SimployerComply.xcodeproj/project.pbxproj
 git commit -m "chore(release): bump version to v$VERSION and update appcast.xml" || true
 git push origin main
 
