@@ -3,6 +3,82 @@
     <channel>
         <title>Simployer Comply</title>
         <item>
+            <title>1.0.5</title>
+            <pubDate>Tue, 10 Nov 2026 17:03:17 +0100</pubDate>
+            <sparkle:version>202611101700</sparkle:version>
+            <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description><![CDATA[<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #E4E4E7;
+    background-color: #18181B;
+    padding: 14px 18px;
+    margin: 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: rgba(151,115,255,0.18);
+    color: #C4B5FD;
+    border: 1px solid rgba(151,115,255,0.3);
+    margin-bottom: 10px;
+}
+h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+ul {
+    padding-left: 18px;
+    margin: 0 0 12px 0;
+}
+li {
+    margin-bottom: 6px;
+    color: #D4D4D8;
+}
+p.footer {
+    font-size: 11px;
+    color: #71717A;
+    margin-top: 14px;
+    border-top: 1px solid #27272A;
+    padding-top: 8px;
+}
+</style>
+</head>
+<body>
+<span class="badge">Version 1.0.5</span>
+<h3>Vad är nytt i denna version:</h3>
+<ul>
+<li>Stöd för macOS 14 Sonoma (Mac mini M2 och molnmaskiner)</li>
+<li>Strömlinjeformad Mini Action HUD med 'Åtgärda allt' CTA</li>
+<li>Synkroniserad 3-åtgärders regelefterlevnad i Control Room och Menu Bar</li>
+</ul>
+<p class="footer">Simployer Comply Autonomous Engine — Alltid i tråd med loven.</p>
+</body>
+</html>
+]]></description>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer-Comply-1.0.5.zip" length="5081558" type="application/octet-stream" sparkle:edSignature="vSfsk7X6XmxN1TDXTf8548xLljaSbN0CKsHH4MbxQm7/ASmoQCC956k14z6/H6ndGzsAfl4r7Ly1T2ca6aTWBA=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101700-202611101653.delta" sparkle:deltaFrom="202611101653" length="350434" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="y+XEQoFcHOT6TVvYfDFG/mIRF2Mk0IHnqmBB0QeKEufwh0fAZR41QJNtWYrvHRdnDJb8BkV3cFSDC3h4O2/xCQ=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101700-202611101025.delta" sparkle:deltaFrom="202611101025" length="2187526" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="vNHd6AaGep1qzoPg6wLZMIbBovLUGiFjThVKd0Xl40iQSQnaSZEkq1QwccPqCfbTHrnnB4Sdcewmt5Pws7NUBQ=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101700-202611100755.delta" sparkle:deltaFrom="202611100755" length="2366622" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="egshyrv/mWkuMVsXkT/u2efY+yT9Td3o3r3phjxSly4+BFY+qSMqUo96KK5UmcnnRHui29vNUQlWivb8ErqaAg=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101700-202611091542.delta" sparkle:deltaFrom="202611091542" length="2536826" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="gwZv8sSNk37JeWEdX6zUYJaMe6992LgQlxVVdw7dfru0D/73DXKFP837zZdtSm3acs4xxvff2w5uMfeMBmFrDg=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101700-202611090920.delta" sparkle:deltaFrom="202611090920" length="2674626" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="8myr6frSmHJ7EBVrnyH1nq58ztOtB5Y85ylahbb9sDuIP586eDAwqJfXfi3bTzI+nwwuSB5C/MsXKtRd71ZxDQ=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>1.0.4</title>
             <pubDate>Tue, 10 Nov 2026 16:55:47 +0100</pubDate>
             <sparkle:version>202611101653</sparkle:version>
@@ -69,12 +145,12 @@ p.footer {
 </body>
 </html>
 ]]></description>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer-Comply-1.0.4.zip" length="5074341" type="application/octet-stream" sparkle:edSignature="CpHA5PwibUxDKUPBT4jZ4RTblUQYKBg98XhwpHnLv626nSqdzo/KG564iTwiAmmTiJY23XKxWFYvpSWf/aEpBw=="/>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer-Comply-1.0.4.zip" length="5074341" type="application/octet-stream" sparkle:edSignature="CpHA5PwibUxDKUPBT4jZ4RTblUQYKBg98XhwpHnLv626nSqdzo/KG564iTwiAmmTiJY23XKxWFYvpSWf/aEpBw=="/>
             <sparkle:deltas>
-                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer%20Comply202611101653-202611101025.delta" sparkle:deltaFrom="202611101025" length="2090970" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="M7MT4oFQ6JNGlggdB6ysVCJYhKwy8SAhv/saNJqYQLCG1+EOEn89aku4HFpfQkUfdbopez39saXoqTltotceCA=="/>
-                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer%20Comply202611101653-202611100755.delta" sparkle:deltaFrom="202611100755" length="2292722" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="QzWkj3cL9hxwfAauZsA/8NIFJOQTEDiyaIAuQe2Js262TF+4V+7pjNNT0RAc1pRCQUxvYpFq6O74zVZsd8t+Aw=="/>
-                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer%20Comply202611101653-202611091542.delta" sparkle:deltaFrom="202611091542" length="2479330" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="WkQWRkFSLQYHkW/EjQIbZXJbkZzTPt4aQpTNc2BtQJFoOJE4cByXKy3IjT5nEe9yCIjqnhnO4OFlQpNnpyCwBQ=="/>
-                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer%20Comply202611101653-202611090920.delta" sparkle:deltaFrom="202611090920" length="2631778" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6eVy3xbxadAVyccSl+NCGFo9DeixZDgzS6ACH7GY2t7s1yBd0IRKC3PGTEIlN282O/hBKqI86idtDnfi+PwkAQ=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101653-202611101025.delta" sparkle:deltaFrom="202611101025" length="2090970" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="M7MT4oFQ6JNGlggdB6ysVCJYhKwy8SAhv/saNJqYQLCG1+EOEn89aku4HFpfQkUfdbopez39saXoqTltotceCA=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101653-202611100755.delta" sparkle:deltaFrom="202611100755" length="2292722" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="QzWkj3cL9hxwfAauZsA/8NIFJOQTEDiyaIAuQe2Js262TF+4V+7pjNNT0RAc1pRCQUxvYpFq6O74zVZsd8t+Aw=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101653-202611091542.delta" sparkle:deltaFrom="202611091542" length="2479330" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="WkQWRkFSLQYHkW/EjQIbZXJbkZzTPt4aQpTNc2BtQJFoOJE4cByXKy3IjT5nEe9yCIjqnhnO4OFlQpNnpyCwBQ=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer%20Comply202611101653-202611090920.delta" sparkle:deltaFrom="202611090920" length="2631778" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6eVy3xbxadAVyccSl+NCGFo9DeixZDgzS6ACH7GY2t7s1yBd0IRKC3PGTEIlN282O/hBKqI86idtDnfi+PwkAQ=="/>
             </sparkle:deltas>
         </item>
         <item>
@@ -144,7 +220,7 @@ p.footer {
 </body>
 </html>
 ]]></description>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer-Comply-1.0.3.zip" length="4579408" type="application/octet-stream" sparkle:edSignature="xQisOd9YR9UJseRptZcIcCz5SGUuNbvmZDd+843NQlgT7J/zh+WK4SufEfAA3uo8XzGCV4+6zwj6iVww+klhAg=="/>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer-Comply-1.0.3.zip" length="4579408" type="application/octet-stream" sparkle:edSignature="xQisOd9YR9UJseRptZcIcCz5SGUuNbvmZDd+843NQlgT7J/zh+WK4SufEfAA3uo8XzGCV4+6zwj6iVww+klhAg=="/>
             <sparkle:deltas>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer%20Comply202611101025-202611100755.delta" sparkle:deltaFrom="202611100755" length="464658" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="VM5hvaPTSvtTJlIvcvfLgx0UlSP/p4q+dvH/wUEUtPurNFKsEyh9DM6/92InO4MW3/2k1n55PdKFGgWdSvNuBQ=="/>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer%20Comply202611101025-202611091542.delta" sparkle:deltaFrom="202611091542" length="717326" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6kOiKuMK9p80CZpRmHF4MDqaEuua0hl01+HeO2T9DU7ttefhbaQ5IF752g6SHaw2mNZY18fKK3rV7Jlak/dBBw=="/>
@@ -219,7 +295,7 @@ p.footer {
 </body>
 </html>
 ]]></description>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.4/Simployer-Comply-1.0.2.zip" length="4501205" type="application/octet-stream" sparkle:edSignature="q/xp7zZ0nyVdMKasicG3Qz4QsUhoLy2P7r/TOS1RvA6XHIO7yPbe/kMSy5YfVu04FshL7i4P/6347r9XhEbpAQ=="/>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.5/Simployer-Comply-1.0.2.zip" length="4501205" type="application/octet-stream" sparkle:edSignature="q/xp7zZ0nyVdMKasicG3Qz4QsUhoLy2P7r/TOS1RvA6XHIO7yPbe/kMSy5YfVu04FshL7i4P/6347r9XhEbpAQ=="/>
             <sparkle:deltas>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer%20Comply202611100755-202611091542.delta" sparkle:deltaFrom="202611091542" length="507058" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="pnPsQRtNTgoZ1tPmv4dhdeiKWYy5YURAmdP0Dbk/Z+T80PR8T0X3H/KraN9bzyhpUBh9CpqZ3p/ufFLtfq1yCg=="/>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer%20Comply202611100755-202611090920.delta" sparkle:deltaFrom="202611090920" length="797422" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="Rk2e3TCc12BfpdYFFCSVHA49cUAYHH0IpgG6ZXySTMbfjihI3k5X8qtEUp1XC55GIrHbvPpG9Ci9Q3hCL+KiDA=="/>
