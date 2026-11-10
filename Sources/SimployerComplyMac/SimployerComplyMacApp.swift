@@ -106,8 +106,12 @@ struct SimployerComplyMacApp: App {
                 .preferredColorScheme(.dark)
         } label: {
             if store.isResolving {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .symbolEffect(.rotate, isActive: true)
+                if #available(macOS 15.0, *) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .symbolEffect(.rotate, isActive: true)
+                } else {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                }
             } else if let icon = SimployerLogoAsset.menuBarStatusIcon(severity: store.complianceSeverity) {
                 Image(nsImage: icon)
             } else if let icon = SimployerLogoAsset.menuBarIcon {
