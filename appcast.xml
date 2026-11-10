@@ -3,6 +3,80 @@
     <channel>
         <title>Simployer Comply</title>
         <item>
+            <title>1.0.3</title>
+            <pubDate>Tue, 10 Nov 2026 10:27:55 +0100</pubDate>
+            <sparkle:version>202611101025</sparkle:version>
+            <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description><![CDATA[<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #E4E4E7;
+    background-color: #18181B;
+    padding: 14px 18px;
+    margin: 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: rgba(151,115,255,0.18);
+    color: #C4B5FD;
+    border: 1px solid rgba(151,115,255,0.3);
+    margin-bottom: 10px;
+}
+h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+ul {
+    padding-left: 18px;
+    margin: 0 0 12px 0;
+}
+li {
+    margin-bottom: 6px;
+    color: #D4D4D8;
+}
+p.footer {
+    font-size: 11px;
+    color: #71717A;
+    margin-top: 14px;
+    border-top: 1px solid #27272A;
+    padding-top: 8px;
+}
+</style>
+</head>
+<body>
+<span class="badge">Version 1.0.3</span>
+<h3>Vad är nytt i denna version:</h3>
+<ul>
+<li>Ny enhetlig Lagradar & Tröskelvarnare med visuell milstolpetidslinje (5 -> 8 -> 10 -> 50).</li>
+<li>Omarbetad Skyddslogg: Lugn kronologisk verifieringsjournal med utfällbara forensiska revisionsbevis och SHA-256-hasher.</li>
+<li>Fixat layout- och marginalfel i sidomenyn för Personal & Avtal.</li>
+</ul>
+<p class="footer">Simployer Comply Autonomous Engine — Alltid i tråd med loven.</p>
+</body>
+</html>
+]]></description>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer-Comply-1.0.3.zip" length="4579408" type="application/octet-stream" sparkle:edSignature="xQisOd9YR9UJseRptZcIcCz5SGUuNbvmZDd+843NQlgT7J/zh+WK4SufEfAA3uo8XzGCV4+6zwj6iVww+klhAg=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer%20Comply202611101025-202611100755.delta" sparkle:deltaFrom="202611100755" length="464658" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="VM5hvaPTSvtTJlIvcvfLgx0UlSP/p4q+dvH/wUEUtPurNFKsEyh9DM6/92InO4MW3/2k1n55PdKFGgWdSvNuBQ=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer%20Comply202611101025-202611091542.delta" sparkle:deltaFrom="202611091542" length="717326" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6kOiKuMK9p80CZpRmHF4MDqaEuua0hl01+HeO2T9DU7ttefhbaQ5IF752g6SHaw2mNZY18fKK3rV7Jlak/dBBw=="/>
+                <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer%20Comply202611101025-202611090920.delta" sparkle:deltaFrom="202611090920" length="919410" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="DRSas2pGQppgOhLLGBbxT4kf5d7uon3RWdeojDo6VIL42VG8dWx58+SL0YSZ/DvVjGhFVfg1Jczpy2N3q1JwAg=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>1.0.2</title>
             <pubDate>Tue, 10 Nov 2026 07:57:42 +0100</pubDate>
             <sparkle:version>202611100755</sparkle:version>
@@ -70,7 +144,7 @@ p.footer {
 </body>
 </html>
 ]]></description>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer-Comply-1.0.2.zip" length="4501205" type="application/octet-stream" sparkle:edSignature="q/xp7zZ0nyVdMKasicG3Qz4QsUhoLy2P7r/TOS1RvA6XHIO7yPbe/kMSy5YfVu04FshL7i4P/6347r9XhEbpAQ=="/>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer-Comply-1.0.2.zip" length="4501205" type="application/octet-stream" sparkle:edSignature="q/xp7zZ0nyVdMKasicG3Qz4QsUhoLy2P7r/TOS1RvA6XHIO7yPbe/kMSy5YfVu04FshL7i4P/6347r9XhEbpAQ=="/>
             <sparkle:deltas>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer%20Comply202611100755-202611091542.delta" sparkle:deltaFrom="202611091542" length="507058" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="pnPsQRtNTgoZ1tPmv4dhdeiKWYy5YURAmdP0Dbk/Z+T80PR8T0X3H/KraN9bzyhpUBh9CpqZ3p/ufFLtfq1yCg=="/>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer%20Comply202611100755-202611090920.delta" sparkle:deltaFrom="202611090920" length="797422" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="Rk2e3TCc12BfpdYFFCSVHA49cUAYHH0IpgG6ZXySTMbfjihI3k5X8qtEUp1XC55GIrHbvPpG9Ci9Q3hCL+KiDA=="/>
@@ -144,42 +218,10 @@ p.footer {
 </body>
 </html>
 ]]></description>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer-Comply-1.0.1.zip" length="4285483" type="application/octet-stream" sparkle:edSignature="1wCmEgGikspRdZ07Uk0oCzubEYazdwBT3P3eaa7/ROvfPQutnElSsmXvu+d9/h79rlFVP+a2W4ndQ/4I4HPpBQ=="/>
+            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.3/Simployer-Comply-1.0.1.zip" length="4285483" type="application/octet-stream" sparkle:edSignature="1wCmEgGikspRdZ07Uk0oCzubEYazdwBT3P3eaa7/ROvfPQutnElSsmXvu+d9/h79rlFVP+a2W4ndQ/4I4HPpBQ=="/>
             <sparkle:deltas>
                 <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.1/Simployer%20Comply202611091542-202611090920.delta" sparkle:deltaFrom="202611090920" length="572734" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976432" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="hTFCLwsFi8qEFrUaMMl3MlL+FRLfaZC57IhHHNcQCpwxgfTVcPy87hE9AZMu+01CBmIUboJ6dsbR6J2KCi6kCQ=="/>
             </sparkle:deltas>
-        </item>
-        <item>
-            <title>1.0.0</title>
-            <pubDate>Mon, 09 Nov 2026 09:19:06 +0100</pubDate>
-            <sparkle:version>202611090920</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://github.com/rasmussjoborg-dotcom/simployer-comply/releases/download/v1.0.2/Simployer-Comply-1.0.0.zip" length="4351965" type="application/octet-stream" sparkle:edSignature="+J5TB5bSgGlYt8sXiN9DaRqRkPQIvfXekrsk4cWyr0oHasCmGnfHOKpPU2elYb4mA2vYtJMaJ08dVuL4j7eLDw=="/>
-            <description><![CDATA[<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; line-height: 1.5; color: #E5E5E5; background-color: #1A1A1E; padding: 12px; margin: 0; }
-h3 { margin-top: 0; font-size: 14px; font-weight: 600; color: #FFFFFF; }
-ul { padding-left: 20px; margin: 8px 0; }
-li { margin-bottom: 4px; }
-.badge { display: inline-block; padding: 2px 6px; font-size: 10px; font-weight: 600; border-radius: 4px; background: rgba(151,115,255,0.2); color: #9773FF; margin-bottom: 8px; }
-</style>
-</head>
-<body>
-<span class="badge">Ny uppdatering</span>
-<h3>Vad är nytt i version 1.0.0</h3>
-<ul>
-<li><b>Autonom regelefterlevnad:</b> Löpande bevakning av AML §§ 14-6, 6-1, 3-5 och 4-6.</li>
-<li><b>Linear-cockpit:</b> Ny mörk arkitektur med dämpad kontrast och förbättrad typografi.</li>
-<li><b>Automatiska uppdateringar:</b> Sparkle 2-motor för sömlösa prototyptester.</li>
-</ul>
-</body>
-</html>
-]]></description>
         </item>
     </channel>
 </rss>
