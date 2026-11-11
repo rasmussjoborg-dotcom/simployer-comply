@@ -40,6 +40,13 @@ public class ComplyStore: ObservableObject {
     @Published public var showAuditReportSheet: Bool = false
     @Published public var auditReportSavedToast: String? = nil
     
+    // MARK: - Onboarding Journey & Company Registry
+    @Published public var isOnboardingActive: Bool = false
+    @Published public var showOnboardingModal: Bool = false
+    @Published public var activeCompany: RegisteredCompany = CompanyLookupService.demoCompany
+    @Published public var selectedOnboardingSource: String? = nil
+    @Published public var hasCompletedOnboarding: Bool = true
+    
     // MARK: - Headless Integrations & Settings State
     @Published public var slackInstantAlerts: Bool = true
     @Published public var slackWeeklyDigest: Bool = true
@@ -54,7 +61,7 @@ public class ComplyStore: ObservableObject {
     private var resolveTimer: Timer? = nil
     @Published public var dataCoverageScore: Double = 0.65 // 65% visibility (missing payroll/time)
     @Published public var handbookSignaturesCount: Int = 4 // 4 of 8 signed
-    @Published public var showPresenterHUD: Bool = true // Dedicated presenter capsule
+    @Published public var showPresenterHUD: Bool = false // Hidden by default, toggled via ⌘D or top bar button
     @Published public var demoHeadcountMode: Int = 8 // 8 (baseline), 10 (AMU threshold), 20 (scaleup)
     @Published public var juristEscalationPending: Bool = true // Complex non-compete clause with Camilla
 
@@ -617,6 +624,34 @@ public class ComplyStore: ObservableObject {
         self.activeNav = "hub"
         lastSyncTimestamp = Date()
         broadcastSync()
+    }
+    
+    public func openOnboarding() {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            self.isOnboardingActive = true
+            self.showOnboardingModal = false
+        }
+    }
+    
+    public func completeOnboarding(with company: RegisteredCompany, source: String) {
+        self.activeCompany = company
+        self.demoHeadcountMode = company.employeeCount
+        self.selectedOnboardingSource = source
+        self.hasCompletedOnboarding = true
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            self.isOnboardingActive = false
+            self.showOnboardingModal = false
+            self.activeNav = "hub"
+        }
+        broadcastSync()
+    }
+    
+    public func skipOnboardingToControlRoom() {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            self.isOnboardingActive = false
+            self.showOnboardingModal = false
+            self.activeNav = "hub"
+        }
     }
     
     public static func loadDefaultAgentEvents() -> [AgentEvent] {

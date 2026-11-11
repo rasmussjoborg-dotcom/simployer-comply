@@ -67,6 +67,14 @@ struct SimployerComplyMacApp: App {
             }
             
             CommandMenu("Demo") {
+                Button(store.language == .se ? "Starta onboarding-guide…" : (store.language == .no ? "Start onboarding-guide…" : "Start Onboarding Journey…")) {
+                    NSApp.activate(ignoringOtherApps: true)
+                    store.openOnboarding()
+                }
+                .keyboardShortcut("o", modifiers: .command)
+                
+                Divider()
+                
                 Button(store.language == .se ? "Simulera +2 anställda (Tröskel 10)" : "Simulate +2 employees (AMU Threshold)") {
                     store.simulateHiringTwoEmployees()
                 }
@@ -154,10 +162,7 @@ struct MenuBarActionHubView: View {
     @ObservedObject var updater: ComplyUpdater
     @Environment(\.openWindow) private var openWindow
     
-    @State private var dismissedContracts: Bool = false
-    @State private var dismissedSafetyRep: Bool = false
-    @State private var dismissedHandbook: Bool = false
-    @State private var dismissedAllCaughtUp: Bool = false
+    @State private var justResolvedInThisSession: Bool = false
     
     private var isCompliant: Bool {
         store.currentCompliancePercent >= 100
@@ -179,56 +184,21 @@ struct MenuBarActionHubView: View {
         store.handbookSignaturesCount >= 8
     }
     
-    private var allTasksDismissed: Bool {
-        dismissedContracts && dismissedSafetyRep && dismissedHandbook
-    }
-    
-    private func scheduleDismissal(contracts: Bool, safetyRep: Bool, handbook: Bool) {
-        if contracts && !dismissedContracts {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
-                    dismissedContracts = true
-                }
-            }
-        }
-        if safetyRep && !dismissedSafetyRep {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
-                withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
-                    dismissedSafetyRep = true
-                }
-            }
-        }
-        if handbook && !dismissedHandbook {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
-                withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
-                    dismissedHandbook = true
-                }
-            }
-        }
-        // At the very end, also dismiss the 'All caught up' card so the view settles into pure calm
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.4) {
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                dismissedAllCaughtUp = true
-            }
-        }
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 11) {
             headerView
             heroStatusView
             
-            if !dismissedAllCaughtUp {
-                if !allTasksDismissed {
-                    checklistView
-                    primaryExecuteSection
-                } else {
-                    allCaughtUpView
-                        .transition(.asymmetric(
-                            insertion: .opacity.combined(with: .scale(scale: 0.98)),
-                            removal: .scale(scale: 0.95).combined(with: .opacity)
-                        ))
-                }
+            // Session-Persistent: Keep checklist & resolved confirmation visible while this session is active
+            if !isCompliant || store.isResolving || justResolvedInThisSession {
+                checklistView
+                primaryExecuteSection
+            } else {
+                allCaughtUpView
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.98)),
+                        removal: .scale(scale: 0.95).combined(with: .opacity)
+                    ))
             }
             
             Divider()
@@ -241,39 +211,26 @@ struct MenuBarActionHubView: View {
         .background(WindowAppearanceConfigurator())
         .preferredColorScheme(.dark)
         .onAppear {
-            if isCompliant {
-                dismissedContracts = true
-                dismissedSafetyRep = true
-                dismissedHandbook = true
-                dismissedAllCaughtUp = true
-            } else {
-                dismissedContracts = contractsResolved
-                dismissedSafetyRep = safetyRepResolved
-                dismissedHandbook = handbookResolved
-                dismissedAllCaughtUp = false
+            // When opening cleanly in an already-compliant steady state from a previous session, show allCaughtUpView
+            if !isCompliant {
+                justResolvedInThisSession = false
             }
+        }
+        .onDisappear {
+            // When user closes the popover, end the "just resolved" celebration so next open is calm
+            justResolvedInThisSession = false
         }
         .onChange(of: store.isResolving) { resolving in
             if !resolving && isCompliant {
-                scheduleDismissal(contracts: true, safetyRep: true, handbook: true)
-            }
-        }
-        .onChange(of: allTasksDismissed) { allDismissed in
-            if allDismissed && !dismissedAllCaughtUp {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                    withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                        dismissedAllCaughtUp = true
-                    }
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
+                    justResolvedInThisSession = true
                 }
             }
         }
         .onChange(of: store.pendingActionCount) { count in
             if count > 0 {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    if !contractsResolved { dismissedContracts = false }
-                    if !safetyRepResolved { dismissedSafetyRep = false }
-                    if !handbookResolved { dismissedHandbook = false }
-                    dismissedAllCaughtUp = false
+                    justResolvedInThisSession = false
                 }
             }
         }
@@ -408,70 +365,64 @@ struct MenuBarActionHubView: View {
     private var checklistView: some View {
         VStack(spacing: 5) {
             // Item 1: Contracts
-            if !dismissedContracts {
-                MiniActionRow(
-                    icon: "doc.text.fill",
-                    iconColor: contractsResolved ? SolTokens.green800 : SolTokens.red700,
-                    title: contractsResolved 
-                        ? (store.language == .se ? "7 anställningsavtal uppdaterade" : (store.language == .no ? "7 arbeidsavtaler oppdatert" : "7 employment contracts updated"))
-                        : (store.language == .se ? "7 avtal saknar övertidsvillkor" : (store.language == .no ? "7 avtaler mangler overtidsvilkår" : "7 contracts need overtime clauses")),
-                    subtitle: contractsResolved 
-                        ? (store.language == .se ? "Lagstadgade villkor införda" : (store.language == .no ? "Lovfestede vilkår innført" : "Statutory terms applied"))
-                        : (store.language == .se ? "Standardavtal saknar lagstadgad skrivning" : (store.language == .no ? "Standardavtaler mangler lovpålagt tekst" : "Standard contracts lack statutory terms")),
-                    isResolved: contractsResolved
-                )
-                .transition(.asymmetric(
-                    insertion: .opacity.combined(with: .move(edge: .top)),
-                    removal: .scale(scale: 0.95).combined(with: .opacity)
-                ))
-            }
+            MiniActionRow(
+                icon: "doc.text.fill",
+                iconColor: contractsResolved ? SolTokens.green800 : SolTokens.red700,
+                title: contractsResolved 
+                    ? (store.language == .se ? "7 anställningsavtal uppdaterade" : (store.language == .no ? "7 arbeidsavtaler oppdatert" : "7 employment contracts updated"))
+                    : (store.language == .se ? "7 avtal saknar övertidsvillkor" : (store.language == .no ? "7 avtaler mangler overtidsvilkår" : "7 contracts need overtime clauses")),
+                subtitle: contractsResolved 
+                    ? (store.language == .se ? "Lagstadgade villkor införda" : (store.language == .no ? "Lovfestede vilkår innført" : "Statutory terms applied"))
+                    : (store.language == .se ? "Standardavtal saknar lagstadgad skrivning" : (store.language == .no ? "Standardavtaler mangler lovpålagt tekst" : "Standard contracts lack statutory terms")),
+                isResolved: contractsResolved
+            )
+            .animation(.spring(response: 0.35, dampingFraction: 0.8), value: contractsResolved)
             
             // Item 2: Verneombud
-            if !dismissedSafetyRep {
-                MiniActionRow(
-                    icon: "person.2.fill",
-                    iconColor: safetyRepResolved ? SolTokens.green800 : SolTokens.amber400,
-                    title: safetyRepResolved 
-                        ? (store.language == .se ? "Digitalt skyddsombudsval utlyst" : (store.language == .no ? "Digitalt verneombudsvalg åpnet" : "Safety rep election opened"))
-                        : (store.language == .se ? "Val av skyddsombud måste utlysas" : (store.language == .no ? "Valg av verneombud må åpnes" : "Safety rep election required")),
-                    subtitle: safetyRepResolved 
-                        ? (store.language == .se ? "Röstning distribuerad till personalen" : (store.language == .no ? "Avstemning sendt til ansatte" : "Ballot distributed to staff"))
-                        : (store.language == .se ? "Teamet har passerat 5 anställda" : (store.language == .no ? "Teamet har passert 5 ansatte" : "Headcount passed 5 employees")),
-                    isResolved: safetyRepResolved
-                )
-                .transition(.asymmetric(
-                    insertion: .opacity.combined(with: .move(edge: .top)),
-                    removal: .scale(scale: 0.95).combined(with: .opacity)
-                ))
-            }
+            MiniActionRow(
+                icon: "person.2.fill",
+                iconColor: safetyRepResolved ? SolTokens.green800 : SolTokens.amber400,
+                title: safetyRepResolved 
+                    ? (store.language == .se ? "Digitalt skyddsombudsval utlyst" : (store.language == .no ? "Digitalt verneombudsvalg åpnet" : "Safety rep election opened"))
+                    : (store.language == .se ? "Val av skyddsombud måste utlysas" : (store.language == .no ? "Valg av verneombud må åpnes" : "Safety rep election required")),
+                subtitle: safetyRepResolved 
+                    ? (store.language == .se ? "Röstning distribuerad till personalen" : (store.language == .no ? "Avstemning sendt til ansatte" : "Ballot distributed to staff"))
+                    : (store.language == .se ? "Teamet har passerat 5 anställda" : (store.language == .no ? "Teamet har passert 5 ansatte" : "Headcount passed 5 employees")),
+                isResolved: safetyRepResolved
+            )
+            .animation(.spring(response: 0.35, dampingFraction: 0.8), value: safetyRepResolved)
             
             // Item 3: Handbook
-            if !dismissedHandbook {
-                MiniActionRow(
-                    icon: "book.closed.fill",
-                    iconColor: handbookResolved ? SolTokens.green800 : SolTokens.amber400,
-                    title: handbookResolved 
-                        ? (store.language == .se ? "Personalhandbok kvitterad av alla" : (store.language == .no ? "Personalhåndbok signert av alle" : "Handbook acknowledged by all staff"))
-                        : (store.language == .se ? "4 medarbetare saknar signatur" : (store.language == .no ? "4 ansatte mangler signatur" : "4 staff pending signature")),
-                    subtitle: handbookResolved 
-                        ? (store.language == .se ? "Samtliga har signerat via BankID" : (store.language == .no ? "Alle har signert via BankID" : "All staff signed via BankID"))
-                        : (store.language == .se ? "Varslingsrutin kräver BankID-kvittens" : (store.language == .no ? "Varslingsrutine krever BankID-signatur" : "Whistleblowing policy requires BankID")),
-                    isResolved: handbookResolved
-                )
-                .transition(.asymmetric(
-                    insertion: .opacity.combined(with: .move(edge: .top)),
-                    removal: .scale(scale: 0.95).combined(with: .opacity)
-                ))
-            }
+            MiniActionRow(
+                icon: "book.closed.fill",
+                iconColor: handbookResolved ? SolTokens.green800 : SolTokens.amber400,
+                title: handbookResolved 
+                    ? (store.language == .se ? "Personalhandbok kvitterad av alla" : (store.language == .no ? "Personalhåndbok signert av alle" : "Handbook acknowledged by all staff"))
+                    : (store.language == .se ? "4 medarbetare saknar signatur" : (store.language == .no ? "4 ansatte mangler signatur" : "4 staff pending signature")),
+                subtitle: handbookResolved 
+                    ? (store.language == .se ? "Samtliga har signerat via BankID" : (store.language == .no ? "Alle har signert via BankID" : "All staff signed via BankID"))
+                    : (store.language == .se ? "Varslingsrutin kräver BankID-kvittens" : (store.language == .no ? "Varslingsrutine krever BankID-signatur" : "Whistleblowing policy requires BankID")),
+                isResolved: handbookResolved
+            )
+            .animation(.spring(response: 0.35, dampingFraction: 0.8), value: handbookResolved)
         }
     }
     
     // MARK: - Single Executive Action (Resolve All)
     @ViewBuilder
     private var primaryExecuteSection: some View {
-        if !isCompliant && !store.isResolving {
+        if isCompliant && justResolvedInThisSession {
+            resolvedConfirmationBadge
+                .transition(.asymmetric(
+                    insertion: .opacity.combined(with: .scale(scale: 0.98)),
+                    removal: .opacity
+                ))
+        } else if !isCompliant && !store.isResolving {
             VStack(spacing: 5) {
                 Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        justResolvedInThisSession = true
+                    }
                     store.resolveWithLiveSpin()
                 } label: {
                     HStack(spacing: 7) {
@@ -512,6 +463,40 @@ struct MenuBarActionHubView: View {
             }
             .padding(.vertical, 4)
         }
+    }
+    
+    // MARK: - Post-Resolution Proof-of-Work Badge
+    private var resolvedConfirmationBadge: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(SolTokens.green800)
+            
+            VStack(alignment: .leading, spacing: 1.5) {
+                Text(store.language == .se 
+                    ? "3 lagkrav åtgärdade · Fullt skydd" 
+                    : (store.language == .no 
+                        ? "3 lovkrav utbedret · Full trygghet" 
+                        : "3 statutory gaps resolved · Full protection"))
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(SolTokens.green800)
+                
+                Text(store.language == .se 
+                    ? "Signerat med BankID · Sparat i revisionsspår" 
+                    : (store.language == .no 
+                        ? "Signert med BankID · Lagret i revisjonsspor" 
+                        : "Signed with BankID · Stored in audit trail"))
+                    .font(.system(size: 9.5))
+                    .foregroundColor(SolTokens.ink600)
+            }
+            
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7.5)
+        .background(SolTokens.green100.opacity(0.4))
+        .cornerRadius(6)
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(SolTokens.greenBorder.opacity(0.7), lineWidth: 1))
     }
     
     // MARK: - All Caught Up (Calm Empty State)
@@ -561,17 +546,6 @@ struct MenuBarActionHubView: View {
             .buttonStyle(.plain)
             
             Spacer()
-            
-            Button(store.language == .se ? "Uppdateringar" : (store.language == .no ? "Oppdateringer" : "Updates")) {
-                updater.checkForUpdates()
-            }
-            .font(.system(size: 10.5))
-            .foregroundColor(SolTokens.ink600)
-            .buttonStyle(.plain)
-            .disabled(!updater.canCheckForUpdates)
-            
-            Text("·")
-                .foregroundColor(SolTokens.ink600)
             
             Button(l10n.menuQuit) {
                 NSApp.terminate(nil)

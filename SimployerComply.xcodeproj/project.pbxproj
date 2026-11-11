@@ -14,6 +14,7 @@
 		2FBEE437682762A7D14A218D /* ComplyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */; };
 		35F6B8D01F2D0F14774BE158 /* ComplyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61593BB04D44D762C627BF2B /* ComplyModels.swift */; };
 		461EF115F5E7A04D1B88BE59 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31DA34C95DE0354F400E1334 /* Inter-Regular.ttf */; };
+		4B56D551BE1CA202488B125D /* CompanyLookupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE85AD67DEC101023E614FB7 /* CompanyLookupService.swift */; };
 		52CF964E89D1E5A7CD5FDD8F /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FF4169989091163FAEE67302 /* Inter-Regular.ttf */; };
 		56E1928C8C77ED28F3FEFD8A /* SimployerComplyIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22378A870BFFEA3829D51606 /* SimployerComplyIOSApp.swift */; };
 		60536E2913DD37AEAC3153BC /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 20A5522E233037659B174066 /* Inter-Medium.ttf */; };
@@ -23,11 +24,13 @@
 		76179912B99F16CD76A6FA69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09CB3BDDE43752266AD231E3 /* Assets.xcassets */; };
 		76A5C16A2FB9B26A751EB240 /* ComplyLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0019712590F87874129D27 /* ComplyLanguage.swift */; };
 		77F6BC66F45F3039738CA690 /* ComplyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE77CE7EC13B82F14102BA /* ComplyStore.swift */; };
+		83A7C58E5590A8D6F08F0986 /* OnboardingWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C608A47255CCC2754B192DC /* OnboardingWizardView.swift */; };
 		86EB6323BB8FF48E8437275A /* IOSMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200ACC54A98903C2A2A25A3C /* IOSMainView.swift */; };
 		8BE134ABC64E90E2ACA9B261 /* ComplyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE77CE7EC13B82F14102BA /* ComplyStore.swift */; };
 		957B75442158DEBBEF04985B /* SimployerComplyMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */; };
 		A5810ADE930C211741178692 /* AutoplayDemoEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C64A820BA02C22ADCA4DA /* AutoplayDemoEngine.swift */; };
 		A71258706571D311BA48CC11 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C9BBC9D7D408A12842A9748 /* Inter-Bold.ttf */; };
+		A7B16961B1C83D68AADE29B8 /* CompanyLookupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE85AD67DEC101023E614FB7 /* CompanyLookupService.swift */; };
 		A7CDDDB2DDA3643437200C2C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED98779A166ED77F3D90FB13 /* Assets.xcassets */; };
 		BA5CDBB99A2C9ED2AC48B354 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B55A96C437A5DEE5F48D1B56 /* AppIcon.icns */; };
 		BF13DDEFB755025DED3321A7 /* AgentLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EE46CD65502760928434FD /* AgentLogView.swift */; };
@@ -56,6 +59,7 @@
 		3F2F58AA827103F884BFF85D /* SimployerComplyIOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SimployerComplyIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53EE77CE7EC13B82F14102BA /* ComplyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyStore.swift; sourceTree = "<group>"; };
 		61593BB04D44D762C627BF2B /* ComplyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyModels.swift; sourceTree = "<group>"; };
+		6C608A47255CCC2754B192DC /* OnboardingWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWizardView.swift; sourceTree = "<group>"; };
 		6E2DEFCBBC869ED28F1B55DA /* SimployerComplyMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimployerComplyMacApp.swift; sourceTree = "<group>"; };
 		75EE46CD65502760928434FD /* AgentLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentLogView.swift; sourceTree = "<group>"; };
 		777B2FE0E0869660613B5E78 /* camilla_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camilla_avatar.png; sourceTree = "<group>"; };
@@ -65,6 +69,7 @@
 		B5E4982118DFCC8873F8B954 /* InspectionExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionExportView.swift; sourceTree = "<group>"; };
 		BD4C64A820BA02C22ADCA4DA /* AutoplayDemoEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoplayDemoEngine.swift; sourceTree = "<group>"; };
 		CD0019712590F87874129D27 /* ComplyLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyLanguage.swift; sourceTree = "<group>"; };
+		CE85AD67DEC101023E614FB7 /* CompanyLookupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyLookupService.swift; sourceTree = "<group>"; };
 		DB1FC1C4686F68327AF839D3 /* ComplyUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplyUpdater.swift; sourceTree = "<group>"; };
 		DE93FEA6F446214D9721AC32 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
@@ -192,6 +197,7 @@
 		DEDEB326ACBEA95CF067C8F9 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				CE85AD67DEC101023E614FB7 /* CompanyLookupService.swift */,
 				CD0019712590F87874129D27 /* ComplyLanguage.swift */,
 				61593BB04D44D762C627BF2B /* ComplyModels.swift */,
 				53EE77CE7EC13B82F14102BA /* ComplyStore.swift */,
@@ -209,6 +215,7 @@
 				B5E4982118DFCC8873F8B954 /* InspectionExportView.swift */,
 				E9919606AC3EB2B8D8F2ED1A /* MacMainView.swift */,
 				F3A97EEDF3533D4764DB779D /* MacModals.swift */,
+				6C608A47255CCC2754B192DC /* OnboardingWizardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -330,6 +337,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B56D551BE1CA202488B125D /* CompanyLookupService.swift in Sources */,
 				64D6F8E72137423512D47B7C /* ComplyLanguage.swift in Sources */,
 				CC6F00287CA96F9EF2CDB01D /* ComplyModels.swift in Sources */,
 				77F6BC66F45F3039738CA690 /* ComplyStore.swift in Sources */,
@@ -345,6 +353,7 @@
 			files = (
 				BF13DDEFB755025DED3321A7 /* AgentLogView.swift in Sources */,
 				A5810ADE930C211741178692 /* AutoplayDemoEngine.swift in Sources */,
+				A7B16961B1C83D68AADE29B8 /* CompanyLookupService.swift in Sources */,
 				76A5C16A2FB9B26A751EB240 /* ComplyLanguage.swift in Sources */,
 				35F6B8D01F2D0F14774BE158 /* ComplyModels.swift in Sources */,
 				8BE134ABC64E90E2ACA9B261 /* ComplyStore.swift in Sources */,
@@ -352,6 +361,7 @@
 				CD59EE7D2E9410E7DBA2EC4D /* InspectionExportView.swift in Sources */,
 				E2BE5E5E1845C75F8C1D466A /* MacMainView.swift in Sources */,
 				2F055EE34DA2CA31F27C36B4 /* MacModals.swift in Sources */,
+				83A7C58E5590A8D6F08F0986 /* OnboardingWizardView.swift in Sources */,
 				957B75442158DEBBEF04985B /* SimployerComplyMacApp.swift in Sources */,
 				68175D182169028D841D7C41 /* SolTokens.swift in Sources */,
 			);

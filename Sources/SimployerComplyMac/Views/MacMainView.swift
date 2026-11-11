@@ -56,16 +56,50 @@ struct MacMainView: View {
         ZStack(alignment: .leading) {
             SolTokens.canvasRoot.ignoresSafeArea()
             
-            // Global keyboard shortcut for immediate prototype reset (⌘R)
-            Button("") {
-                resetEntirePrototype()
+            // Global keyboard shortcuts (⌘R = reset, ⌘O = onboarding)
+            Group {
+                Button("") {
+                    resetEntirePrototype()
+                }
+                .keyboardShortcut("r", modifiers: .command)
+                
+                Button("") {
+                    if store.isOnboardingActive {
+                        store.skipOnboardingToControlRoom()
+                    } else {
+                        store.openOnboarding()
+                    }
+                }
+                .keyboardShortcut("o", modifiers: .command)
             }
-            .keyboardShortcut("r", modifiers: .command)
             .opacity(0)
             .frame(width: 0, height: 0)
             
-            // MARK: - Main Content Split (Linear Sidebar + Framed Canvas)
-            HStack(spacing: 0) {
+            // MARK: - Top-Level Mode: Full-Window Onboarding Wizard vs Live Control Room
+            if store.isOnboardingActive {
+                OnboardingWizardView(store: store)
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.98)),
+                        removal: .opacity.combined(with: .scale(scale: 1.02))
+                    ))
+            } else {
+                controlRoomContent
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 1.02)),
+                        removal: .opacity.combined(with: .scale(scale: 0.98))
+                    ))
+            }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if store.showPresenterHUD {
+                presenterHUDOverlay
+            }
+        }
+    }
+    
+    // MARK: - Live Control Room Dashboard & Telemetry Environment
+    private var controlRoomContent: some View {
+        HStack(spacing: 0) {
                 // Left Sidebar (resizable)
                 VStack(alignment: .leading, spacing: 3.5) {
                     // Simployer Comply Brand Header (Aligned with Breadcrumb Bar height)
@@ -319,8 +353,7 @@ struct MacMainView: View {
                     .layoutPriority(1)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        }
-        .overlay {
+            .overlay {
             if showSearchPalette {
                 CommandPaletteModal(
                     store: store,
@@ -447,11 +480,6 @@ struct MacMainView: View {
                 }
             }
             .padding(24)
-        }
-        .overlay(alignment: .bottomTrailing) {
-            if store.showPresenterHUD {
-                presenterHUDOverlay
-            }
         }
         .onChange(of: autoplay.currentStepIndex) { _ in
             if let step = autoplay.currentStep {
@@ -781,11 +809,12 @@ struct MacMainView: View {
             }
             
             // 2. Quick Action Sequences
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(store.l10n.hudQuickActionsSection)
                     .font(.system(size: 8.5, weight: .bold, design: .monospaced))
                     .foregroundColor(SolTokens.ink450)
                 
+                // Row 1: Live Actions
                 HStack(spacing: 6) {
                     Button {
                         store.simulateHiringTwoEmployees()
@@ -826,6 +855,37 @@ struct MacMainView: View {
                         .foregroundColor(SolTokens.lav500)
                         .cornerRadius(5)
                         .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.lav400.opacity(0.3), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+                
+                // Row 2: Onboarding Journey & Reset
+                HStack(spacing: 6) {
+                    Button {
+                        if store.isOnboardingActive {
+                            store.skipOnboardingToControlRoom()
+                        } else {
+                            store.openOnboarding()
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: store.isOnboardingActive ? "arrow.right.circle.fill" : "sparkles.rectangle.stack")
+                                .font(.system(size: 10))
+                            Text(store.isOnboardingActive ?
+                                 (store.language == .se ? "Till Control Room (⌘O)" : (store.language == .no ? "Til Control Room (⌘O)" : "To Control Room (⌘O)")) :
+                                 (store.language == .se ? "Onboarding (⌘O)" : (store.language == .no ? "Onboarding (⌘O)" : "Onboarding (⌘O)"))
+                            )
+                                .font(.inter(10.5, .semibold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.85)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 6)
+                        .background(SolTokens.plum900.opacity(0.2))
+                        .foregroundColor(SolTokens.lav400)
+                        .cornerRadius(5)
+                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(SolTokens.lav500.opacity(0.4), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                     
@@ -4410,6 +4470,28 @@ struct MacMainView: View {
                                     .padding(.vertical, 6.5)
                                     .background(SolTokens.paper200)
                                     .foregroundColor(SolTokens.ink700)
+                                    .cornerRadius(6)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(SolTokens.paper300, lineWidth: 1)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                
+                                // Onboarding Journey Button
+                                Button {
+                                    store.openOnboarding()
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "sparkles.rectangle.stack")
+                                            .font(.inter(11))
+                                        Text(store.language == .se ? "Onboarding (⌘O)" : (store.language == .no ? "Onboarding (⌘O)" : "Onboarding (⌘O)"))
+                                            .font(.inter(12, .semibold))
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6.5)
+                                    .background(SolTokens.paper200)
+                                    .foregroundColor(SolTokens.plum900)
                                     .cornerRadius(6)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 6)
@@ -8300,6 +8382,31 @@ struct DemoControlsPopover: View {
                 }
                 .buttonStyle(.plain)
             }
+            
+            // Section 2b: Onboarding Journey
+            Button {
+                isPresented = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    store.openOnboarding()
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles.rectangle.stack")
+                        .font(.inter(9))
+                    Text(store.language == .se ? "Starta onboarding-guide (⌘O)" : (store.language == .no ? "Start onboarding-guide (⌘O)" : "Run Onboarding Journey (⌘O)"))
+                        .font(.inter(11, .semibold))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(SolTokens.paper200)
+                .foregroundColor(SolTokens.ink900)
+                .cornerRadius(6)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(SolTokens.paper300, lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
             
             Divider()
                 .overlay(SolTokens.paper300)
